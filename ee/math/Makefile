@@ -8,8 +8,8 @@
 
 EE_LIB = libmf.a
 
-EE_CFLAGS += -fshort-double
-# EE_CFLAGS += -mlong64 -mhard-float -fno-builtin # do we really need it it even in old toolchain?
+EE_CFLAGS += -fno-builtin
+# EE_CFLAGS += -fshort-double -mlong64 -mhard-float # do we really need it it even in old toolchain?
 
 EE_OBJS = acoshf.o airyf.o asinf.o asinhf.o atanf.o \
 	atanhf.o bdtrf.o betaf.o cbrtf.o chbevlf.o chdtrf.o \
