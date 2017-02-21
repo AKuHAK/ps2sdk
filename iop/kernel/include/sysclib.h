@@ -34,10 +34,12 @@ char _toupper(char c);
 char _tolower(char c);
 #define I_tolower DECLARE_IMPORT(7, _tolower)
 
+#undef toupper
 #ifndef toupper
 #define toupper(c) _toupper(c)
 #endif
 
+#undef tolower
 #ifndef tolower
 #define tolower(c) _tolower(c)
 #endif
