@@ -186,6 +186,12 @@ _root:
    syscall         # ExitThread() (noreturn)
    .end   _root
 
+   .sdata
+   .global __dso_handle
+   .weak __dso_handle
+__dso_handle:
+   .long 0
+
    .bss
    .align   6
 _args:
