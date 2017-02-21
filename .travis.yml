@@ -6,4 +6,4 @@ services:
   - docker
 
 script:
-  - docker run -it --rm -v "$PWD:/src" akuhak/ps2toolchain make install
+  - docker run -it --rm -v "$PWD:/src" akuhak/ps2toolchain:new make install
