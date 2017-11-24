@@ -8,8 +8,8 @@
 
 SUBDIRS = kernel libc rpc startup debug \
 	eedebug sbv dma graph math3d math \
-	packet draw erl erl-loader mpeg libgs \
-	libvux font input inputx network
+	packet draw erl erl-loader libgs \
+	libvux font input inputx network #mpeg
 
 include $(PS2SDKSRC)/Defs.make
 include $(PS2SDKSRC)/Rules.make
