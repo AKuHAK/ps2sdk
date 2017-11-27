@@ -1,5 +1,14 @@
-#ifndef _PS2IP_RPC_H
-#define _PS2IP_RPC_H
+/**
+ * @file
+ * PS2IP RPC definitions
+ * This header conflicts with fileXio.h
+ */
+
+#ifndef __PS2IP_RPC_H__
+#define __PS2IP_RPC_H__
+
+#include <tamtypes.h>
+#include <tcpip.h>
 
 #define PS2IP_IRX 0xB0125F2
 
@@ -52,7 +61,8 @@ typedef struct {
 	void *ee_addr;
 	struct sockaddr sockaddr; // sizeof = 16
 	s32 malign;
-	u8 malign_buff[16]; // buffer for sending misaligned portion
+	/** buffer for sending misaligned portion */
+	u8 malign_buff[16];
 } send_pkt;
 
 typedef struct {
@@ -147,4 +157,4 @@ typedef struct {
 
 #endif
 
-#endif	//_PS2IP_RPC_H
+#endif /* __PS2IP_RPC_H__ */

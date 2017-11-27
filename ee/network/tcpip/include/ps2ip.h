@@ -6,21 +6,26 @@
 # Copyright (c) 2003 Marcus R. Brown <mrbrown@0xd6.org>
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# $
-# Imports and definitions for ps2ip.
 */
 
-#ifndef IOP_PS2IP_H
-#define IOP_PS2IP_H
+/**
+ * @file
+ * Imports and definitions for ps2ip.
+ */
 
+#ifndef __PS2IP_H__
+#define __PS2IP_H__
+
+#include <stddef.h>
 #include <tcpip.h>
 
-//Initializes PS2IP. Specify a dummy address like "169.254.0.1" if DHCP is to be used, before enabling DHCP via ps2ip_setconfig().
+/** Initializes PS2IP. Specify a dummy address like "169.254.0.1" if DHCP is to be used, before enabling DHCP via ps2ip_setconfig(). */
 int ps2ipInit(struct ip4_addr *ip_address, struct ip4_addr *subnet_mask, struct ip4_addr *gateway);
 void ps2ipDeinit(void);
-/*	Use to specify the number of H-sync ticks per milisecond (Default: 16). Use this function
-	to keep timings accurate, if a mode like 480P (~31KHz H-sync) is used instead of NTSC/PAL (~16KHz H-sync).	*/
+/**
+ * Use to specify the number of H-sync ticks per milisecond (Default: 16). 
+ * Use this function to keep timings accurate, if a mode like 480P (~31KHz H-sync) is used instead of NTSC/PAL (~16KHz H-sync).	
+ */
 void ps2ipSetHsyncTicksPerMSec(unsigned char ticks);
 
 /* From include/lwip/sockets.h:  */
@@ -79,10 +84,10 @@ err_t	etharp_output(struct netif *netif, struct pbuf *q, const ip_addr_t *ipaddr
 #define inet_ntoa_r(addr, buf, buflen)  ip4addr_ntoa_r((const ip4_addr_t*)&(addr), buf, buflen)
 
 u32        ipaddr_addr(const char *cp);
-int        ipaddr_aton(const char *cp, ip_addr_t *addr);
+int        ip4addr_aton(const char *cp, ip4_addr_t *addr);
 /** returns ptr to static buffer; not reentrant! */
-char       *ipaddr_ntoa(const ip_addr_t *addr);
-char       *ipaddr_ntoa_r(const ip_addr_t *addr, char *buf, int buflen);
+char       *ip4addr_ntoa(const ip4_addr_t *addr);
+char       *ip4addr_ntoa_r(const ip4_addr_t *addr, char *buf, int buflen);
 
 /* From include/lwip/tcpip.h:  */
 err_t     tcpip_input(struct pbuf *p, struct netif *inp);
@@ -95,10 +100,10 @@ struct netif *netif_add(struct netif *netif,
                         void *state, netif_init_fn init, netif_input_fn input);
 #define        I_netif_add DECLARE_IMPORT(26, netif_add)
 
-/* Returns a network interface given its name. The name is of the form
-   "et0", where the first two letters are the "name" field in the
-   netif structure, and the digit is in the num field in the same
-   structure. */
+/** Returns a network interface given its name. 
+ * The name is of the form "et0", where the first two letters are the "name" field in the
+ * netif structure, and the digit is in the num field in the same structure. 
+ */
 struct netif *netif_find(const char *name);
 void netif_set_default(struct netif *netif);
 void netif_set_ipaddr(struct netif *netif, const ip4_addr_t *ipaddr);
@@ -116,6 +121,7 @@ u8               pbuf_clen(struct pbuf *p);
 void             pbuf_chain(struct pbuf *h, struct pbuf *t);
 struct pbuf*     pbuf_dechain(struct pbuf *p);
 struct pbuf*     pbuf_take(struct pbuf *f);
+struct pbuf*     pbuf_coalesce(struct pbuf *p, pbuf_layer layer);
 
 #ifdef PS2IP_DNS
 /* From include/lwip/netdb.h:  */
@@ -133,4 +139,4 @@ void           dns_setserver(u8 numdns, const ip_addr_t *dnsserver);
 ip_addr_t      dns_getserver(u8 numdns);
 #endif
 
-#endif /* IOP_PS2IP_H */
+#endif /* __PS2IP_H__ */

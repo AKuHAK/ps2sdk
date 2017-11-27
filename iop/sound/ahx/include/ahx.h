@@ -8,12 +8,13 @@
 # Review ps2sdk README & LICENSE files for further details.
 */
 
-#ifndef __AHX_H
-#define __AHX_H
+/**
+ * @file
+ * AHX player functions
+ */
 
-#if defined(__LANGUAGE_C_PLUS_PLUS)||defined(__cplusplus)||defined(c_plusplus)
-extern "C" {
-#endif
+#ifndef __AHX_H__
+#define __AHX_H__
 
 struct  AHXPListEntry {
 	int Note;
@@ -118,8 +119,4 @@ void AHXPlayer_SetOversampling(int enable);
 
 void AHXOutput_MixBuffer(short* target);
 
-#if defined(__LANGUAGE_C_PLUS_PLUS)||defined(__cplusplus)||defined(c_plusplus)
-}
-#endif
-
-#endif //__AHX_H
+#endif /* __AHX_H__ */

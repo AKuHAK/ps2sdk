@@ -6,12 +6,15 @@
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# Common definitions for librm on the EE and IOP
 */
 
-#ifndef _LIBRM_COMMON_H_
-#define _LIBRM_COMMON_H_
+/**
+ * @file
+ * Common definitions for librm on the EE and IOP
+ */
+
+#ifndef __LIBRM_COMMON_H__
+#define __LIBRM_COMMON_H__
 
 #include <tamtypes.h>
 
@@ -59,4 +62,4 @@ enum RM_STATE {
 	RM_STATE_STABLE
 };
 
-#endif	// _LIBRM_COMMON_H_
+#endif /* _LIBRM_COMMON_H_ */

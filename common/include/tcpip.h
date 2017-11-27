@@ -6,13 +6,17 @@
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# $
-# Common definitions file for the LWIP v2.0.0 port.
 */
 
-#ifndef _TCPIP_H
-#define _TCPIP_H
+/**
+ * @file
+ * Common definitions file for the LWIP v2.0.0 port.
+ */
+
+#ifndef __TCPIP_H__
+#define __TCPIP_H__
+
+#include <tamtypes.h>
 
 /* Some portions of this header fall under the following copyright.  The license
    is compatible with that of ps2sdk.
@@ -40,7 +44,9 @@
 
 /*** Taken from src/include/lwip/opt.h. If changes were made to lwipopts.h, please update this section.
 	Some settings affect the fields present in structures like struct netif! ****/
-#define MEMP_NUM_NETCONN		4
+#define MEMP_NUM_UDP_PCB		4
+#define MEMP_NUM_TCP_PCB		5
+#define MEMP_NUM_NETCONN		(MEMP_NUM_TCP_PCB+MEMP_NUM_UDP_PCB)
 #define LWIP_NETIF_STATUS_CALLBACK	0
 #define LWIP_NETIF_LINK_CALLBACK	0
 #define LWIP_AUTOIP			0
@@ -1758,4 +1764,4 @@ typedef struct
 	u8			hw_addr[8];
 } t_ip_info;
 
-#endif	/* _TCPIP_H */
+#endif /* __TCPIP_H__ */

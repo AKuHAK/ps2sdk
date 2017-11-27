@@ -96,8 +96,9 @@
  * MEM_SIZE: the size of the heap memory. If the application will send
  * a lot of data that needs to be copied, this should be set high.
  */
-//SP193: setting this too low may cause tcp_write() to fail when it tries to allocate from PBUF_RAM!
-#define MEM_SIZE		(TCP_MSS * 8)
+/*	SP193: setting this too low may cause tcp_write() to fail when it tries to allocate from PBUF_RAM!
+	Up to TCP_SND_BUF * 2 segments may be transmitted at once, thanks to Nagle and Delayed Ack. */
+#define MEM_SIZE		(TCP_SND_BUF * 2)
 
 /*
    ------------------------------------------------
@@ -105,15 +106,31 @@
    ------------------------------------------------
 */
 /**
+ * MEMP_NUM_TCPIP_MSG_INPKT: the number of struct tcpip_msg, which are used
+ * for incoming packets.
+ * (only needed if you use tcpip.c)
+ */
+//SP193: this should be around the size of the TCP window because the TCPIP thread may take a while to execute (non-preemptive multitasking), otherwise incoming frames may get dropped.
+#define MEMP_NUM_TCPIP_MSG_INPKT        24
+
+/**
+ * MEMP_NUM_TCPIP_MSG_API: the number of struct tcpip_msg, which are used
+ * for callback/timeout API communication.
+ * (only needed if you use tcpip.c)
+ */
+//SP193: this should be around the size of MEM_SIZE (in PBUFs), to prevent transmissions from being potentially being dropped.
+#define MEMP_NUM_TCPIP_MSG_API		8
+
+/**
  * MEMP_NUM_NETCONN: the number of struct netconns.
  * (only needed if you use the sequential API, like api_lib.c)
  */
-#define MEMP_NUM_NETCONN                10	//SP193: find it weird that the default is only 4, while the maximum number of simultaneous TCP and UDP connections in total is 9.
+#define MEMP_NUM_NETCONN       (MEMP_NUM_TCP_PCB+MEMP_NUM_UDP_PCB)
 
 /**
  * PBUF_POOL_SIZE: the number of buffers in the pbuf pool.
  */
-#define PBUF_POOL_SIZE		25	//SP193: should be at least ((TCP_WND/PBUF_POOL_BUFSIZE)+1). But that is too small to handle simultaneous connections.
+#define PBUF_POOL_SIZE		32	//SP193: should be at least ((TCP_WND/PBUF_POOL_BUFSIZE)+1). But that is too small to handle simultaneous connections.
 
 /** SYS_LIGHTWEIGHT_PROT
  * define SYS_LIGHTWEIGHT_PROT in lwipopts.h if you want inter-task protection
@@ -223,5 +240,21 @@
  * This is overridable but should only be needed by very small targets
  * or when using against non standard DNS servers. */
 #define LWIP_DNS_SECURE	0
+
+/*
+   ------------------------------------------------
+   ---------- Network Interfaces options ----------
+   ------------------------------------------------
+*/
+/**
+ * LWIP_NETIF_TX_SINGLE_PBUF: if this is set to 1, lwIP tries to put all data
+ * to be sent into one single pbuf. This is for compatibility with DMA-enabled
+ * MACs that do not support scatter-gather.
+ * Beware that this might involve CPU-memcpy before transmitting that would not
+ * be needed without this flag! Use this only if you need to!
+ *
+ * @todo: TCP and IP-frag do not work with this, yet:
+ */
+#define LWIP_NETIF_TX_SINGLE_PBUF             1
 
 #endif /* __LWIPOPTS_H__ */

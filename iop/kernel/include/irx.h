@@ -6,14 +6,17 @@
 # Copyright (c) 2003 Marcus R. Brown <mrbrown@0xd6.org>
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# Convienence macros for IRX modules.
 */
 
-#ifndef IOP_IRX_H
-#define IOP_IRX_H
+/**
+ * @file
+ * Convienence macros for IRX modules.
+ */
 
-#include "types.h"
+#ifndef __IRX_H__
+#define __IRX_H__
+
+#include <types.h>
 
 #define IRX_VER(major, minor)	((((major) & 0xff) << 8) + ((minor) & 0xff))
 
@@ -99,4 +102,4 @@ struct irx_export_table _exp_##modname			\
 
 #define END_EXPORT_TABLE __asm__ (".section\t.text\n\t.word\t0");
 
-#endif /* IOP_IRX_H */
+#endif /* __IRX_H__ */

@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <kernel.h>
-#include <timer.h>
+#include <time.h>
 #include <limits.h>
 
 #include "lwip/sys.h"
@@ -25,6 +25,7 @@
 #include "ps2ip_internal.h"
 
 static arch_message msg_pool[SYS_MAX_MESSAGES];
+static arch_message *free_head;
 
 /* Function prototypes */
 static inline arch_message *alloc_msg(void);
@@ -37,22 +38,14 @@ extern void *_gp;
 
 static inline arch_message *try_alloc_msg(void)
 {
-	unsigned int i;
 	arch_message *message;
 
-	if(PollSema(MsgCountSema)==MsgCountSema){
+	if(PollSema(MsgCountSema)==MsgCountSema)
+	{
 		DI();
 
-		for(i=0,message=NULL; i<SYS_MAX_MESSAGES; i++)
-		{
-			if((msg_pool[i].next == NULL) && (msg_pool[i].sys_msg == NULL))
-			{
-				msg_pool[i].next = (arch_message *) 0xFFFFFFFF;
-				msg_pool[i].sys_msg = (void *) 0xFFFFFFFF;
-				message=&msg_pool[i];
-				break;
-			}
-		}
+		message = free_head;
+		free_head = free_head->next;
 
 		EI();
 	}else message=NULL;
@@ -62,22 +55,13 @@ static inline arch_message *try_alloc_msg(void)
 
 static inline arch_message *alloc_msg(void)
 {
-	unsigned int i;
 	arch_message *message;
 
 	WaitSema(MsgCountSema);
 	DI();
 
-	for(i=0,message=NULL; i<SYS_MAX_MESSAGES; i++)
-	{
-		if((msg_pool[i].next == NULL) && (msg_pool[i].sys_msg == NULL))
-		{
-			msg_pool[i].next = (arch_message *) 0xFFFFFFFF;
-			msg_pool[i].sys_msg = (void *) 0xFFFFFFFF;
-			message=&msg_pool[i];
-			break;
-		}
-	}
+	message = free_head;
+	free_head = free_head->next;
 
 	EI();
 
@@ -87,14 +71,17 @@ static inline arch_message *alloc_msg(void)
 static void free_msg(arch_message *msg)
 {
 	DI();
-	msg->next = NULL;
-	msg->sys_msg = NULL;
+
+	msg->next = free_head;
+	free_head = msg;
+
 	EI();
 	SignalSema(MsgCountSema);
 }
 
 static void TimeoutHandler(s32 alarm_id, u16 time, void *pvArg){
 	iReleaseWaitThread((int)pvArg);
+	ExitHandler();
 }
 
 static inline u32_t ComputeTimeDiff(u32 start, u32 end)
@@ -265,10 +252,10 @@ static u32_t sys_arch_mbox_fetch_internal(sys_mbox_t pMBox, void** ppvMSG, u32_t
 
 	TimeElasped=0;
 	if(block){
-		start=cpu_ticks();
+		start=clock()/(CLOCKS_PER_SEC*1000);
 
 		if((result=ReceiveMbx(&pmsg, pMBox, u32Timeout))==0){
-			TimeElasped = ComputeTimeDiff(start, cpu_ticks());
+			TimeElasped = ComputeTimeDiff(start, clock()/(CLOCKS_PER_SEC*1000));
 		}
 		else{
 			return SYS_ARCH_TIMEOUT;
@@ -374,14 +361,14 @@ u32_t sys_arch_sem_wait(sys_sem_t *Sema, u32_t u32Timeout)
 		int	AlarmID;
 		u32_t	WaitTime;
 
-		start=cpu_ticks();
+		start=clock()/(CLOCKS_PER_SEC*1000);
 		AlarmID=SetAlarm(mSec2HSyncTicks(u32Timeout), &TimeoutHandler, (void*)GetThreadId());
 
 		if(WaitSema(*Sema)==*Sema)
 		{
 			ReleaseAlarm(AlarmID);
 
-			WaitTime=ComputeTimeDiff(start, cpu_ticks());
+			WaitTime=ComputeTimeDiff(start, clock()/(CLOCKS_PER_SEC*1000));
 			result=(WaitTime<=u32Timeout?WaitTime:u32Timeout);
 		}
 		else result=SYS_ARCH_TIMEOUT;
@@ -410,6 +397,7 @@ void sys_sem_set_invalid(sys_sem_t *sem){
 
 void sys_init(void)
 {
+	arch_message *prev;
 	unsigned int i;
 	ee_sema_t sema;
 
@@ -420,18 +408,24 @@ void sys_init(void)
 	sema.init_count = sema.max_count = SYS_MAX_MESSAGES;
 	MsgCountSema=CreateSema(&sema);
 
-	for(i = 0; i < SYS_MAX_MESSAGES; i++)
+	free_head = &msg_pool[0];
+	prev = &msg_pool[0];
+
+	for(i = 1; i < SYS_MAX_MESSAGES; i++)
 	{
-		msg_pool[i].next = NULL;
-		msg_pool[i].sys_msg = NULL;
+		prev->next = &msg_pool[i];
+		prev = &msg_pool[i];
 	}
+
+	//NULL-terminate free message list
+	prev->next = NULL;
 
 	ProtLevel = 0;
 }
 
 u32_t sys_now(void)
 {
-	return(cpu_ticks()/295000);
+	return(clock()/(CLOCKS_PER_SEC*1000));
 }
 
 sys_prot_t sys_arch_protect(void)
@@ -451,4 +445,16 @@ void sys_arch_unprotect(sys_prot_t level)
 	ProtLevel = level;
 	if(ProtLevel == 0)
 		EI();
+}
+
+void *ps2ip_calloc64(size_t n, size_t size)
+{
+	void *ptr = NULL;
+	size_t sz = n * size;
+
+	if ((ptr = memalign(64, sz)) == NULL)
+		return ptr;
+
+	memset(ptr, 0, sz);
+	return ptr;
 }

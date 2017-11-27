@@ -6,9 +6,12 @@
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# PS2 TCP/IP STACK FOR IOP
 */
+
+/**
+ * @file
+ * PS2 TCP/IP STACK FOR IOP
+ */
 
 #include <types.h>
 #include <stdio.h>
@@ -245,30 +248,24 @@ static void EnQRxPacket(void *packet)
 static err_t
 SMapLowLevelOutput(struct netif *pNetIF, struct pbuf* pOutput)
 {
-	static u8 buffer[1518];
+	err_t result;
 	struct pbuf* pbuf;
-	unsigned char *buffer_ptr;
-	unsigned short int TotalLength;
 
-	if(pOutput->next != NULL)
+	result = ERR_OK;
+	if(pOutput->tot_len > pOutput->len)
 	{
-		pbuf=pOutput;
-		buffer_ptr=buffer;
-		TotalLength=0;
-		while(pbuf!=NULL)
+		pbuf_ref(pOutput);	//Increment reference count because LWIP must free the PBUF, not the driver!
+		if((pbuf = pbuf_coalesce(pOutput, PBUF_RAW)) != pOutput)
 		{
-			memcpy(buffer_ptr, pbuf->payload, pbuf->len);
-			TotalLength+=pbuf->len;
-			buffer_ptr+=pbuf->len;
-			pbuf=pbuf->next;
-		}
-
-		NetManNetIFSendPacket(buffer, TotalLength);
+			NetManNetIFSendPacket(pbuf->payload, pbuf->len);
+			pbuf_free(pbuf);
+		} else
+			result = ERR_MEM;
 	} else {
 		NetManNetIFSendPacket(pOutput->payload, pOutput->len);
 	}
 
-	return ERR_OK;
+	return result;
 }
 
 //SMapOutput():

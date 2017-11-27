@@ -8,9 +8,15 @@
 # Review ps2sdk README & LICENSE files for further details.
 */
 
-#ifndef __PS2SND_H
-#define __PS2SND_H 1
+/**
+ * @file
+ * PS2SND definitions.
+ */
 
+#ifndef __PS2SND_H__
+#define __PS2SND_H__
+
+#include <tamtypes.h>
 #include <libsd.h>
 
 #define STREAM_STEREO 1
@@ -77,4 +83,4 @@ u32 sndQueryMaxFreeMemSize();
 }
 #endif
 
-#endif /* __PS2SND_H */
+#endif /* __PS2SND_H__ */

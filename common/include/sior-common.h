@@ -6,12 +6,17 @@
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# Common definitions for SIOR on the EE and IOP
 */
 
-#ifndef _SIOR_COMMON_H_
-#define _SIOR_COMMON_H_
+/**
+ * @file
+ * Common definitions for SIOR on the EE and IOP
+ */
+
+#ifndef __SIOR_COMMON_H__
+#define __SIOR_COMMON_H__
+
+#include <tamtypes.h>
 
 #define	SIOR_IRX              0xC001510
 
@@ -57,4 +62,4 @@ union siorCommsData {
 	int c;
 };
 
-#endif // _SIOR_COMMON_H_
+#endif /* __SIOR_COMMON_H__ */

@@ -6,9 +6,12 @@
 # Copyright (c) 2003 Marcus R. Brown <mrbrown@0xd6.org>
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# DEV9 Device Driver.
 */
+
+/**
+ * @file
+ * DEV9 Device Driver.
+ */
 
 #include <types.h>
 #include <defs.h>
@@ -19,8 +22,8 @@
 #include <thbase.h>
 #include <thsemap.h>
 #include <stdio.h>
+#include <sysclib.h>
 #include <dev9.h>
-#include <poweroff.h>
 
 #include <aifregs.h>
 #include <dev9regs.h>
@@ -42,11 +45,25 @@ IRX_ID(MODNAME, 2, 8);
 #define SSBUS_R_141c		0xbf80141c
 #define SSBUS_R_1420		0xbf801420
 
+static int semaAttrGlobal;	/* Semaphore attribute value to use. */
+static const char *mod_name;	/* Module name. */
 static int dev9type = -1;	/* 0 for PCMCIA, 1 for expansion bay */
 static int using_aif = 0;	/* 1 if using AIF on a T10K */
 
-static void (*p_dev9_intr_cb)(int flag) = NULL;
-static int dma_lock_sem = -1;	/* used to arbitrate DMA */
+static int dma_lock_sem;	/* used to arbitrate DMA */
+
+enum PC_CARD_TYPE{
+	PC_CARD_TYPE_NONE = 0,
+	PC_CARD_TYPE_PCMCIA,
+	PC_CARD_TYPE_CARDBUS,
+};
+
+enum PC_CARD_VOLTAGE{
+	PC_CARD_VOLTAGE_INVALID = 0,
+	PC_CARD_VOLTAGE_3V,
+	PC_CARD_VOLTAGE_5V,
+	PC_CARD_VOLTAGE_04h
+};
 
 static int pcic_cardtype;	/* Translated value of bits 0-1 of 0xbf801462 */
 static int pcic_voltage;	/* Translated value of bits 2-3 of 0xbf801462 */
@@ -54,6 +71,10 @@ static int pcic_voltage;	/* Translated value of bits 2-3 of 0xbf801462 */
 static s16 eeprom_data[5];	/* 2-byte EEPROM status (0/-1 = invalid, 1 = valid),
 				   6-byte MAC address,
 				   2-byte MAC address checksum.  */
+
+typedef int (*dev9IntrDispatchCb_t)(int flag);
+static dev9IntrDispatchCb_t p_dev9_intr_cb = NULL;
+static void dev9RegisterIntrDispatchCb(dev9IntrDispatchCb_t callback);
 
 /* Each driver can register callbacks that correspond to each bit of the
    SMAP interrupt status register (0xbx000028).  */
@@ -65,14 +86,14 @@ static dev9_dma_cb_t dev9_predma_cbs[4], dev9_postdma_cbs[4];
 
 static int dev9_intr_dispatch(int flag);
 
-static void dev9x_on_shutdown(void*);
-
 static void dev9_set_stat(int stat);
+static int dev9_ssbus_mode(int mode);
 static int dev9_device_probe(void);
 static int dev9_device_reset(void);
+static int dev9_card_find_manfid(u32 manfid);
 
 static int read_eeprom_data(void);
-static int dev9_init(void);
+static int dev9_init(int sema_attr);
 static int speed_device_init(void);
 
 static void pcmcia_set_stat(int stat);
@@ -80,12 +101,12 @@ static int pcic_ssbus_mode(int mode);
 static int pcmcia_device_probe(void);
 static int pcmcia_device_reset(void);
 static int card_find_manfid(u32 manfid);
-static int pcmcia_init(void);
+static int pcmcia_init(int sema_attr);
 
 static void expbay_set_stat(int stat);
 static int expbay_device_probe(void);
 static int expbay_device_reset(void);
-static int expbay_init(void);
+static int expbay_init(int sema_attr);
 
 extern struct irx_export_table _exp_dev9;
 
@@ -145,13 +166,52 @@ static iop_device_t dev9x_device =
 	&dev9x_ops
 };
 
+static int print_help(void)
+{
+	printf("Usage:\n");
+	printf("  %s [-sa] <attribute>]\n", mod_name);
+	printf("      -sa  You can specify attibute of sempahore for queuing thread.\n");
+	printf("           List of possible <attribute>:\n");
+	printf("             SA_THPRI(default), SA_THFIFO\n");
+
+	return MODULE_NO_RESIDENT_END;
+}
+
 int _start(int argc, char **argv)
 {
 	USE_DEV9_REGS;
-	int idx, res = 1;
+	const char *pModName;
+	int idx, res;
 	u16 dev9hw;
 
+	semaAttrGlobal = SA_THPRI;
+
 	printf(BANNER, VERSION);
+
+	mod_name = (pModName = strrchr(argv[0], '/')) != NULL ? pModName + 1 : argv[0];
+
+	for(--argc,++argv; argc > 0; argc--,argv++) {
+		if((*argv)[0] != '-')
+			break;
+
+		if(strcmp("-sa", *argv) == 0) {
+			--argc;
+			++argv;
+			if (argc > 0) {
+				if(strcmp("SA_THFIFO", *argv) == 0) {
+					semaAttrGlobal = SA_THFIFO;
+				} else if(strcmp("SA_THPRI", *argv) == 0) {
+					semaAttrGlobal = SA_THPRI;
+				} else {
+					return print_help();
+				}
+			} else {
+				return print_help();
+			}
+		} else {
+			return print_help();
+		}
+	}
 
 	for (idx = 0; idx < 16; idx++)
 		dev9_shutdown_cbs[idx] = NULL;
@@ -160,13 +220,14 @@ int _start(int argc, char **argv)
 	if (dev9hw == 0x20) {		/* CXD9566 (PCMCIA) */
 		dev9type = DEV9_TYPE_PCMCIA;
 		M_PRINTF("CXD9566 detected.\n");
-		res = pcmcia_init();
+		res = pcmcia_init(semaAttrGlobal);
 	} else if (dev9hw == 0x30) {	/* CXD9611 (Expansion Bay) */
 		dev9type = DEV9_TYPE_EXPBAY;
 		M_PRINTF("CXD9611 detected.\n");
-		res = expbay_init();
+		res = expbay_init(semaAttrGlobal);
 	} else {
 		M_PRINTF("unknown dev9 hardware.\n");
+		res = MODULE_NO_RESIDENT_END;
 	}
 
 	if (res)
@@ -176,8 +237,6 @@ int _start(int argc, char **argv)
 	if (AddDrv(&dev9x_device) != 0) {
 		return MODULE_NO_RESIDENT_END;
 	}
-
-	AddPowerOffHandler(&dev9x_on_shutdown, NULL);
 
 	return MODULE_RESIDENT_END;
 }
@@ -238,6 +297,18 @@ static void dev9_set_stat(int stat)
 	}
 }
 
+static int dev9_ssbus_mode(int mode)
+{
+	switch(dev9type){
+		case DEV9_TYPE_PCMCIA:
+			return pcic_ssbus_mode(mode);
+		case DEV9_TYPE_EXPBAY:
+			return 0;
+	}
+
+	return -1;
+}
+
 static int dev9_device_probe(void)
 {
 	switch(dev9type){
@@ -283,6 +354,18 @@ void dev9Shutdown(void)
 		DEV9_REG(DEV9_R_POWER) = DEV9_REG(DEV9_R_POWER) & ~1;
 	}
 	DelayThread(1000000);
+}
+
+static int dev9_card_find_manfid(u32 manfid)
+{
+	switch(dev9type){
+		case DEV9_TYPE_PCMCIA:
+			return card_find_manfid(manfid);
+		case DEV9_TYPE_EXPBAY:
+			return 0;
+	}
+
+	return -1;
 }
 
 /* Export 7 */
@@ -444,8 +527,14 @@ void dev9LEDCtl(int ctl)
 	SPD_REG8(SPD_R_PIO_DATA) = (ctl == 0);
 }
 
+static void dev9RegisterIntrDispatchCb(dev9IntrDispatchCb_t callback)
+{
+	p_dev9_intr_cb = callback;
+}
+
 /* Export 11 */
-int dev9RegisterShutdownCb(int idx, dev9_shutdown_cb_t cb){
+int dev9RegisterShutdownCb(int idx, dev9_shutdown_cb_t cb)
+{
 	if (idx < 16)
 	{
 		dev9_shutdown_cbs[idx] = cb;
@@ -454,11 +543,15 @@ int dev9RegisterShutdownCb(int idx, dev9_shutdown_cb_t cb){
 	return -1;
 }
 
-static int dev9_init(void)
+static int dev9_init(int sema_attr)
 {
+	iop_sema_t sema;
 	int i, flags;
 
-	if ((dma_lock_sem = CreateMutex(IOP_MUTEX_UNLOCKED)) < 0)
+	sema.attr = sema_attr;
+	sema.initial = 1;
+	sema.max = 1;
+	if ((dma_lock_sem = CreateSema(&sema)) < 0)
 		return -1;
 
 	CpuSuspendIntr(&flags);
@@ -472,7 +565,8 @@ static int dev9_init(void)
 	/* Disable all device interrupts.  */
 	dev9IntrDisable(0xffff);
 
-	p_dev9_intr_cb = (void *)dev9_intr_dispatch;
+	/* Register interrupt dispatch callback handler. */
+	dev9RegisterIntrDispatchCb(&dev9_intr_dispatch);
 
 	/* Reset the SMAP interrupt callback table. */
 	for (i = 0; i < 16; i++)
@@ -490,6 +584,7 @@ static int dev9_init(void)
 	return 0;
 }
 
+#ifndef SKIP_SMAP_INIT
 static int dev9_smap_read_phy(volatile u8 *emac3_regbase, unsigned int address, unsigned int *data){
 	unsigned int i, PHYRegisterValue;
 	int result;
@@ -640,17 +735,23 @@ static int dev9_smap_init(void)
 
 	return 0;
 }
+#endif
 
 static int speed_device_init(void)
 {
 	USE_SPD_REGS;
 	const char *spdnames[] = { "(unknown)", "TS", "ES1", "ES2" };
-	int idx, res, InitCount;
+	int idx, res;
 	u16 spdrev;
+#ifndef SKIP_SMAP_INIT
+	int i;
+#endif
 
 	eeprom_data[0] = 0;
 
-	for(InitCount=0; InitCount<8; InitCount++){
+#ifndef SKIP_SMAP_INIT
+	for(i = 0; i < 8; i++) {
+#endif
 		if (dev9_device_probe() < 0) {
 			M_PRINTF("PC card or expansion device isn't connected.\n");
 			return -1;
@@ -660,19 +761,18 @@ static int speed_device_init(void)
 
 		/* Locate the SPEED Lite chip and get the bus ready for the
 		   PCMCIA device.  */
-		if (dev9type == DEV9_TYPE_PCMCIA) {
-			if ((res = card_find_manfid(0xf15300)))
-				M_PRINTF("SPEED Lite not found.\n");
+		if ((res = dev9_card_find_manfid(0xf15300)))
+			M_PRINTF("SPEED Lite not found.\n");
 
-			if (!res && (res = pcic_ssbus_mode(5)))
-				M_PRINTF("Unable to change SSBUS mode.\n");
+		if (!res && (res = dev9_ssbus_mode(5)))
+			M_PRINTF("Unable to change SSBUS mode.\n");
 
-			if (res) {
-				dev9Shutdown();
-				return -1;
-			}
+		if (res) {
+			dev9Shutdown();
+			return -1;
 		}
 
+#ifndef SKIP_SMAP_INIT
 		if((res = dev9_smap_init()) == 0){
 			break;
 		}
@@ -685,6 +785,7 @@ static int speed_device_init(void)
 		M_PRINTF("SMAP initialization failed: %d\n", res);
 		eeprom_data[0] = -1;
 	}
+#endif
 
 	/* Print out the SPEED chip revision.  */
 	spdrev = SPD_REG16(SPD_R_REV_1);
@@ -704,11 +805,11 @@ static int pcic_get_cardtype(void)
 	u16 val = DEV9_REG(DEV9_R_1462) & 0x03;
 
 	if (val == 0)
-		return 1;	/* 16-bit */
+		return PC_CARD_TYPE_PCMCIA;	/* 16-bit */
 	else
-	if (val < 3)
-		return 2;	/* CardBus */
-	return 0;
+	if (val < 3)	//If the bit pattern is either 10b or 01b
+		return PC_CARD_TYPE_CARDBUS;	/* CardBus */
+	return PC_CARD_TYPE_NONE;
 }
 
 static int pcic_get_voltage(void)
@@ -717,12 +818,12 @@ static int pcic_get_voltage(void)
 	u16 val = DEV9_REG(DEV9_R_1462) & 0x0c;
 
 	if (val == 0x04)
-		return 3;
+		return PC_CARD_VOLTAGE_04h;
 	if (val == 0 || val == 0x08)
-		return 1;
+		return PC_CARD_VOLTAGE_3V;
 	if (val == 0x0c)
-		return 2;
-	return 0;
+		return PC_CARD_VOLTAGE_5V;
+	return PC_CARD_VOLTAGE_INVALID;
 }
 
 static int pcic_power(int voltage, int flag)
@@ -814,12 +915,12 @@ static int pcmcia_device_probe(void)
 
 	pcic_voltage = pcic_get_voltage();
 	pcic_cardtype = pcic_get_cardtype();
-	voltage = (pcic_voltage == 2 ? 5 : (pcic_voltage == 1 ? 3 : 0));
+	voltage = (pcic_voltage == PC_CARD_VOLTAGE_5V ? 5 : (pcic_voltage == PC_CARD_VOLTAGE_3V ? 3 : 0));
 
 	M_PRINTF("%s PCMCIA card detected. Vcc = %dV\n",
 			pcic_ct_names[pcic_cardtype], voltage);
 
-	if (pcic_voltage == 3 || pcic_cardtype != 1)
+	if (pcic_voltage == PC_CARD_VOLTAGE_04h || pcic_cardtype != PC_CARD_TYPE_PCMCIA)
 		return -1;
 
 	return 0;
@@ -831,7 +932,7 @@ static int pcmcia_device_reset(void)
 	u16 cstc1, cstc2;
 
 	/* The card must be 16-bit (type 2?) */
-	if (pcic_cardtype != 1)
+	if ((DEV9_REG(DEV9_R_1462) & 0x03) != 0)
 		return -1;
 
 	DEV9_REG(DEV9_R_147E) = 1;
@@ -943,7 +1044,7 @@ static int pcmcia_intr(void *unused)
 	return 1;
 }
 
-static int pcmcia_init(void)
+static int pcmcia_init(int sema_attr)
 {
 	USE_DEV9_REGS;
 	USE_AIF_REGS;
@@ -991,7 +1092,7 @@ static int pcmcia_init(void)
 		_sw(0xe01a3043, SSBUS_R_1418);
 	}
 
-	if (dev9_init() != 0)
+	if (dev9_init(sema_attr) != 0)
 		return 1;
 
 	CpuSuspendIntr(&flags);
@@ -1048,7 +1149,7 @@ static int expbay_intr(void *unused)
 	return 1;
 }
 
-static int expbay_init(void)
+static int expbay_init(int sema_attr)
 {
 	USE_DEV9_REGS;
 	int flags;
@@ -1066,7 +1167,7 @@ static int expbay_init(void)
 			return 1;
 	}
 
-	if (dev9_init() != 0)
+	if (dev9_init(sema_attr) != 0)
 		return 1;
 
 	CpuSuspendIntr(&flags);
@@ -1081,11 +1182,4 @@ static int expbay_init(void)
 
 	M_PRINTF("CXD9611 (Expansion Bay type) initialized.\n");
 	return 0;
-}
-
-static void dev9x_on_shutdown(void*p)
-{
-	M_PRINTF("shutdown\n");
-	dev9IntrDisable(-1);
-	dev9Shutdown();
 }

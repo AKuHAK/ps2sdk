@@ -8,18 +8,26 @@
 # Review ps2sdk README & LICENSE files for further details.
 */
 
-#ifndef _LIBPWROFF_H
-#define _LIBPWROFF_H
+/**
+ * @file
+ * Power-off library.
+ */
+
+#ifndef __LIBPWROFF_H__
+#define __LIBPWROFF_H__
+
+#define POWEROFF_THREAD_PRIORITY	0x70
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define POWEROFF_THREAD_PRIORITY	0x70
-
 typedef void (*poweroff_callback)(void *arg);
 
-int poweroffInit(void);	//Initializes the poweroff library. A service thread with a default priority of 0x70 will be created.
+/** Initializes the poweroff library.
+ * A service thread with a default priority of 0x70 will be created.
+ */
+int poweroffInit(void);
 void poweroffSetCallback(poweroff_callback cb, void *arg);
 void poweroffShutdown(void);
 void poweroffChangeThreadPriority(int priority);
@@ -28,4 +36,4 @@ void poweroffChangeThreadPriority(int priority);
 }
 #endif
 
-#endif /* _LIBPWROFF_H */
+#endif /* __LIBPWROFF_H__ */

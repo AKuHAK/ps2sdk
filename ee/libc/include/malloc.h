@@ -6,12 +6,15 @@
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# EE memory allocation prototypes
 */
 
-#ifndef _MALLOC_H
-#define _MALLOC_H
+/**
+ * @file
+ * EE memory allocation prototypes
+ */
+
+#ifndef __MALLOC_H__
+#define __MALLOC_H__
 
 #include <stddef.h>
 #include <stdarg.h>
@@ -56,7 +59,6 @@ int __mem_walk_end(void * token);
 
 */
 
-
 /* You should never need to use this normally.  */
 void *	ps2_sbrk(size_t incr);
 
@@ -64,5 +66,4 @@ void *	ps2_sbrk(size_t incr);
 }
 #endif
 
-#endif	// _MALLOC_H
-
+#endif /* __MALLOC_H__ */

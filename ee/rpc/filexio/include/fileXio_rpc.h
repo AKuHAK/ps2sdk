@@ -6,26 +6,28 @@
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# fileXio RPC client header file
 */
 
-#ifndef _FILEXIO_RPC_H
-#define _FILEXIO_RPC_H
+/**
+ * @file
+ * fileXio RPC client header file
+ */
 
-// include the common definitions
+#ifndef __FILEXIO_RPC_H__
+#define __FILEXIO_RPC_H__
+
 #include <fileXio.h>
 #include <sys/stat.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #define FXIO_WAIT		0
 #define FXIO_NOWAIT		1
 
 #define FXIO_COMPLETE	1
 #define FXIO_INCOMPLETE	0
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int fileXioInit(void);
 void fileXioExit(void);
@@ -67,5 +69,4 @@ int fileXioSetRWBufferSize(int size);
 }
 #endif
 
-
-#endif // _FILEXIO_H
+#endif /* __FILEXIO_RPC_H__ */

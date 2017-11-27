@@ -40,6 +40,29 @@ static int pfsFormatArg[1] = { PFS_ZONE_SIZE };
 #define _OMIT_SYSTEM_PARTITION
 //#define DEBUG
 
+static char *sizesString[9] = {
+		"128M",
+		"256M",
+		"512M",
+		"1G",
+		"2G",
+		"4G",
+		"8G",
+		"16G",
+		"32G"
+};
+
+static int sizesMB[9] = {
+		128,
+		256,
+		512,
+		1024,
+		2048,
+		4096,
+		8192,
+		16384,
+		32768
+};
 
 static void hddUpdateInfo();
 
@@ -78,7 +101,14 @@ int hddCheckFormatted()
 
 int hddFormat()
 {
-	int retVal;
+	int retVal, i;
+	const char *partitionList[] = {
+		"hdd0:__net",
+		"hdd0:__system",
+		"hdd0:__sysconf",
+		"hdd0:__common",
+		NULL
+	};
 
 	if(!hddStatusCurrent)
 		hddUpdateInfo();
@@ -87,21 +117,12 @@ int hddFormat()
 	if(retVal < 0)
 		return retVal;
 
-	retVal = fileXioFormat("pfs:", "hdd0:__net", (const char*)&pfsFormatArg, sizeof(pfsFormatArg));
-	if(retVal < 0)
-		return retVal;
-
-	retVal = fileXioFormat("pfs:", "hdd0:__system", (const char*)&pfsFormatArg, sizeof(pfsFormatArg));
-	if(retVal < 0)
-		return retVal;
-
-	retVal = fileXioFormat("pfs:", "hdd0:__common", (const char*)&pfsFormatArg, sizeof(pfsFormatArg));
-	if(retVal < 0)
-		return retVal;
-
-	retVal = fileXioFormat("pfs:", "hdd0:__sysconf", (const char*)&pfsFormatArg, sizeof(pfsFormatArg));
-	if(retVal < 0)
-		return retVal;
+	for(i = 0; partitionList[i] != NULL; i++)
+	{
+		retVal = fileXioFormat("pfs:", partitionList[i], (const char*)&pfsFormatArg, sizeof(pfsFormatArg));
+		if(retVal < 0)
+			return retVal;
+	}
 
 	hddUpdateInfo();
 
@@ -172,7 +193,7 @@ int hddGetFilesystemList(t_hddFilesystem hddFs[], int maxEntries)
 #endif
 
 		// Calculate filesystem size
-		partitionFd = fileXioOpen(hddFs[count].filename, O_RDONLY, 0);
+		partitionFd = fileXioOpen(hddFs[count].filename, O_RDONLY);
 
 		// If we failed to open the partition, then a password is probably set
 		// (usually this means we have tried to access a game partition). We
@@ -268,30 +289,6 @@ static void hddUpdateInfo()
 	hddStatusCurrent = 1;
 }
 
-static char *sizesString[9] = {
-		"128M",
-		"256M",
-		"512M",
-		"1G",
-		"2G",
-		"4G",
-		"8G",
-		"16G",
-		"32G"
-};
-
-static int sizesMB[9] = {
-		128,
-		256,
-		512,
-		1024,
-		2048,
-		4096,
-		8192,
-		16384,
-		32768
-};
-
 int hddMakeFilesystem(int fsSizeMB, char *name, int type)
 {
 	int maxIndex;
@@ -324,7 +321,7 @@ int hddMakeFilesystem(int fsSizeMB, char *name, int type)
 
 	// Check if filesystem already exists
 	sprintf(openString, "hdd0:%s", fsName);
-	partFd = fileXioOpen(openString, O_RDONLY, 0);
+	partFd = fileXioOpen(openString, O_RDONLY);
 	if(partFd > 0 || partFd == -EACCES)	// Filesystem already exists
 	{
 		fileXioClose(partFd);
@@ -350,7 +347,7 @@ int hddMakeFilesystem(int fsSizeMB, char *name, int type)
 		printf(">>> openString = %s\n", openString);
 #endif
 
-		partFd = fileXioOpen(openString, O_RDWR | O_CREAT, 0);
+		partFd = fileXioOpen(openString, O_RDWR | O_CREAT);
 		if(partFd >= 0)
 			break;
 		else {
@@ -496,7 +493,7 @@ int hddExpandFilesystem(t_hddFilesystem *fs, int extraMB)
 	partSize = sizesMB[useIndex];
 
 	// Open partition
-	partFd = fileXioOpen(fs->filename, O_RDWR, 0);
+	partFd = fileXioOpen(fs->filename, O_RDWR);
 	if(partFd < 0)
 		return partFd;
 

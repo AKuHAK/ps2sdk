@@ -11,7 +11,11 @@
 */
 
 #include <stdio.h>
+#ifdef _IOP
 #include <sysclib.h>
+#else
+#include <string.h>
+#endif
 #include <errno.h>
 #include <iomanX.h>
 #include <thsemap.h>
@@ -27,11 +31,18 @@ extern pfs_config_t pfsConfig;
 extern int pfsFioSema;
 extern pfs_file_slot_t *pfsFileSlots;
 
+#ifdef PFS_IOCTL2_INC_CHECKSUM
+extern u32 pfsBlockSize;
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 //	Function declarations
 
 static int devctlFsckStat(pfs_mount_t *pfsMount, int mode);
 
+#ifdef PFS_IOCTL2_INC_CHECKSUM
+static int ioctl2InvalidateInode(pfs_cache_t *clink);
+#endif
 static int ioctl2Attr(pfs_cache_t *clink, int cmd, void *arg, void *outbuf, u32 *offset);
 static pfs_aentry_t *getAentry(pfs_cache_t *clink, char *key, char *value, int mode);
 static int ioctl2AttrAdd(pfs_cache_t *clink, pfs_ioctl2attr_t *attr);
@@ -96,6 +107,14 @@ int pfsFioDevctl(iop_file_t *f, const char *name, int cmd, void *arg, size_t arg
 	return rv;
 }
 
+#ifdef PFS_IOCTL2_INC_CHECKSUM
+static int ioctl2InvalidateInode(pfs_cache_t *clink)
+{
+	clink->u.inode->checksum++;
+	return clink->pfsMount->blockDev->transfer(clink->pfsMount->fd, clink->u.inode, clink->sub, clink->block << pfsBlockSize, 1 << pfsBlockSize, PFS_IO_MODE_WRITE);
+}
+#endif
+
 int pfsFioIoctl2(iop_file_t *f, int cmd, void *arg, size_t arglen,	void *buf, size_t buflen)
 {
 	int rv;
@@ -106,10 +125,17 @@ int pfsFioIoctl2(iop_file_t *f, int cmd, void *arg, size_t arglen,	void *buf, si
 		if(cmd==PIOCATTRREAD)
 			return -EISDIR;
 
-	if(!(f->mode & O_WRONLY)) {
-		if(cmd!=PIOCATTRLOOKUP)
-			if(cmd!=PIOCATTRREAD)
+	if(!(f->mode & O_WRONLY))
+	{
+		switch(cmd)
+		{
+			case PIOCATTRLOOKUP:
+			case PIOCATTRREAD:
+			case PIOCINVINODE:
+				break;
+			default:
 				return -EACCES;
+		}
 	}
 	if((rv=pfsFioCheckFileSlot(fileSlot))<0)
 		return rv;
@@ -132,6 +158,12 @@ int pfsFioIoctl2(iop_file_t *f, int cmd, void *arg, size_t arglen,	void *buf, si
 		rv=ioctl2Attr(fileSlot->clink, cmd, arg, buf, &fileSlot->aentryOffset);
 		break;
 
+#ifdef PFS_IOCTL2_INC_CHECKSUM
+	case PIOCINVINODE:
+		rv=ioctl2InvalidateInode(fileSlot->clink);
+		break;
+#endif
+
 	default:
 		rv=-EINVAL;
 		break;
@@ -150,7 +182,7 @@ static int ioctl2Attr(pfs_cache_t *clink, int cmd, void *arg, void *outbuf, u32 
 	int rv;
 	pfs_cache_t *flink;
 
-	if((flink=pfsCacheGetData(clink->pfsMount, clink->sub, clink->sector+1
+	if((flink=pfsCacheGetData(clink->pfsMount, clink->sub, clink->block+1
 		,PFS_CACHE_FLAG_NOTHING, &rv))==NULL)
 		return rv;
 
@@ -180,7 +212,7 @@ static int ioctl2Attr(pfs_cache_t *clink, int cmd, void *arg, void *outbuf, u32 
 
 void pfsFioDevctlCloseAll(void)
 {
-	u32 i;
+	s32 i;
 
 	for(i=0;i < pfsConfig.maxOpen;i++)
 	{

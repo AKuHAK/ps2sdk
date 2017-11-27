@@ -86,7 +86,7 @@ int NetManInitRPCClient(void)
 				thread.option = 0;
 				thread.thread = &EERxThread;
 				thread.stacksize = 0x600;
-				thread.priority = 0x26; //The receive thread should have a higher priority than transmission threads, so that it won't get interrupted
+				thread.priority = 0x29;	//Should have a lower priority than the driver thread, so that frames can be received without stalling the driver thread.
 				RxThreadID = CreateThread(&thread);
 				StartThread(RxThreadID, NULL);
 			}
@@ -171,10 +171,14 @@ void NetManRpcNetProtStackFreeRxPacket(void *packet)
 	((struct NetManPacketBuffer*)packet)->handle = NULL;
 }
 
+static void EERxEnd(void *end_param)
+{
+	PacketReqs.count -= SifRpcRxBuffer.result;
+	iSetEventFlag(NetManRxDoneEvfID, 1);
+}
+
 static void EERxThread(void *arg)
 {
-	int OldState, sent;
-
 	while(1)
 	{
 		//Unlike the EE-side implementation, do not use SleepThread because the old IOP kernel still puts the thread to SLEEP within sceSifCallRpc.
@@ -185,22 +189,8 @@ static void EERxThread(void *arg)
 			while(PacketReqs.count > 0)
 			{
 				WaitSema(NetManIOSemaID);
-				//NETMAN_EE_RPC_FUNC_SEND_PACKETS may not accept all frames, if there is insufficient memory.
-				if(sceSifCallRpc(&EEClient, NETMAN_EE_RPC_FUNC_HANDLE_PACKETS, 0, &PacketReqs, sizeof(PacketReqs), &SifRpcRxBuffer, sizeof(s32), NULL, NULL) >= 0)
-					sent = SifRpcRxBuffer.result;
-				else
-					sent = 0;
+				while(sceSifCallRpc(&EEClient, NETMAN_EE_RPC_FUNC_HANDLE_PACKETS, 0, &PacketReqs, sizeof(PacketReqs), &SifRpcRxBuffer, sizeof(SifRpcRxBuffer.result), &EERxEnd, NULL) < 0){};
 				SignalSema(NetManIOSemaID);
-
-				if(sent > 0)
-				{	//Only if frames were accepted successfully.
-					CpuSuspendIntr(&OldState);
-					PacketReqs.count -= sent;
-					CpuResumeIntr(OldState);
-
-					SetEventFlag(NetManRxDoneEvfID, 1);
-				} else	//Ideally, this should not happen. But if it does, give the EE some time.
-					DelayThread(200);
 			}
 		} else
 			SetEventFlag(NetManRxDoneEvfID, 1);

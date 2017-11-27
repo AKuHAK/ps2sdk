@@ -6,12 +6,17 @@
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# Common definitions for the libcdvd RPC on the EE and IOP
 */
 
-#ifndef _LIBCDVD_RPC_H_
-#define _LIBCDVD_RPC_H_
+/**
+ * @file
+ * Common definitions for the libcdvd RPC on the EE and IOP
+ */
+
+#ifndef __LIBCDVD_RPC_H__
+#define __LIBCDVD_RPC_H__
+
+#include <tamtypes.h>
 
 /* S-command parameters */
 
@@ -48,4 +53,4 @@ struct cdvdReadKeyParam{
 	u32 command;
 };
 
-#endif // _LIBCDVD_RPC_H_
+#endif /* _LIBCDVD_RPC_H_ */

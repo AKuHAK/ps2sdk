@@ -6,23 +6,21 @@
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# Wide-character type, constant and function declarations for LIBC.
 */
 
-#ifndef _WCHAR_H_
-#define _WCHAR_H_
+/**
+ * @file
+ * Wide-character type, constant and function declarations for LIBC.
+ */
 
-/* include file. */
+#ifndef __WCHAR_H__
+#define __WCHAR_H__
+
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <tamtypes.h>
 #include <errno.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #define __need_size_t
 #define __need_wchar_t
@@ -51,6 +49,10 @@ extern "C" {
 #else
 #define WCHAR_MAX 0x7fffffffu
 #endif
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 wchar_t *wcsdup(const wchar_t* string);
@@ -101,4 +103,4 @@ unsigned long int wcstoul(const wchar_t *nptr, wchar_t **endptr, int base);
 }
 #endif
 
-#endif /* _WCHAR_H_ */
+#endif /* __WCHAR_H__ */

@@ -6,12 +6,15 @@
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
-#
-# Common used typedef
 */
 
-#ifndef _TAMTYPES_H_
-#define _TAMTYPES_H_ 1
+/**
+ * @file
+ * Commonly used typedefs
+ */
+
+#ifndef __TAMTYPES_H__
+#define __TAMTYPES_H__
 
 #if !defined(_EE) && !defined(_IOP)
 #error Either _EE or _IOP must be defined!
@@ -95,4 +98,4 @@ static inline void _sd(u64 val, u32 addr) { *(vu64 *)addr = val; }
 static inline void _sq(u128 val, u32 addr) { *(vu128 *)addr = val; }
 #endif
 
-#endif
+#endif /* __TAMTYPES_H__ */

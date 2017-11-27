@@ -1,3 +1,12 @@
+/*
+# _____     ___ ____     ___ ____
+#  ____|   |    ____|   |        | |____|
+# |     ___|   |____ ___|    ____| |    \    PS2DEV Open Source Project.
+#-----------------------------------------------------------------------
+# Licenced under Academic Free License version 2.0
+# Review ps2sdk README & LICENSE files for further details.
+*/
+
 #include <kernel.h>
 #include <ee_cop0_defs.h>
 
@@ -14,7 +23,8 @@ struct SyscallPatchData{
 	void *function;
 };
 
-static unsigned int unknown;	/* 0x80075330 */
+char *_kExecArg[] __attribute__((section(".kExecArg")));
+char *_kExecArg[] = {NULL};					/* 0x80075330 */
 
 //Function prototypes:
 int PutTLBEntry(unsigned int PageMask, unsigned int EntryHi, unsigned int EntryLo0, unsigned int EntryLo1);
@@ -29,7 +39,7 @@ static const struct SyscallPatchData SyscallPatchData[]={
 	{ 0x57, &GetTLBEntry},
 	{ 0x58, &ProbeTLBEntry},
 	{ 0x59, &ExpandScratchPad},
-	{ 0x03, &unknown},
+	{ 0x03, &_kExecArg},
 };
 
 int _start(int syscall) __attribute__((section(".start")));
