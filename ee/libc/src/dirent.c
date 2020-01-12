@@ -1,7 +1,7 @@
 #include <dirent.h>
 #include <stdio.h>
 
-#ifdef F_opendir
+#if defined(F_opendir) || defined(DOXYGEN)
 DIR *opendir(const char *path)
 {
 	printf("opendir not implemented\n");
@@ -9,7 +9,7 @@ DIR *opendir(const char *path)
 }
 #endif
 
-#ifdef F_readdir
+#if defined(F_readdir) || defined(DOXYGEN)
 struct dirent *readdir(DIR *dir)
 {
 	printf("readdir not implemented\n");
@@ -17,14 +17,14 @@ struct dirent *readdir(DIR *dir)
 }
 #endif
 
-#ifdef F_rewinddir
+#if defined(F_rewinddir) || defined(DOXYGEN)
 void rewinddir(DIR *dir)
 {
 	printf("rewinddir not implemented\n");
 }
 #endif
 
-#ifdef F_closedir
+#if defined(F_closedir) || defined(DOXYGEN)
 int closedir(DIR *dir)
 {
 	printf("closedir not implemented\n");

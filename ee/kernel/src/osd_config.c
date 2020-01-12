@@ -35,14 +35,14 @@ typedef struct {
 extern ConfigParamT10K g_t10KConfig;
 extern char g_RomName[];
 
-#ifdef F__config_internals
+#if defined(F__config_internals) || defined(DOXYGEN)
 ConfigParamT10K g_t10KConfig = {540, TV_SCREEN_43, DATE_YYYYMMDD, LANGUAGE_JAPANESE, 0, 0, 0};
 
 /** stores romname of ps2 */
 char g_RomName[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 #endif
 
-#ifdef F_GetRomName
+#if defined(F_GetRomName) || defined(DOXYGEN)
 char* GetRomName(char *romname)
 {
 	int fd;
@@ -54,7 +54,7 @@ char* GetRomName(char *romname)
 }
 #endif
 
-#ifdef F_IsT10K
+#if defined(F_IsT10K) || defined(DOXYGEN)
 int IsT10K(void)
 {
 	// only read in the romname the first time
@@ -64,14 +64,14 @@ int IsT10K(void)
 }
 #endif
 
-#ifdef F_IsEarlyJap
+#if defined(F_IsEarlyJap) || defined(DOXYGEN)
 int IsEarlyJap(ConfigParam config)
 {
 	return config.version == 0;
 }
 #endif
 
-#ifdef F_configGetLanguage
+#if defined(F_configGetLanguage) || defined(DOXYGEN)
 int  configGetLanguage(void)
 {
 	ConfigParam config;
@@ -86,7 +86,7 @@ int  configGetLanguage(void)
 }
 #endif
 
-#ifdef F_configSetLanguage
+#if defined(F_configSetLanguage) || defined(DOXYGEN)
 void configSetLanguage(int language)
 {
 	ConfigParam config;
@@ -107,7 +107,7 @@ void configSetLanguage(int language)
 }
 #endif
 
-#ifdef F_configGetTvScreenType
+#if defined(F_configGetTvScreenType) || defined(DOXYGEN)
 int  configGetTvScreenType(void)
 {
 	ConfigParam config;
@@ -120,7 +120,7 @@ int  configGetTvScreenType(void)
 }
 #endif
 
-#ifdef F_configSetTvScreenType
+#if defined(F_configSetTvScreenType) || defined(DOXYGEN)
 void configSetTvScreenType(int screenType)
 {
 	ConfigParam config;
@@ -138,7 +138,7 @@ void configSetTvScreenType(int screenType)
 }
 #endif
 
-#ifdef F_configGetDateFormat
+#if defined(F_configGetDateFormat) || defined(DOXYGEN)
 int  configGetDateFormat(void)
 {
 	ConfigParam config;
@@ -155,7 +155,7 @@ int  configGetDateFormat(void)
 }
 #endif
 
-#ifdef F_configSetDateFormat
+#if defined(F_configSetDateFormat) || defined(DOXYGEN)
 void configSetDateFormat(int dateFormat)
 {
 	ConfigParam config;
@@ -177,7 +177,7 @@ void configSetDateFormat(int dateFormat)
 }
 #endif
 
-#ifdef F_configGetTimeFormat
+#if defined(F_configGetTimeFormat) || defined(DOXYGEN)
 int  configGetTimeFormat(void)
 {
 	ConfigParam config;
@@ -194,7 +194,7 @@ int  configGetTimeFormat(void)
 }
 #endif
 
-#ifdef F_configSetTimeFormat
+#if defined(F_configSetTimeFormat) || defined(DOXYGEN)
 void configSetTimeFormat(int timeFormat)
 {
 	ConfigParam config;
@@ -216,7 +216,7 @@ void configSetTimeFormat(int timeFormat)
 }
 #endif
 
-#ifdef F_configGetTimezone
+#if defined(F_configGetTimezone) || defined(DOXYGEN)
 int  configGetTimezone(void)
 {
 	ConfigParam config;
@@ -231,7 +231,7 @@ int  configGetTimezone(void)
 }
 #endif
 
-#ifdef F_configSetTimezone
+#if defined(F_configSetTimezone) || defined(DOXYGEN)
 void configSetTimezone(int timezoneOffset)
 {
 	ConfigParam config;
@@ -248,7 +248,7 @@ void configSetTimezone(int timezoneOffset)
 }
 #endif
 
-#ifdef F_configIsSpdifEnabled
+#if defined(F_configIsSpdifEnabled) || defined(DOXYGEN)
 int  configIsSpdifEnabled(void)
 {
 	ConfigParam config;
@@ -261,7 +261,7 @@ int  configIsSpdifEnabled(void)
 }
 #endif
 
-#ifdef F_configSetSpdifEnabled
+#if defined(F_configSetSpdifEnabled) || defined(DOXYGEN)
 void configSetSpdifEnabled(int enabled)
 {
 	ConfigParam config;
@@ -275,7 +275,7 @@ void configSetSpdifEnabled(int enabled)
 }
 #endif
 
-#ifdef F_configIsDaylightSavingEnabled
+#if defined(F_configIsDaylightSavingEnabled) || defined(DOXYGEN)
 int  configIsDaylightSavingEnabled(void)
 {
 	ConfigParam config;
@@ -293,7 +293,7 @@ int  configIsDaylightSavingEnabled(void)
 }
 #endif
 
-#ifdef F_configSetDaylightSavingEnabled
+#if defined(F_configSetDaylightSavingEnabled) || defined(DOXYGEN)
 void configSetDaylightSavingEnabled(int daylightSaving)
 {
 	ConfigParam config;
@@ -313,7 +313,7 @@ void configSetDaylightSavingEnabled(int daylightSaving)
 
 // the following functions are all used in time conversion
 
-#ifdef F_configGetTime
+#if defined(F_configGetTime) || defined(DOXYGEN)
 unsigned char frombcd(unsigned char bcd)
 {
 	return bcd - (bcd>>4)*6;

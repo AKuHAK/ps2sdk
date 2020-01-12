@@ -19,14 +19,14 @@
 #include <malloc.h>
 #include <wchar.h>
 
-#ifdef F_wcsdup
+#if defined(F_wcsdup) || defined(DOXYGEN)
 wchar_t *wcsdup(const wchar_t* wcs)
 {
 	return wcscpy(malloc((wcslen(wcs)+1)*sizeof(wchar_t)), wcs);
 }
 #endif
 
-#ifdef F_wcscasecmp
+#if defined(F_wcscasecmp) || defined(DOXYGEN)
 int wcscasecmp(const wchar_t* ws1, const wchar_t* ws2)
 {
 	while (*ws1 != '\0' && towlower(*ws1) == towlower(*ws2))
@@ -39,7 +39,7 @@ int wcscasecmp(const wchar_t* ws1, const wchar_t* ws2)
 }
 #endif
 
-#ifdef F_wcsncasecmp
+#if defined(F_wcsncasecmp) || defined(DOXYGEN)
 int wcsncasecmp(const wchar_t* ws1, const wchar_t* ws2, size_t n)
 {
 	if (n == 0)
@@ -58,7 +58,7 @@ int wcsncasecmp(const wchar_t* ws1, const wchar_t* ws2, size_t n)
 }
 #endif
 
-#ifdef F_wcstok
+#if defined(F_wcstok) || defined(DOXYGEN)
 wchar_t* wcstok(wchar_t* wcs, const wchar_t* delimiters)
 {
 	static wchar_t* start;
@@ -120,7 +120,7 @@ wchar_t* wcstok(wchar_t* wcs, const wchar_t* delimiters)
 }
 #endif
 
-#ifdef F_wcsrchr
+#if defined(F_wcsrchr) || defined(DOXYGEN)
 wchar_t* wcsrchr(const wchar_t* ws, wint_t wc)
 {
 	/* use the asm wcschr to do wcsrchr */
@@ -143,7 +143,7 @@ wchar_t* wcsrchr(const wchar_t* ws, wint_t wc)
 }
 #endif
 
-#ifdef F_wcswcs
+#if defined(F_wcswcs) || defined(DOXYGEN)
 wchar_t* wcswcs(const wchar_t* ws1, const wchar_t* ws2)
 {
 	wchar_t* wcspos;
@@ -170,7 +170,7 @@ wchar_t* wcswcs(const wchar_t* ws1, const wchar_t* ws2)
 }
 #endif
 
-#ifdef F_wcsupr
+#if defined(F_wcsupr) || defined(DOXYGEN)
 wchar_t* wcsupr(wchar_t* wcs)
 {
 	wchar_t* wcsptr = wcs;
@@ -187,7 +187,7 @@ wchar_t* wcsupr(wchar_t* wcs)
 }
 #endif
 
-#ifdef F_wcslwr
+#if defined(F_wcslwr) || defined(DOXYGEN)
 wchar_t* wcslwr(wchar_t* wcs)
 {
 	wchar_t* wcsptr = wcs;
@@ -204,7 +204,7 @@ wchar_t* wcslwr(wchar_t* wcs)
 }
 #endif
 
-#ifdef F_towlower
+#if defined(F_towlower) || defined(DOXYGEN)
 wint_t towlower(wint_t wc)
 {
 	if (iswupper(wc)) wc+=32;
@@ -213,7 +213,7 @@ wint_t towlower(wint_t wc)
 }
 #endif
 
-#ifdef F_towupper
+#if defined(F_towupper) || defined(DOXYGEN)
 wint_t towupper(wint_t wc)
 {
 	if (iswlower(wc)) wc-=32;
@@ -222,7 +222,7 @@ wint_t towupper(wint_t wc)
 }
 #endif
 
-#ifdef F_iswupper
+#if defined(F_iswupper) || defined(DOXYGEN)
 int iswupper(wint_t wc)
 {
 	if (wc < 'A' || wc > 'Z')
@@ -234,7 +234,7 @@ int iswupper(wint_t wc)
 }
 #endif
 
-#ifdef F_iswlower
+#if defined(F_iswlower) || defined(DOXYGEN)
 int iswlower(wint_t wc)
 {
 	if (wc < 'a' || wc > 'z')
@@ -246,14 +246,14 @@ int iswlower(wint_t wc)
 }
 #endif
 
-#ifdef F_iswalpha
+#if defined(F_iswalpha) || defined(DOXYGEN)
 int iswalpha(wint_t wc)
 {
 	return((iswlower(wc) || iswupper(wc))?1:0);
 }
 #endif
 
-#ifdef F_iswdigit
+#if defined(F_iswdigit) || defined(DOXYGEN)
 int iswdigit(wint_t wc)
 {
 	if (wc < '0' || wc > '9')
@@ -265,35 +265,35 @@ int iswdigit(wint_t wc)
 }
 #endif
 
-#ifdef F_iswalnum
+#if defined(F_iswalnum) || defined(DOXYGEN)
 int iswalnum(wint_t wc)
 {
 	return((iswalpha(wc) || iswdigit(wc))?1:0);
 }
 #endif
 
-#ifdef F_iswcntrl
+#if defined(F_iswcntrl) || defined(DOXYGEN)
 int iswcntrl(wint_t wc)
 {
 	return((wc < 0x20 || wc == 0x7F)?1:0);
 }
 #endif
 
-#ifdef F_iswgraph
+#if defined(F_iswgraph) || defined(DOXYGEN)
 int iswgraph(wint_t wc)
 {
 	return((iswcntrl(wc) || iswspace(wc))?0:1);
 }
 #endif
 
-#ifdef F_iswprint
+#if defined(F_iswprint) || defined(DOXYGEN)
 int iswprint(wint_t wc)
 {
 	return(iswcntrl(wc)?0:1);
 }
 #endif
 
-#ifdef F_iswpunct
+#if defined(F_iswpunct) || defined(DOXYGEN)
 int iswpunct(wint_t wc)
 {
 	if (iswcntrl(wc) || iswalnum(wc) || iswspace(wc))
@@ -306,21 +306,21 @@ int iswpunct(wint_t wc)
 }
 #endif
 
-#ifdef F_iswspace
+#if defined(F_iswspace) || defined(DOXYGEN)
 int iswspace(wint_t wc)
 {
 	return(((wc>=0x09 && wc<=0x0D) || wc==0x20)?1:0);
 }
 #endif
 
-#ifdef F_iswxdigit
+#if defined(F_iswxdigit) || defined(DOXYGEN)
 int iswxdigit(wint_t wc)
 {
 	return((iswdigit(wc) || (wc>='a' && wc<='f') || (wc>='A' && wc<='F'))?1:0);
 }
 #endif
 
-#ifdef F_wcscpy
+#if defined(F_wcscpy) || defined(DOXYGEN)
 wchar_t* wcscpy(wchar_t* destination, const wchar_t* source)
 {
 	wchar_t *ptr;
@@ -337,7 +337,7 @@ wchar_t* wcscpy(wchar_t* destination, const wchar_t* source)
 }
 #endif
 
-#ifdef F_wcsncpy
+#if defined(F_wcsncpy) || defined(DOXYGEN)
 wchar_t* wcsncpy(wchar_t* destination, const wchar_t* source, size_t num)
 {
 	wchar_t *ptr;
@@ -355,7 +355,7 @@ wchar_t* wcsncpy(wchar_t* destination, const wchar_t* source, size_t num)
 }
 #endif
 
-#ifdef F_wcspbrk
+#if defined(F_wcspbrk) || defined(DOXYGEN)
 wchar_t* wcspbrk(const wchar_t* wcs1, const wchar_t* wcs2)
 {
     const wchar_t *needle;
@@ -370,7 +370,7 @@ wchar_t* wcspbrk(const wchar_t* wcs1, const wchar_t* wcs2)
 }
 #endif
 
-#ifdef F_wcsspn
+#if defined(F_wcsspn) || defined(DOXYGEN)
 size_t wcsspn(const wchar_t* ws1, const wchar_t* ws2)
 {
     const wchar_t *c;
@@ -384,7 +384,7 @@ size_t wcsspn(const wchar_t* ws1, const wchar_t* ws2)
 }
 #endif
 
-#ifdef F_wcscspn
+#if defined(F_wcscspn) || defined(DOXYGEN)
 size_t wcscspn(const wchar_t* wcs1, const wchar_t* wcs2)
 {
     const wchar_t *c;
@@ -399,7 +399,7 @@ size_t wcscspn(const wchar_t* wcs1, const wchar_t* wcs2)
 #endif
 
 
-#ifdef F_wcscmp
+#if defined(F_wcscmp) || defined(DOXYGEN)
 int wcscmp(const wchar_t *s1, const wchar_t *s2)
 {
 	const wchar_t *us1 = (const wchar_t *)s1;
@@ -417,7 +417,7 @@ int wcscmp(const wchar_t *s1, const wchar_t *s2)
 }
 #endif
 
-#ifdef F_wcsncmp
+#if defined(F_wcsncmp) || defined(DOXYGEN)
 int wcsncmp(const wchar_t *s1, const wchar_t *s2, int len)
 {
 	const wchar_t *us1 = (const wchar_t *)s1;
@@ -436,7 +436,7 @@ int wcsncmp(const wchar_t *s1, const wchar_t *s2, int len)
 }
 #endif
 
-#ifdef F_wcslen
+#if defined(F_wcslen) || defined(DOXYGEN)
 int wcslen(const wchar_t *string){
 	int i;
 
@@ -446,7 +446,7 @@ int wcslen(const wchar_t *string){
 }
 #endif
 
-#ifdef F_wcschr
+#if defined(F_wcschr) || defined(DOXYGEN)
 wchar_t *wcschr(const wchar_t *string, wint_t character)
 {
 	int i;
@@ -463,7 +463,7 @@ wchar_t *wcschr(const wchar_t *string, wint_t character)
 }
 #endif
 
-#ifdef F_wcscat
+#if defined(F_wcscat) || defined(DOXYGEN)
 wchar_t* wcscat(wchar_t* destination, const wchar_t* source)
 {
 	wchar_t *ptr;
@@ -480,7 +480,7 @@ wchar_t* wcscat(wchar_t* destination, const wchar_t* source)
 }
 #endif
 
-#ifdef F_wcsncat
+#if defined(F_wcsncat) || defined(DOXYGEN)
 wchar_t* wcsncat(wchar_t* destination, const wchar_t* source, size_t num)
 {
 	wchar_t *ptr;

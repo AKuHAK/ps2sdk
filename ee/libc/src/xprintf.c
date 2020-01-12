@@ -35,7 +35,7 @@
 */
 #define MAXDIG 20
 
-#ifdef F_vxprintf
+#if defined(F_vxprintf) || defined(DOXYGEN)
 /*
 ** Conversion types fall into various categories as defined by the
 ** following enumeration.
@@ -640,7 +640,7 @@ int vxprintf(func,arg,format,ap)
 } /* End of function */
 #endif
 
-#ifdef F_xprintf
+#if defined(F_xprintf) || defined(DOXYGEN)
 /*
 ** This non-standard function is still occasionally useful....
 */
@@ -670,7 +670,7 @@ struct s_strargument {    /* Describes the string being written to */
 };
 
 void __sout(char *, int, void *);
-#ifdef F___sout
+#if defined(F___sout) || defined(DOXYGEN)
 void __sout(txt,amt,arg)
   char *txt;
   int amt;
@@ -694,7 +694,7 @@ void __sout(txt,amt,arg)
 }
 #endif
 
-#ifdef F_vsnprintf
+#if defined(F_vsnprintf) || defined(DOXYGEN)
 int vsnprintf(char *buf, size_t n, const char *fmt, va_list ap){
   struct s_strargument arg;
   arg.next = buf;
@@ -704,7 +704,7 @@ int vsnprintf(char *buf, size_t n, const char *fmt, va_list ap){
 }
 #endif
 
-#ifdef F_snprintf
+#if defined(F_snprintf) || defined(DOXYGEN)
 int snprintf(char *str, size_t sz, const char *format, ...)
 {
 	va_list args;
@@ -722,7 +722,7 @@ int snprintf(char *str, size_t sz, const char *format, ...)
 }
 #endif
 
-#ifdef F_vsprintf
+#if defined(F_vsprintf) || defined(DOXYGEN)
 int vsprintf(char *buf, const char *fmt, va_list ap){
   struct s_strargument arg;
   arg.next = buf;
@@ -732,7 +732,7 @@ int vsprintf(char *buf, const char *fmt, va_list ap){
 }
 #endif
 
-#ifdef F_sprintf
+#if defined(F_sprintf) || defined(DOXYGEN)
 __attribute__((weak))
 int sprintf (char *str, const char *format, ...)
 {
@@ -769,7 +769,7 @@ struct sgMprintf {
 
 void __mout(char *, int, void*);
 
-#ifdef F___mout
+#if defined(F___mout) || defined(DOXYGEN)
 /* The xprintf callback function. */
 void __mout(zNewText,nNewChar,arg)
   char *zNewText;
@@ -802,7 +802,7 @@ void __mout(zNewText,nNewChar,arg)
 ** routine naming conventions.
 */
 
-#ifdef F_mprintf
+#if defined(F_mprintf) || defined(DOXYGEN)
 char *mprintf(const char *zFormat, ...){
   va_list ap;
   struct sgMprintf sMprintf;
@@ -832,7 +832,7 @@ char *mprintf(const char *zFormat, ...){
 ** The name is changed to TclVMPrintf() to conform with Tcl naming
 ** conventions.
 */
-#ifdef F_vmprintf
+#if defined(F_vmprintf) || defined(DOXYGEN)
 char *vmprintf(const char *zFormat,va_list ap){
   struct sgMprintf sMprintf;
   char zBuf[200];
@@ -851,7 +851,7 @@ char *vmprintf(const char *zFormat,va_list ap){
 }
 #endif
 
-#ifdef F_asprintf
+#if defined(F_asprintf) || defined(DOXYGEN)
 int asprintf(char ** strp, const char *zFormat, ...){
   va_list ap;
   struct sgMprintf sMprintf;
@@ -878,7 +878,7 @@ int asprintf(char ** strp, const char *zFormat, ...){
 }
 #endif
 
-#ifdef F_vasprintf
+#if defined(F_vasprintf) || defined(DOXYGEN)
 int vasprintf(char **strp, const char *format, va_list ap) {
   struct sgMprintf sMprintf;
   char zBuf[200];
@@ -905,7 +905,7 @@ int vasprintf(char **strp, const char *format, va_list ap) {
 
 void __fout(char *, int, void *);
 
-#ifdef F___fout
+#if defined(F___fout) || defined(DOXYGEN)
 void __fout(zNewText,nNewChar,arg)
   char *zNewText;
   int nNewChar;
@@ -915,7 +915,7 @@ void __fout(zNewText,nNewChar,arg)
 }
 #endif
 
-#ifdef F_fprintf
+#if defined(F_fprintf) || defined(DOXYGEN)
 /* The public interface routines */
 int fprintf(FILE *pOut, const char *zFormat, ...){
   va_list ap;
@@ -928,14 +928,14 @@ int fprintf(FILE *pOut, const char *zFormat, ...){
 }
 #endif
 
-#ifdef F_vfprintf
+#if defined(F_vfprintf) || defined(DOXYGEN)
 int vfprintf(FILE *pOut, const char *zFormat, va_list ap){
   return vxprintf(__fout,pOut,zFormat,ap);
 }
 #endif
 
 
-#ifdef F_printf
+#if defined(F_printf) || defined(DOXYGEN)
 int printf(const char *format, ...)
 {
 	va_list args;
@@ -951,7 +951,7 @@ int printf(const char *format, ...)
 
 extern int (*_ps2sdk_write)(int, const void*, int);
 
-#ifdef F_vprintf
+#if defined(F_vprintf) || defined(DOXYGEN)
 int vprintf(const char *format, va_list args)
 {
   static char buf[PS2LIB_STR_MAX];
@@ -964,7 +964,7 @@ int vprintf(const char *format, va_list args)
 }
 #endif
 
-#ifdef F_putchar
+#if defined(F_putchar) || defined(DOXYGEN)
 int putchar( int chr )
 {
 	_ps2sdk_write(1, &chr, 1);
@@ -972,7 +972,7 @@ int putchar( int chr )
 }
 #endif
 
-#ifdef F_sio_printf
+#if defined(F_sio_printf) || defined(DOXYGEN)
 int sio_printf(const char *format, ...)
 {
         static char buf[PS2LIB_STR_MAX];
