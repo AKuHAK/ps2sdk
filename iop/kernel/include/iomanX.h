@@ -32,7 +32,7 @@
 #ifndef IOMAN_NO_EXTENDED
 /** Supports calls after chstat().  */
 #define IOP_DT_FSEXT	0x10000000
-#define IOP_DT_FSEXT	0x20000000
+#define IOP_DT_PSX	0x20000000
 #endif
 
 /** File objects passed to driver operations.  */
