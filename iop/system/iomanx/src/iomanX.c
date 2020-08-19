@@ -74,6 +74,9 @@ int AddDrv(iop_device_t *device)
 	int i, res = -1;
     int oldIntr;
 
+    if (!strcmp(device->name, "xfrom"))
+    	device->type |= IOP_DT_PSX;
+
     CpuSuspendIntr(&oldIntr);
 
 	for (i = 0; i < MAX_DEVICES; i++)
@@ -438,21 +441,29 @@ int dread(int fd, iox_dirent_t *iox_dirent)
        variable of the stat structure to iomanX's extended format.  */
     if ((f->device->type & 0xf0000000) != IOP_DT_FSEXT)
     {
-        typedef int	io_dread_t(iop_file_t *, io_dirent_t *);
-        io_dirent_t io_dirent;
-        io_dread_t *io_dread = (io_dread_t*) f->device->ops->dread;
-        res = io_dread(f, &io_dirent);
+        if ((f->device->type & 0xf0000000) == IOP_DT_PSX)
+        {
+          res = f->device->ops->dread(f, iox_dirent);
+          iox_dirent->stat.mode = mode2modex(iox_dirent->stat.mode);
+        }
+        else
+        {
+          typedef int	io_dread_t(iop_file_t *, io_dirent_t *);
+          io_dirent_t io_dirent;
+          io_dread_t *io_dread = (io_dread_t*) f->device->ops->dread;
+          res = io_dread(f, &io_dirent);
 
-        iox_dirent->stat.mode = mode2modex(io_dirent.stat.mode);
+          iox_dirent->stat.mode = mode2modex(io_dirent.stat.mode);
 
-        iox_dirent->stat.attr = io_dirent.stat.attr;
-        iox_dirent->stat.size = io_dirent.stat.size;
-        memcpy(iox_dirent->stat.ctime, io_dirent.stat.ctime, sizeof(io_dirent.stat.ctime));
-        memcpy(iox_dirent->stat.atime, io_dirent.stat.atime, sizeof(io_dirent.stat.atime));
-        memcpy(iox_dirent->stat.mtime, io_dirent.stat.mtime, sizeof(io_dirent.stat.mtime));
-        iox_dirent->stat.hisize = io_dirent.stat.hisize;
+          iox_dirent->stat.attr = io_dirent.stat.attr;
+          iox_dirent->stat.size = io_dirent.stat.size;
+          memcpy(iox_dirent->stat.ctime, io_dirent.stat.ctime, sizeof(io_dirent.stat.ctime));
+          memcpy(iox_dirent->stat.atime, io_dirent.stat.atime, sizeof(io_dirent.stat.atime));
+          memcpy(iox_dirent->stat.mtime, io_dirent.stat.mtime, sizeof(io_dirent.stat.mtime));
+          iox_dirent->stat.hisize = io_dirent.stat.hisize;
 
-        strncpy(iox_dirent->name, io_dirent.name, sizeof(iox_dirent->name));
+          strncpy(iox_dirent->name, io_dirent.name, sizeof(iox_dirent->name));
+        }
     }
     else
         res = f->device->ops->dread(f, iox_dirent);

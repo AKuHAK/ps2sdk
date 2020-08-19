@@ -31,19 +31,20 @@
 #define IOP_DT_FS	0x10
 #ifndef IOMAN_NO_EXTENDED
 /** Supports calls after chstat().  */
-#define IOP_DT_FSEXT	0x10000000	
+#define IOP_DT_FSEXT	0x10000000
+#define IOP_DT_FSEXT	0x20000000
 #endif
 
 /** File objects passed to driver operations.  */
 typedef struct _iop_file {
 	/** File open mode.  */
-	int	mode;		
+	int	mode;
 	/** HW device unit number.  */
-	int	unit;		
+	int	unit;
 	/** Device driver.  */
-	struct _iop_device *device; 
+	struct _iop_device *device;
 	/** The device driver can use this however it wants.  */
-	void	*privdata;	
+	void	*privdata;
 } iop_file_t;
 
 typedef struct _iop_device {
