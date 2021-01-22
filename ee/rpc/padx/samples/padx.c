@@ -145,6 +145,8 @@ int main(int argc, char **argv)
 		for(port=0; port < 2; port++)
 		{
 			s32 state = padGetState(port, 0);
+			s32 state1 = padGetState(0, 0);
+			printf("  state(0,00      : %i \n", (int)state1);
 
 			if((state == PAD_STATE_STABLE) && (portConnected[port] == 0))
 			{
