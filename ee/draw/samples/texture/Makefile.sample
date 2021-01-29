@@ -6,7 +6,7 @@
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
 
-EE_BIN = texture.elf
+EE_BIN  = texture.elf
 EE_OBJS = texture.o
 EE_LIBS = -ldraw -lgraph -lmath3d -lpacket -ldma
 

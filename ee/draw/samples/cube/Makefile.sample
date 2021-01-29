@@ -6,7 +6,7 @@
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
 
-EE_BIN = cube.elf
+EE_BIN  = cube.elf
 EE_OBJS = cube.o
 EE_LIBS = -ldraw -lgraph -lmath3d -lpacket -ldma
 

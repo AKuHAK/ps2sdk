@@ -42,22 +42,22 @@ void init_gs(framebuffer_t *frame, zbuffer_t *z, texbuffer_t *texbuf)
 {
 
 	// Define a 32-bit 640x512 framebuffer.
-	frame->width = 640;
-	frame->height = 512;
-	frame->mask = 0;
-	frame->psm = GS_PSM_32;
+	frame->width   = 640;
+	frame->height  = 512;
+	frame->mask    = 0;
+	frame->psm     = GS_PSM_32;
 	frame->address = graph_vram_allocate(frame->width,frame->height, frame->psm, GRAPH_ALIGN_PAGE);
 
 	// Enable the zbuffer.
-	z->enable = DRAW_ENABLE;
-	z->mask = 0;
-	z->method = ZTEST_METHOD_GREATER_EQUAL;
-	z->zsm = GS_ZBUF_32;
+	z->enable  = DRAW_ENABLE;
+	z->mask    = 0;
+	z->method  = ZTEST_METHOD_GREATER_EQUAL;
+	z->zsm     = GS_ZBUF_32;
 	z->address = graph_vram_allocate(frame->width,frame->height,z->zsm, GRAPH_ALIGN_PAGE);
 
 	// Allocate some vram for the texture buffer
-	texbuf->width = 256;
-	texbuf->psm = GS_PSM_24;
+	texbuf->width   = 256;
+	texbuf->psm     = GS_PSM_24;
 	texbuf->address = graph_vram_allocate(256,256,GS_PSM_24,GRAPH_ALIGN_BLOCK);
 
 	// Initialize the screen and tie the first framebuffer to the read circuits.
@@ -122,22 +122,22 @@ void setup_texture(texbuffer_t *texbuf)
 	lod_t lod;
 
 	lod.calculation = LOD_USE_K;
-	lod.max_level = 0;
-	lod.mag_filter = LOD_MAG_NEAREST;
-	lod.min_filter = LOD_MIN_NEAREST;
-	lod.l = 0;
-	lod.k = 0;
+	lod.max_level   = 0;
+	lod.mag_filter  = LOD_MAG_NEAREST;
+	lod.min_filter  = LOD_MIN_NEAREST;
+	lod.l           = 0;
+	lod.k           = 0;
 
-	texbuf->info.width = draw_log2(256);
-	texbuf->info.height = draw_log2(256);
+	texbuf->info.width      = draw_log2(256);
+	texbuf->info.height     = draw_log2(256);
 	texbuf->info.components = TEXTURE_COMPONENTS_RGB;
-	texbuf->info.function = TEXTURE_FUNCTION_DECAL;
+	texbuf->info.function   = TEXTURE_FUNCTION_DECAL;
 
 	clut.storage_mode = CLUT_STORAGE_MODE1;
-	clut.start = 0;
-	clut.psm = 0;
-	clut.load_method = CLUT_NO_LOAD;
-	clut.address = 0;
+	clut.start        = 0;
+	clut.psm          = 0;
+	clut.load_method  = CLUT_NO_LOAD;
+	clut.address      = 0;
 
 	q = draw_texture_sampling(q,0,&lod);
 	q = draw_texturebuffer(q,0,texbuf,&clut);
@@ -180,14 +180,14 @@ int render(framebuffer_t *frame, zbuffer_t *z)
 	packets[1] = packet_init(100,PACKET_NORMAL);
 
 	// Define the triangle primitive we want to use.
-	prim.type = PRIM_TRIANGLE;
-	prim.shading = PRIM_SHADE_GOURAUD;
-	prim.mapping = DRAW_ENABLE;
-	prim.fogging = DRAW_DISABLE;
-	prim.blending = DRAW_ENABLE;
+	prim.type         = PRIM_TRIANGLE;
+	prim.shading      = PRIM_SHADE_GOURAUD;
+	prim.mapping      = DRAW_ENABLE;
+	prim.fogging      = DRAW_DISABLE;
+	prim.blending     = DRAW_ENABLE;
 	prim.antialiasing = DRAW_DISABLE;
 	prim.mapping_type = PRIM_MAP_ST;
-	prim.colorfix = PRIM_UNFIXED;
+	prim.colorfix     = PRIM_UNFIXED;
 
 	color.r = 0x80;
 	color.g = 0x80;

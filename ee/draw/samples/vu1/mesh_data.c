@@ -11,9 +11,9 @@
 
 int faces_count = 36;
 
-/** 
+/**
  * Array of vertex indexes.
- * 3 faces = 1 triangle 
+ * 3 faces = 1 triangle
  */
 int faces[36] = {
     0, 1, 2,

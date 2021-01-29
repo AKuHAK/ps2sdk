@@ -28,25 +28,25 @@
 /** Data of our texture (24bit, RGB8) */
 extern unsigned char zbyszek[];
 
-/** 
- * Data of VU1 micro program (draw_3D.vcl/vsm). 
- * How we can use it: 
- * 1. Upload program to VU1. 
- * 2. Send calculated local_screen matrix once per mesh (3D object) 
- * 3. Set buffers size. (double-buffering described below) 
- * 4. Send packet with: lod, clut, tex buffer, scale vector, rgba, verts and sts. 
- * What this program is doing? 
- * 1. Load local_screen. 
- * 2. Zero clipping flag. 
- * 3. Set current buffer start address from TOP register (xtop command) 
- *      To use pararelism, we set two buffers in the VU1. It means, that when 
- *      VU1 is working with one verts packet, we can load second one into another buffer. 
- *      xtop command is automatically switching buffers. I think that AAA games used 
- *      quad buffers (TOP+TOPS) which can give best performance and no VIF_FLUSH should be needed. 
- * 4. Load rest of data. 
- * 5. Prepare GIF tag. 
- * 6. For every vertex: transform, clip, scale, perspective divide. 
- * 7. Send it to GS via XGKICK command. 
+/**
+ * Data of VU1 micro program (draw_3D.vcl/vsm).
+ * How we can use it:
+ * 1. Upload program to VU1.
+ * 2. Send calculated local_screen matrix once per mesh (3D object)
+ * 3. Set buffers size. (double-buffering described below)
+ * 4. Send packet with: lod, clut, tex buffer, scale vector, rgba, verts and sts.
+ * What this program is doing?
+ * 1. Load local_screen.
+ * 2. Zero clipping flag.
+ * 3. Set current buffer start address from TOP register (xtop command)
+ *      To use pararelism, we set two buffers in the VU1. It means, that when
+ *      VU1 is working with one verts packet, we can load second one into another buffer.
+ *      xtop command is automatically switching buffers. I think that AAA games used
+ *      quad buffers (TOP+TOPS) which can give best performance and no VIF_FLUSH should be needed.
+ * 4. Load rest of data.
+ * 5. Prepare GIF tag.
+ * 6. For every vertex: transform, clip, scale, perspective divide.
+ * 7. Send it to GS via XGKICK command.
  */
 extern u32 VU1Draw3D_CodeStart __attribute__((section(".vudata")));
 extern u32 VU1Draw3D_CodeEnd __attribute__((section(".vudata")));
@@ -56,11 +56,11 @@ VECTOR camera_position = {140.00f, 140.00f, 40.00f, 1.00f};
 VECTOR camera_rotation = {0.00f, 0.00f, 0.00f, 1.00f};
 MATRIX local_world, world_view, view_screen, local_screen;
 
-/** 
- * Packets for sending VU data 
- * Each packet will have: 
- * a) View/Projection matrix (calculated every frame) 
- * b) Cube data (prim,lod,vertices,sts,...) added from zbyszek_packet. 
+/**
+ * Packets for sending VU data
+ * Each packet will have:
+ * a) View/Projection matrix (calculated every frame)
+ * b) Cube data (prim,lod,vertices,sts,...) added from zbyszek_packet.
  */
 packet2_t *vif_packets[2] __attribute__((aligned(64)));
 packet2_t *curr_vif_packet;
@@ -73,21 +73,21 @@ u8 context = 0;
 /** Set GS primitive type of drawing. */
 prim_t prim;
 
-/** 
- * Color look up table. 
- * Needed for texture. 
+/**
+ * Color look up table.
+ * Needed for texture.
  */
 clutbuffer_t clut;
 
-/** 
- * Level of details. 
- * Needed for texture. 
+/**
+ * Level of details.
+ * Needed for texture.
  */
 lod_t lod;
 
-/** 
- * Helper arrays. 
- * Needed for calculations. 
+/**
+ * Helper arrays.
+ * Needed for calculations.
  */
 VECTOR *c_verts __attribute__((aligned(128))), *c_sts __attribute__((aligned(128)));
 
@@ -148,22 +148,22 @@ void draw_cube(VECTOR t_object_position, texbuffer_t *t_texbuff)
 void init_gs(framebuffer_t *t_frame, zbuffer_t *t_z, texbuffer_t *t_texbuff)
 {
 	// Define a 32-bit 640x512 framebuffer.
-	t_frame->width = 640;
-	t_frame->height = 512;
-	t_frame->mask = 0;
-	t_frame->psm = GS_PSM_32;
+	t_frame->width   = 640;
+	t_frame->height  = 512;
+	t_frame->mask    = 0;
+	t_frame->psm     = GS_PSM_32;
 	t_frame->address = graph_vram_allocate(t_frame->width, t_frame->height, t_frame->psm, GRAPH_ALIGN_PAGE);
 
 	// Enable the zbuffer.
-	t_z->enable = DRAW_ENABLE;
-	t_z->mask = 0;
-	t_z->method = ZTEST_METHOD_GREATER_EQUAL;
-	t_z->zsm = GS_ZBUF_32;
+	t_z->enable  = DRAW_ENABLE;
+	t_z->mask    = 0;
+	t_z->method  = ZTEST_METHOD_GREATER_EQUAL;
+	t_z->zsm     = GS_ZBUF_32;
 	t_z->address = graph_vram_allocate(t_frame->width, t_frame->height, t_z->zsm, GRAPH_ALIGN_PAGE);
 
 	// Allocate some vram for the texture buffer
-	t_texbuff->width = 128;
-	t_texbuff->psm = GS_PSM_24;
+	t_texbuff->width   = 128;
+	t_texbuff->psm     = GS_PSM_24;
 	t_texbuff->address = graph_vram_allocate(128, 128, GS_PSM_24, GRAPH_ALIGN_BLOCK);
 
 	// Initialize the screen and tie the first framebuffer to the read circuits.
@@ -226,32 +226,32 @@ void clear_screen(framebuffer_t *frame, zbuffer_t *z)
 void set_lod_clut_prim_tex_buff(texbuffer_t *t_texbuff)
 {
 	lod.calculation = LOD_USE_K;
-	lod.max_level = 0;
-	lod.mag_filter = LOD_MAG_NEAREST;
-	lod.min_filter = LOD_MIN_NEAREST;
-	lod.l = 0;
-	lod.k = 0;
+	lod.max_level   = 0;
+	lod.mag_filter  = LOD_MAG_NEAREST;
+	lod.min_filter  = LOD_MIN_NEAREST;
+	lod.l           = 0;
+	lod.k           = 0;
 
 	clut.storage_mode = CLUT_STORAGE_MODE1;
-	clut.start = 0;
-	clut.psm = 0;
-	clut.load_method = CLUT_NO_LOAD;
-	clut.address = 0;
+	clut.start        = 0;
+	clut.psm          = 0;
+	clut.load_method  = CLUT_NO_LOAD;
+	clut.address      = 0;
 
 	// Define the triangle primitive we want to use.
-	prim.type = PRIM_TRIANGLE;
-	prim.shading = PRIM_SHADE_GOURAUD;
-	prim.mapping = DRAW_ENABLE;
-	prim.fogging = DRAW_DISABLE;
-	prim.blending = DRAW_ENABLE;
+	prim.type         = PRIM_TRIANGLE;
+	prim.shading      = PRIM_SHADE_GOURAUD;
+	prim.mapping      = DRAW_ENABLE;
+	prim.fogging      = DRAW_DISABLE;
+	prim.blending     = DRAW_ENABLE;
 	prim.antialiasing = DRAW_DISABLE;
 	prim.mapping_type = PRIM_MAP_ST;
-	prim.colorfix = PRIM_UNFIXED;
+	prim.colorfix     = PRIM_UNFIXED;
 
-	t_texbuff->info.width = draw_log2(128);
-	t_texbuff->info.height = draw_log2(128);
+	t_texbuff->info.width      = draw_log2(128);
+	t_texbuff->info.height     = draw_log2(128);
 	t_texbuff->info.components = TEXTURE_COMPONENTS_RGB;
-	t_texbuff->info.function = TEXTURE_FUNCTION_DECAL;
+	t_texbuff->info.function   = TEXTURE_FUNCTION_DECAL;
 }
 
 void render(framebuffer_t *t_frame, zbuffer_t *t_z, texbuffer_t *t_texbuff)
@@ -260,8 +260,8 @@ void render(framebuffer_t *t_frame, zbuffer_t *t_z, texbuffer_t *t_texbuff)
 
 	set_lod_clut_prim_tex_buff(t_texbuff);
 
-	/** 
-	 * Allocate some space for object position calculating. 
+	/**
+	 * Allocate some space for object position calculating.
 	 * c_ prefix = calc_
 	 */
 	c_verts = (VECTOR *)memalign(128, sizeof(VECTOR) * faces_count);

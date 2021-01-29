@@ -67,29 +67,29 @@ void init_gs(framebuffer_t *frame, zbuffer_t *z)
 {
 
 	// Define a 32-bit 640x512 framebuffer.
-	frame->width = 640;
+	frame->width  = 640;
 	frame->height = 512;
-	frame->mask = 0;
-	frame->psm = GS_PSM_32;
+	frame->mask   = 0;
+	frame->psm    = GS_PSM_32;
 
 	// Allocate some vram for our framebuffer.
 	frame->address = graph_vram_allocate(frame->width,frame->height, frame->psm, GRAPH_ALIGN_PAGE);
 
 	frame++;
 
-	frame->width = 640;
+	frame->width  = 640;
 	frame->height = 512;
-	frame->mask = 0;
-	frame->psm = GS_PSM_32;
+	frame->mask   = 0;
+	frame->psm    = GS_PSM_32;
 
 	// Allocate some vram for our framebuffer.
 	frame->address = graph_vram_allocate(frame->width,frame->height, frame->psm, GRAPH_ALIGN_PAGE);
 
 	// Enable the zbuffer.
-	z->enable = DRAW_ENABLE;
-	z->mask = 0;
-	z->method = ZTEST_METHOD_GREATER_EQUAL;
-	z->zsm = GS_ZBUF_32;
+	z->enable  = DRAW_ENABLE;
+	z->mask    = 0;
+	z->method  = ZTEST_METHOD_GREATER_EQUAL;
+	z->zsm     = GS_ZBUF_32;
 	z->address = graph_vram_allocate(frame->width,frame->height,z->zsm, GRAPH_ALIGN_PAGE);
 
 	// Initialize the screen and tie the first framebuffer to the read circuits.
@@ -238,14 +238,14 @@ int render(framebuffer_t *frame, zbuffer_t *z)
 	VECTOR object_rotation = { 0.00f, 0.00f, 0.00f, 1.00f };
 
 	// Define the triangle primitive we want to use.
-	prim.type = PRIM_TRIANGLE;
-	prim.shading = PRIM_SHADE_GOURAUD;
-	prim.mapping = DRAW_DISABLE;
-	prim.fogging = DRAW_DISABLE;
-	prim.blending = DRAW_ENABLE;
+	prim.type         = PRIM_TRIANGLE;
+	prim.shading      = PRIM_SHADE_GOURAUD;
+	prim.mapping      = DRAW_DISABLE;
+	prim.fogging      = DRAW_DISABLE;
+	prim.blending     = DRAW_ENABLE;
 	prim.antialiasing = DRAW_DISABLE;
 	prim.mapping_type = DRAW_DISABLE;
-	prim.colorfix = PRIM_UNFIXED;
+	prim.colorfix     = PRIM_UNFIXED;
 
 	color.r = 0x80;
 	color.g = 0x80;
