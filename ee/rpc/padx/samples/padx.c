@@ -9,7 +9,8 @@
 
 #define DEBUG_BGCOLOR(col) *((u64 *) 0x120000e0) = (u64) (col)
 
-static char* padTypeStr[] = {	"Unsupported controller", "Mouse", "Nejicon",
+static char* padTypeStr[] = {
+						"Unsupported controller","Mouse", "Nejicon",
 						"Konami Gun", "Digital", "Analog", "Namco Gun",
 						"DualShock"};
 
@@ -117,9 +118,6 @@ int main(int argc, char **argv)
 		loadmodules(0);
 	}
 
-
-
-
 	padInit(0);
 
 	padBuf[0] = memalign(64, 256);
@@ -172,11 +170,11 @@ int main(int argc, char **argv)
 					padWait(port);
 				}
 
-				ModeCurId = padInfoMode(port, 0, PAD_MODECURID, 0);
-				ModeCurOffs = padInfoMode(port, 0, PAD_MODECUROFFS, 0);
-				ModeCurExId = padInfoMode(port, 0, PAD_MODECUREXID, 0);
+				ModeCurId    = padInfoMode(port, 0, PAD_MODECURID, 0);
+				ModeCurOffs  = padInfoMode(port, 0, PAD_MODECUROFFS, 0);
+				ModeCurExId  = padInfoMode(port, 0, PAD_MODECUREXID, 0);
 				ModeTableNum = padInfoMode(port, 0, PAD_MODETABLE, -1);
-				acts[port] = padInfoAct(port, 0, -1, 0);
+				acts[port]   = padInfoAct(port, 0, -1, 0);
 
 				printf("  ModeCurId      : %i (%s)\n", (int)ModeCurId, padTypeStr[ModeCurId]);
 				printf("  ModeCurExId    : %i\n", (int)ModeCurExId);
@@ -234,23 +232,38 @@ int main(int argc, char **argv)
 					old_pad[port] = paddata[port];
 
 					// Values 50 and 200 used because my controllers are worn out :-)
-					if((buttons.ljoy_h <= 50) || (buttons.ljoy_h >= 200)) printf("Left Analog  X: %i\n", (int)buttons.ljoy_h);
-					if((buttons.ljoy_v <= 50) || (buttons.ljoy_v >= 200)) printf("Left Analog  Y: %i\n", (int)buttons.ljoy_v);
-					if((buttons.rjoy_h <= 50) || (buttons.rjoy_h >= 200)) printf("Right Analog X: %i\n", (int)buttons.rjoy_h);
-					if((buttons.rjoy_v <= 50) || (buttons.rjoy_v >= 200)) printf("Right Analog Y: %i\n", (int)buttons.rjoy_v);
+					if((buttons.ljoy_h <= 50) || (buttons.ljoy_h >= 200))
+						printf("Left Analog  X: %i\n", (int)buttons.ljoy_h);
+					if((buttons.ljoy_v <= 50) || (buttons.ljoy_v >= 200))
+						printf("Left Analog  Y: %i\n", (int)buttons.ljoy_v);
+					if((buttons.rjoy_h <= 50) || (buttons.rjoy_h >= 200))
+						printf("Right Analog X: %i\n", (int)buttons.rjoy_h);
+					if((buttons.rjoy_v <= 50) || (buttons.rjoy_v >= 200))
+						printf("Right Analog Y: %i\n", (int)buttons.rjoy_v);
 
 
-					if(new_pad[port]) printf("Controller (%i) button(s) pressed: ", (int)port);
-	            	if(new_pad[port] & PAD_LEFT)		printf("LEFT ");
-					if(new_pad[port] & PAD_RIGHT) 		printf("RIGHT ");
-					if(new_pad[port] & PAD_UP) 			printf("UP ");
-					if(new_pad[port] & PAD_DOWN) 		printf("DOWN ");
-					if(new_pad[port] & PAD_START) 		printf("START ");
-					if(new_pad[port] & PAD_SELECT) 		printf("SELECT ");
-					if(new_pad[port] & PAD_SQUARE) 		printf("SQUARE (Pressure: %i) ", (int)buttons.square_p);
-					if(new_pad[port] & PAD_TRIANGLE)	printf("TRIANGLE (Pressure: %i) ", (int)buttons.triangle_p);
-					if(new_pad[port] & PAD_CIRCLE)		printf("CIRCLE (Pressure: %i) ", (int)buttons.circle_p);
-					if(new_pad[port] & PAD_CROSS)		printf("CROSS (Pressure: %i) ", (int)buttons.cross_p);
+					if(new_pad[port])
+						printf("Controller (%i) button(s) pressed: ", (int)port);
+					if(new_pad[port] & PAD_LEFT)
+						printf("LEFT ");
+					if(new_pad[port] & PAD_RIGHT)
+						printf("RIGHT ");
+					if(new_pad[port] & PAD_UP)
+						printf("UP ");
+					if(new_pad[port] & PAD_DOWN)
+						printf("DOWN ");
+					if(new_pad[port] & PAD_START)
+						printf("START ");
+					if(new_pad[port] & PAD_SELECT)
+						printf("SELECT ");
+					if(new_pad[port] & PAD_SQUARE)
+						printf("SQUARE (Pressure: %i) ", (int)buttons.square_p);
+					if(new_pad[port] & PAD_TRIANGLE)
+						printf("TRIANGLE (Pressure: %i) ", (int)buttons.triangle_p);
+					if(new_pad[port] & PAD_CIRCLE)
+						printf("CIRCLE (Pressure: %i) ", (int)buttons.circle_p);
+					if(new_pad[port] & PAD_CROSS)
+						printf("CROSS (Pressure: %i) ", (int)buttons.cross_p);
 					if(new_pad[port] & PAD_L1)
 					{
 						printf("L1 (Start Little Motor) ");
@@ -261,7 +274,8 @@ int main(int argc, char **argv)
 						printf("L2 (Stop Little Motor) ");
 						padStartAct(port, 0, 0);
 					}
-					if(new_pad[port] & PAD_L3)			printf("L3 ");
+					if(new_pad[port] & PAD_L3)
+						printf("L3 ");
 					if(new_pad[port] & PAD_R1)
 					{
 						printf("R1 (Start Big Motor) ");
@@ -272,9 +286,11 @@ int main(int argc, char **argv)
 						printf("R2 (Stop Big Motor) ");
 						padStopAct(port, 1);
 					}
-					if(new_pad[port] & PAD_R3)			printf("R3 ");
+					if(new_pad[port] & PAD_R3)
+						printf("R3 ");
 
-					if(new_pad[port]) printf("\n");
+					if(new_pad[port])
+						printf("\n");
 				}
 
 			}
@@ -284,4 +300,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

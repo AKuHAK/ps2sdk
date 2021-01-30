@@ -36,7 +36,8 @@ static s32 VblankStartHandler(s32 cause)
 {
 	iSignalSema(VblankStartSema);
 
-	//As per the SONY documentation, call ExitHandler() at the very end of your interrupt handler.
+	/* As per the SONY documentation, call ExitHandler() at the very end of
+	   your interrupt handler.*/
 	ExitHandler();
 	return 0;
 }
@@ -45,7 +46,8 @@ static s32 VblankEndHandler(s32 cause)
 {
 	iSignalSema(VblankEndSema);
 
-	//As per the SONY documentation, call ExitHandler() at the very end of your interrupt handler.
+	/* As per the SONY documentation, call ExitHandler() at the very end of
+	   your interrupt handler.*/
 	ExitHandler();
 	return 0;
 }
@@ -180,8 +182,9 @@ static const char *getRmButton(u32 button)
 
 int main(int argc, char *argv[])
 {
-	/*	Buffers for receiving input from remote controllers. A 256-byte region is required for each possible remote.
-		Buffers must be each aligned to a 64-byte boundary due to how the EE data cache works. */
+	/* Buffers for receiving input from remote controllers. A 256-byte region is
+	   required for each possible remote. Buffers must be each aligned to a
+	   64-byte boundary due to how the EE data cache works. */
 	static u8 rmData[256] __attribute__((aligned(64)));
 	struct remote_data data, olddata;
 	int startY, wrap;
@@ -196,9 +199,9 @@ int main(int argc, char *argv[])
 	//Initialize graphics library
 	init_scr();
 
-	scr_printf(	"Welcome to the RMMAN sample!\n");
-	scr_printf(	"For this demo, the remote should be plugged into port 2.\n");
-	scr_printf(	"Loading modules...\n");
+	scr_printf("Welcome to the RMMAN sample!\n");
+	scr_printf("For this demo, the remote should be plugged into port 2.\n");
+	scr_printf("Loading modules...\n");
 
 	//Load modules
 	SifLoadFileInit();
@@ -238,12 +241,12 @@ int main(int argc, char *argv[])
 
 	SifLoadFileExit();
 
-	scr_printf(	"Initializing...\n");
+	scr_printf("Initializing...\n");
 
 	//Prepare semaphores, for detecting Vertical-Blanking events.
-	sema.count = 0;
+	sema.count     = 0;
 	sema.max_count = 1;
-	sema.attr = 0;
+	sema.attr      = 0;
 
 	VblankStartSema = CreateSema(&sema);
 	VblankEndSema = CreateSema(&sema);
@@ -254,17 +257,18 @@ int main(int argc, char *argv[])
 
 	//Initialize the RMMAN RPC service
 	RMMan_Init();
-	scr_printf(	"Module version: 0x%04x\n", RMMan_GetModuleVersion());
+	scr_printf("Module version: 0x%04x\n", RMMan_GetModuleVersion());
 
-	scr_printf(	"Opening ports...");
+	scr_printf("Opening ports...");
 
-	/*	The remote can only be connected to slot 0 of any port (multitaps are not supported).
-		For this demo, assume that the remote controller dongle is connected to
-		controller port 2 (port = 1).	*/
+	/* The remote can only be connected to slot 0 of any port
+	   (multitaps are not supported).
+	   For this demo, assume that the remote controller dongle is connected to
+	   controller port 2 (port = 1). */
 	RMMan_Open(1, 0, rmData);
 
-	scr_printf(	"done!\n");
-	scr_printf(	"New input will be displayed here:\n");
+	scr_printf("done!\n");
+	scr_printf("New input will be displayed here:\n");
 
 	//Enable interrupt handlers
 	_EnableIntc(INTC_VBLANK_S);
@@ -279,8 +283,9 @@ int main(int argc, char *argv[])
 
 	//Enter the main loop
 	while(1)
-	{	//Like with PADMAN, RMMAN only sends updates once every 1/60th (NTSC) or 1/50th (PAL) second.
-		//Hence, wait for a VBlank cycle (1/50th or 1/60th second).
+	{
+	/* Like with PADMAN, RMMAN only sends updates once every 1/60th (NTSC) or 1/50th (PAL)
+	   second. Hence, wait for a VBlank cycle (1/50th or 1/60th second). */
 		WaitSema(VblankStartSema);
 		WaitSema(VblankEndSema);
 
@@ -298,14 +303,15 @@ int main(int argc, char *argv[])
 
 			scr_printf("\t%08x (%s)\t%08x (%s)\n", data.status, getRmStatus(data.status), data.button, getRmButton(data.button));
 
-			if(wrap)	//From libdebug itself
+			//From libdebug itself
+			if(wrap)
 			{
 				scr_setXY(0, startY);
 				wrap = 0;
 			}
 		}
 	}
-	
+
 	scr_printf("Shutting down...\n");
 
 	//Prepare for shutdown

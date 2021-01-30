@@ -1,14 +1,15 @@
 /*
-# _____     ___ ____     ___ ____
-#  ____|   |    ____|   |        | |____|
-# |     ___|   |____ ___|    ____| |    \    PS2DEV Open Source Project.
+# _____	 ___ ____	 ___ ____
+#  ____|   |	____|   |		| |____|
+# |	 ___|   |____ ___|	____| |	\	PS2DEV Open Source Project.
 #-----------------------------------------------------------------------
 # Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
 */
 
-// Based on pad sample by pukko, check the pad samples for more advanced features.
+/* Based on pad sample by pukko,
+ * check the pad samples for more advanced features. */
 
 #include <tamtypes.h>
 #include <kernel.h>
@@ -47,55 +48,61 @@ static u32 maxslot[2];
 
 void loadmodules(int free)
 {
-    int ret;
+	int ret;
 
 	if(free == 1)
 	{
 		ret = SifLoadModule("host0:sio2man.irx", 0, NULL);
 
-	    if (ret < 0) {
-	        printf("SifLoadModule sio2man.irx failed: %d\n", ret);
-	        SleepThread();
-	    }
+		if (ret < 0)
+		{
+			printf("SifLoadModule sio2man.irx failed: %d\n", ret);
+			SleepThread();
+		}
 
 		ret = SifLoadModule("host0:mtapman.irx", 0, NULL);
 
-	    if (ret < 0) {
-	        printf("SifLoadModule mtapman.irx failed: %d\n", ret);
-	        SleepThread();
-	    }
+		if (ret < 0)
+		{
+			printf("SifLoadModule mtapman.irx failed: %d\n", ret);
+			SleepThread();
+		}
 
-	    ret = SifLoadModule("host0:padman.irx", 0, NULL);
+		ret = SifLoadModule("host0:padman.irx", 0, NULL);
 
-	    if (ret < 0) {
-	        printf("SifLoadModule padman.irx failed: %d\n", ret);
-	        SleepThread();
-	    }
+		if (ret < 0)
+		{
+			printf("SifLoadModule padman.irx failed: %d\n", ret);
+			SleepThread();
+		}
 
 	}
 	else
 	{
 
-	    ret = SifLoadModule("rom0:XSIO2MAN", 0, NULL);
+		ret = SifLoadModule("rom0:XSIO2MAN", 0, NULL);
 
-	    if (ret < 0) {
-	        printf("SifLoadModule XSIO2MAN failed: %d\n", ret);
-	        SleepThread();
-	    }
+		if (ret < 0)
+		{
+			printf("SifLoadModule XSIO2MAN failed: %d\n", ret);
+			SleepThread();
+		}
 
 		ret = SifLoadModule("rom0:XMTAPMAN", 0, NULL);
 
-	    if (ret < 0) {
-	        printf("SifLoadModule XMTAPMAN failed: %d\n", ret);
-	        SleepThread();
-	    }
+		if (ret < 0)
+		{
+			printf("SifLoadModule XMTAPMAN failed: %d\n", ret);
+			SleepThread();
+		}
 
-	    ret = SifLoadModule("rom0:XPADMAN", 0, NULL);
+		ret = SifLoadModule("rom0:XPADMAN", 0, NULL);
 
-	    if (ret < 0) {
-	        printf("SifLoadModule XPADMAN failed: %d\n", ret);
-	        SleepThread();
-	    }
+		if (ret < 0)
+		{
+			printf("SifLoadModule XPADMAN failed: %d\n", ret);
+			SleepThread();
+		}
 
 	}
 
@@ -183,26 +190,22 @@ void find_controllers()
 		}
 	}
 
-
 }
-
-
-
 
 
 int main(int argc, char **argv)
 {
 	u32 i;
 
-    struct padButtonStatus buttons;
-    u32 paddata;
-    u32 old_pad[2][4];
-    u32 new_pad[2][4];
+	struct padButtonStatus buttons;
+	u32 paddata;
+	u32 old_pad[2][4];
+	u32 new_pad[2][4];
 	s32 ret;
 
 	SifInitRpc(0);
 
-    printf("libmtap sample");
+	printf("libmtap sample");
 
 	if((argc == 2) && (strncmp(argv[1], "free", 4) == 0))
 	{
@@ -221,7 +224,7 @@ int main(int argc, char **argv)
 
 
 	mtapInit();
-    padInit(0);
+	padInit(0);
 
 	mtapConnected[0] = 0;
 	mtapConnected[1] = 0;
@@ -258,31 +261,48 @@ int main(int argc, char **argv)
 				{
 					ret = padRead(port, slot, &buttons);
 
-   	 	    		if (ret != 0)
+   	 				if (ret != 0)
 					{
-            			paddata = 0xffff ^ buttons.btns;
+						paddata = 0xffff ^ buttons.btns;
 
 						new_pad[port][slot] = paddata & ~old_pad[port][slot];
-            			old_pad[port][slot] = paddata;
+						old_pad[port][slot] = paddata;
 
-						if(new_pad[port][slot]) printf("Controller (%i,%i) button(s) pressed: ", (int)port, (int)slot);
+						if(new_pad[port][slot])
+							printf("Controller (%i,%i) button(s) pressed: ", (int)port, (int)slot);
 
-            			if(new_pad[port][slot] & PAD_LEFT)		printf("LEFT ");
-						if(new_pad[port][slot] & PAD_RIGHT) 	printf("RIGHT ");
-						if(new_pad[port][slot] & PAD_UP) 		printf("UP ");
-						if(new_pad[port][slot] & PAD_DOWN) 		printf("DOWN ");
-						if(new_pad[port][slot] & PAD_START) 	printf("START ");
-						if(new_pad[port][slot] & PAD_SELECT) 	printf("SELECT ");
-						if(new_pad[port][slot] & PAD_SQUARE) 	printf("SQUARE ");
-						if(new_pad[port][slot] & PAD_TRIANGLE)	printf("TRIANGLE ");
-						if(new_pad[port][slot] & PAD_CIRCLE)	printf("CIRCLE ");
-						if(new_pad[port][slot] & PAD_CROSS)		printf("CROSS ");
-						if(new_pad[port][slot] & PAD_L1)		printf("L1 ");
-						if(new_pad[port][slot] & PAD_L2)		printf("L2 ");
-						if(new_pad[port][slot] & PAD_L3)		printf("L3 ");
-						if(new_pad[port][slot] & PAD_R1)		printf("R1 ");
-						if(new_pad[port][slot] & PAD_R2)		printf("R2 ");
-						if(new_pad[port][slot] & PAD_R3)		printf("R3 ");
+						if(new_pad[port][slot] & PAD_LEFT)
+							printf("LEFT ");
+						if(new_pad[port][slot] & PAD_RIGHT)
+							printf("RIGHT ");
+						if(new_pad[port][slot] & PAD_UP)
+							printf("UP ");
+						if(new_pad[port][slot] & PAD_DOWN)
+							printf("DOWN ");
+						if(new_pad[port][slot] & PAD_START)
+							printf("START ");
+						if(new_pad[port][slot] & PAD_SELECT)
+							printf("SELECT ");
+						if(new_pad[port][slot] & PAD_SQUARE)
+							printf("SQUARE ");
+						if(new_pad[port][slot] & PAD_TRIANGLE)
+							printf("TRIANGLE ");
+						if(new_pad[port][slot] & PAD_CIRCLE)
+							printf("CIRCLE ");
+						if(new_pad[port][slot] & PAD_CROSS)
+							printf("CROSS ");
+						if(new_pad[port][slot] & PAD_L1)
+							printf("L1 ");
+						if(new_pad[port][slot] & PAD_L2)
+							printf("L2 ");
+						if(new_pad[port][slot] & PAD_L3)
+							printf("L3 ");
+						if(new_pad[port][slot] & PAD_R1)
+							printf("R1 ");
+						if(new_pad[port][slot] & PAD_R2)
+							printf("R2 ");
+						if(new_pad[port][slot] & PAD_R3)
+							printf("R3 ");
 
 						if(new_pad[port][slot]) printf("\n");
 
@@ -294,5 +314,5 @@ int main(int argc, char **argv)
 
 		wait_vsync();
 	}
-    return 0;
+	return 0;
 }
