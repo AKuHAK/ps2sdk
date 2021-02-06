@@ -10,7 +10,7 @@
 
 /**
  * @file
- * RPC Interface for PS2 Remote Control Driver (RMMAN)
+ * @brief RPC Interface for PS2 Remote Control Driver (RMMAN)
  */
 
 #ifndef __LIBRM_H__
@@ -109,45 +109,48 @@ struct remote_data
 extern "C" {
 #endif
 
-/** Initialise librm
- * @return == 1 => OK
+/**
+ *  @brief Initialise librm
+ *  @return == 1 => OK
  */
 int RMMan_Init(void);
 
-/** Ends all remote communication
- * @return == 1 => OK
+/**
+ *  @brief Ends all remote communication
+ *  @return == 1 => OK
  */
 int RMMan_End(void);
 
 /**
- * @param port Port number to open (0 or 1)
- * @param slot Slot to open (0 or 1: multitap not supported)
- * @param pData The address of the buffer for storing the pad status.
+ *  @param port Port number to open (0 or 1)
+ *  @param slot Slot to open (0 or 1: multitap not supported)
+ *  @param pData The address of the buffer for storing the pad status.
  *                Must be a 256-byte region (2xsizeof(struct pad_data).
  *                Must be a 64-byte aligned address.
- * @return != 0 => OK
+ *  @return != 0 => OK
  */
 int RMMan_Open(int port, int slot, void *pData);
 
 /**
- * Closes an opened port.
+ *  @brief Closes an opened port.
  *
- * @param port Port to close
- * @param slot Slot to close
- * @return != 0 => OK
+ *  @param port Port to close
+ *  @param slot Slot to close
+ *  @return != 0 => OK
  */
 int RMMan_Close(int port, int slot);
 
-/** Read remote data
- * @param port Port number to get the status for.
- * @param slot Slot number to get the status for.
- * @param data A pointer to a 32 byte array where the result is stored
- * @return != 0 => OK
+/**
+ *  @brief Read remote data
+ *  @param port Port number to get the status for.
+ *  @param slot Slot number to get the status for.
+ *  @param data A pointer to a 32 byte array where the result is stored
+ *  @return != 0 => OK
  */
 void RMMan_Read(int port, int slot, struct remote_data *data);
 
-/** Returns the rmman.irx version
- *
+/**
+ *  @brief Returns the rmman.irx version
  */
 u32 RMMan_GetModuleVersion(void);
 

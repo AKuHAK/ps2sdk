@@ -9,14 +9,20 @@
 */
 
 /**
- * @file
- * Power-off library.
+ *  @file
+ *  @brief Power-off library.
+ *  @details Poweroff is a library that substitutes for the missing poweroff
+ *  functionality in rom0:CDVDMAN, which is offered by newer CDVDMAN
+ *  modules (i.e. sceCdPoweroff). Other than allowing the PlayStation 2
+ *  to be switched off via software means, this is used to safeguard
+ *  against the user switching off/resetting the console before data
+ *  can be completely written to disk.
  */
 
 #ifndef __LIBPWROFF_H__
 #define __LIBPWROFF_H__
 
-#define POWEROFF_THREAD_PRIORITY	0x70
+#define POWEROFF_THREAD_PRIORITY 0x70
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,12 +30,46 @@ extern "C" {
 
 typedef void (*poweroff_callback)(void *arg);
 
-/** Initializes the poweroff library.
- * A service thread with a default priority of 0x70 will be created.
+/**
+ *  @brief Initializes the poweroff library.
+ *  @details A service thread with a default priority of POWEROFF_THREAD_PRIORITY
+ *  will be created.
  */
 int poweroffInit(void);
+
+/**
+ *  @brief Set callback function
+ *
+ *  @param [in] cb Function that will be called when power button is pressed.
+ *  @param [in] arg Arguments that are sent to cb function (can be NULL)
+ *
+ *  @details Callback function should be defined elsewhere. There are some
+ *  standart specifications. Last function inside callback should be
+ *  poweroffShutdown.
+ *  You should close all files (close(fd)) and unmount all partitions. If you
+ *  use PFS, close all files and unmount all partitions.
+ *  fileXioDevctl("pfs:", PDIOC_CLOSEALL, NULL, 0, NULL, 0)
+ *  Shut down DEV9 (Network module), if you used it.
+ *  while(fileXioDevctl("dev9x:", DDIOC_OFF, NULL, 0, NULL, 0) < 0){};
+ */
 void poweroffSetCallback(poweroff_callback cb, void *arg);
+
+/**
+ *  @brief Immidiate console shutdown.
+ *
+ */
 void poweroffShutdown(void);
+
+/**
+ *  @brief Change thread priority
+ *
+ *  @details The callback thread runs at priority
+ *  POWEROFF_THREAD_PRIORITY by default. You can change the priority
+ *  by calling this function after poweroffSetCallback.
+ *  You can call this function before poweroffSetCallback as well (but after
+ *  poweroffInit). In that case poweroffSetCallback will be registered with
+ *  the provided value.
+ */
 void poweroffChangeThreadPriority(int priority);
 
 #ifdef __cplusplus
