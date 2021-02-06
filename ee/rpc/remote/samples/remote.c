@@ -52,21 +52,21 @@ void loadmodules(int free)
 {
     SifLoadFileInit();
 
-    if(free == 0)
+    if (free == 0)
     {
-        if(SifLoadModule("rom0:ADDDRV", 0, NULL) < 0)
+        if (SifLoadModule("rom0:ADDDRV", 0, NULL) < 0)
         {
             scr_printf("Failed to load ADDDRV!\n");
             SleepThread();
         }
 
-        if(SifLoadModule("rom1:SIO2MAN", 0, NULL) < 0)
+        if (SifLoadModule("rom1:SIO2MAN", 0, NULL) < 0)
         {
             scr_printf("Failed to load SIO2MAN!\n");
             SleepThread();
         }
 
-        if(SifLoadModule("rom1:RMMAN", 0, NULL) < 0)
+        if (SifLoadModule("rom1:RMMAN", 0, NULL) < 0)
         {
             scr_printf("Failed to load RMMAN!\n");
             SleepThread();
@@ -76,12 +76,12 @@ void loadmodules(int free)
     {
         sbv_patch_enable_lmb();
 
-        if(SifExecModuleBuffer(SIO2MAN_irx, size_SIO2MAN_irx, 0, NULL, NULL) < 0)
+        if (SifExecModuleBuffer(SIO2MAN_irx, size_SIO2MAN_irx, 0, NULL, NULL) < 0)
         {
             scr_printf("Failed to load SIO2MAN!\n");
             SleepThread();
         }
-        if(SifExecModuleBuffer(RMMAN_irx, size_RMMAN_irx, 0, NULL, NULL) < 0)
+        if (SifExecModuleBuffer(RMMAN_irx, size_RMMAN_irx, 0, NULL, NULL) < 0)
         {
             scr_printf("Failed to load RMMAN!\n");
             SleepThread();
@@ -93,7 +93,7 @@ void loadmodules(int free)
 
 static const char *getRmStatus(u32 status)
 {
-    switch(status)
+    switch (status)
     {
         case RM_INIT:
             return "INITIALIZING";
@@ -110,7 +110,7 @@ static const char *getRmStatus(u32 status)
 
 static const char *getRmButton(u32 button)
 {
-    switch(button)
+    switch (button)
     {
         case RM_DVD_ONE:
             return "RM_DVD_ONE";
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
     /* Initialize RPC services */
     SifInitRpc(0);
     SifIopReset(NULL, 0);
-    while(!SifIopSync()){};
+    while (!SifIopSync()) {};
     SifInitRpc(0);
 
     /* Initialize graphics library */
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
     scr_printf("Loading modules...\n");
 
     /* Load modules */
-    if((argc == 2) && (strncmp(argv[1], "free", 4) == 0))
+    if ((argc == 2) && (strncmp(argv[1], "free", 4) == 0))
     {
         scr_printf(" - Using PS2SDK sio2man.irx, rmman.irx modules.\n");
         loadmodules(1);
@@ -288,12 +288,12 @@ int main(int argc, char *argv[])
     scr_printf("Initializing...\n");
 
     /* Prepare semaphores, for detecting Vertical-Blanking events. */
-    sema.count     = 0;
-    sema.max_count = 1;
-    sema.attr      = 0;
+    sema.count      = 0;
+    sema.max_count  = 1;
+    sema.attr       = 0;
 
     VblankStartSema = CreateSema(&sema);
-    VblankEndSema = CreateSema(&sema);
+    VblankEndSema   = CreateSema(&sema);
 
     /* Register VBlank start and end interrupt handlers. */
     AddIntcHandler(INTC_VBLANK_S, &VblankStartHandler, 0);
@@ -320,13 +320,13 @@ int main(int argc, char *argv[])
     /* In order to preserve the messages above,
        preserve the current Y coordinate. */
     startY = scr_getY();
-    wrap = 0;
+    wrap   = 0;
 
     /* Erase old remote state */
     memset(&olddata, 0, sizeof(olddata));
 
     /* Enter the main loop */
-    while(1)
+    while (1)
     {
         /* Like with PADMAN, RMMAN only sends updates once every 1/60th (NTSC)
            or 1/50th (PAL) second. Hence, wait for a VBlank cycle
@@ -338,19 +338,21 @@ int main(int argc, char *argv[])
         RMMan_Read(1, 0, &data);
 
         /* If there was a difference, print it. */
-        if((olddata.status != data.status) || (olddata.button != data.button)) {
+        if ((olddata.status != data.status) || (olddata.button != data.button))
+        {
             olddata = data;
 
             /* Do not draw past the end of the screen. If this is the last line,
                prepare to wrap around. */
-            if(scr_getY() + 1 >= 27)
+            if (scr_getY() + 1 >= 27)
                 wrap = 1;
 
             scr_printf("\t%08x (%s)\t%08x (%s)\n", data.status,
                        getRmStatus(data.status), data.button, getRmButton(data.button));
 
             /* From libdebug itself */
-            if(wrap) {
+            if (wrap)
+            {
                 scr_setXY(0, startY);
                 wrap = 0;
             }
