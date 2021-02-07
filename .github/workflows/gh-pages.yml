@@ -10,17 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@latest
+    - uses: actions/checkout@v2
 
     - name: Doxygen documentation generation
-      uses: mattnotmitt/doxygen-action@latest
+      uses: mattnotmitt/doxygen-action@v1
 
     - name: Deploy
-      uses: peaceiris/actions-gh-pages@latest
+      uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/html
         force_orphan: true
+        enable_jekyll: true
 
     - name: Update main doxy file
       run: |
@@ -28,6 +29,6 @@ jobs:
 
     - name: Upload artifacts
       if: ${{ success() }}
-      uses: actions/upload-artifact@latest
+      uses: actions/upload-artifact@v2
       with:
         path: Doxyfile
