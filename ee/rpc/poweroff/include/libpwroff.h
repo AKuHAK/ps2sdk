@@ -46,7 +46,7 @@ int poweroffInit(void);
  *  @details Callback function should be defined elsewhere. There are some
  *  standart specifications. Last function inside callback should be
  *  poweroffShutdown().\n
- *  You should close all files (close(fd)) and unmount all partitions. If you
+ *  You should close all files (`close(fd)`) and unmount all partitions. If you
  *  use PFS, close all files and unmount all partitions.
  *  ~~~~~~~~~~~~~~~{.c}
  *  fileXioDevctl("pfs:", PDIOC_CLOSEALL, NULL, 0, NULL, 0)
@@ -60,6 +60,7 @@ void poweroffSetCallback(poweroff_callback cb, void *arg);
 
 /**
  *  @brief Immidiate console shutdown.
+ *  @details No return value.
  *
  */
 void poweroffShutdown(void);
@@ -69,7 +70,7 @@ void poweroffShutdown(void);
  *
  *  @details The callback thread runs at priority
  *  <b>POWEROFF_THREAD_PRIORITY</b> by default. You can change the priority
- *  by calling this function after `poweroffSetCallback`.
+ *  by calling this function after poweroffSetCallback().
  *  You can call this function before `poweroffSetCallback` as well (but after
  *  `poweroffInit`). In that case `poweroffSetCallback` will be registered with
  *  the provided priority.
