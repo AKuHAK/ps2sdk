@@ -23,7 +23,7 @@ static void poweroffCallback(void *arg)
     printf("\'hi\' from Poweroff callback!\n");
 
     //Close all files and unmount all partitions.
-    //close(fd);
+    // close(fd);
 
     //If you use PFS, close all files and unmount all partitions.
     //fileXioDevctl("pfs:", PDIOC_CLOSEALL, NULL, 0, NULL, 0)
