@@ -22,13 +22,3 @@ jobs:
         publish_dir: ./docs/html
         force_orphan: true
         enable_jekyll: true
-
-    - name: Update main doxy file
-      run: |
-        doxygen -u
-
-    - name: Upload artifacts
-      if: ${{ success() }}
-      uses: actions/upload-artifact@v2
-      with:
-        path: Doxyfile
