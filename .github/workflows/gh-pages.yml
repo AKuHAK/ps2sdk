@@ -12,6 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install dependencies
+      run: |
+        sudo apt install graphviz flex bison
+
     - name: Doxygen documentation generation
       uses: mattnotmitt/doxygen-action@v1
     
