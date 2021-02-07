@@ -28,6 +28,24 @@
 extern "C" {
 #endif
 
+/**
+ *  @brief User defined function for use in poweroffSetCallback()
+ *
+ *  @details In fact there can be anything.
+ *  This function will be called when power button is pressed.
+ *  In common cases it should end everything and poweroff console.
+ *  You should close all files (`close(fd)`) and unmount all partitions. If you
+ *  use PFS, close all files and unmount all partitions.
+ *  ~~~~~~~~~~~~~~~{.c}
+ *  fileXioDevctl("pfs:", PDIOC_CLOSEALL, NULL, 0, NULL, 0)
+ *  ~~~~~~~~~~~~~~~
+ *  Shut down DEV9 (Network module), if you used it:
+ *  ~~~~~~~~~~~~~~~{.c}
+ *  while(fileXioDevctl("dev9x:", DDIOC_OFF, NULL, 0, NULL, 0) < 0){};
+ *  ~~~~~~~~~~~~~~~
+ *  Last function inside callback should be
+ *  poweroffShutdown().
+ */
 typedef void (*poweroff_callback)(void *arg);
 
 /**
@@ -43,18 +61,9 @@ int poweroffInit(void);
  *  @param [in] cb Function that will be called when power button is pressed.
  *  @param [in] arg Arguments that are sent to cb function (can be <b>NULL</b>)
  *
- *  @details Callback function should be defined elsewhere. There are some
- *  standart specifications. Last function inside callback should be
- *  poweroffShutdown().\n
- *  You should close all files (`close(fd)`) and unmount all partitions. If you
- *  use PFS, close all files and unmount all partitions.
- *  ~~~~~~~~~~~~~~~{.c}
- *  fileXioDevctl("pfs:", PDIOC_CLOSEALL, NULL, 0, NULL, 0)
- *  ~~~~~~~~~~~~~~~
- *  Shut down DEV9 (Network module), if you used it:
- *  ~~~~~~~~~~~~~~~{.c}
- *  while(fileXioDevctl("dev9x:", DDIOC_OFF, NULL, 0, NULL, 0) < 0){};
- *  ~~~~~~~~~~~~~~~
+ *  @details Callback function should be user-defined elsewhere. There are some
+ *  standart specifications.
+ *
  */
 void poweroffSetCallback(poweroff_callback cb, void *arg);
 
