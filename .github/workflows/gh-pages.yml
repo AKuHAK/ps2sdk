@@ -8,20 +8,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-  
-    steps:
-    - uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: |
-        sudo apt install graphviz flex bison
+    steps:
+    - uses: actions/checkout@latest
 
     - name: Doxygen documentation generation
-      uses: mattnotmitt/doxygen-action@v1
-    
+      uses: mattnotmitt/doxygen-action@latest
+
     - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@latest
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/html
         force_orphan: true
+
+    - name: Update main doxy file
+      run: |
+        doxygen -u
+
+    - name: Upload artifacts
+      if: ${{ success() }}
+      uses: actions/upload-artifact@latest
+      with:
+        path: Doxyfile

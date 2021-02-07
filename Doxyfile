@@ -2261,7 +2261,7 @@ EXTERNAL_GROUPS        = YES
 # be listed.
 # The default value is: YES.
 
-EXTERNAL_PAGES         = NO
+EXTERNAL_PAGES         = YES
 
 #---------------------------------------------------------------------------
 # Configuration options related to the dot tool
