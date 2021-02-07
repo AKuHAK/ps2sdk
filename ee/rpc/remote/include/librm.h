@@ -39,6 +39,11 @@ struct remote_data
  * @name Button Values
  */
 /** @{ */
+
+/**
+ * @name Status button Values
+ */
+/** @{ */
 #define RM_RELEASED      0x00000000
 #define RM_IDLE          0x00FFFFFF
 
@@ -104,6 +109,9 @@ struct remote_data
 #define RM_PS2_POWEROFF  0x00F0D2DA
 /** @}*/
 
+/** @name PS2 Controller buttons
+ */
+/** @{ */
 #define RM_PS2_SELECT    0x0000D5DA /* 80 */
 #define RM_PS2_L3        0x0010D5DA
 #define RM_PS2_R3        0x0020D5DA
@@ -121,7 +129,8 @@ struct remote_data
 #define RM_PS2_CROSS     0x00E0D5DA
 #define RM_PS2_SQUARE    0x00F0D5DA
 /** @} */
-/** @}*/
+/** @} */
+/** @} */
 
 #ifdef _cplusplus
 extern "C" {
