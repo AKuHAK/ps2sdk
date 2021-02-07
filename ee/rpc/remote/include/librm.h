@@ -26,7 +26,7 @@ struct remote_data
 
 /**
  * @defgroup status
- * @{Status values (guess) */
+ * @{Status values (guess)
  */
 #define RM_INIT          0x000012FF
 #define RM_READY         0x005A12FF
