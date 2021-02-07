@@ -169,9 +169,9 @@ int RMMan_Close(int port, int slot);
 
 /**
  *  @brief Read remote data
- *  @param port Port number to get the status for.
- *  @param slot Slot number to get the status for.
- *  @param data A pointer to a 32 byte array where the result is stored
+ *  @param [in] port Port number to get the status for.
+ *  @param [in] slot Slot number to get the status for.
+ *  @param [out] data A pointer to a 32 byte array where the result is stored
  *  @return != 0 => OK
  */
 void RMMan_Read(int port, int slot, struct remote_data *data);
