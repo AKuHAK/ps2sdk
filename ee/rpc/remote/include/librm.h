@@ -36,16 +36,12 @@ struct remote_data
 /** @} */
 
 /**
- * @name Button Values
- */
-/** @{ */
-
-/**
  * @name Status button Values
  */
 /** @{ */
 #define RM_RELEASED      0x00000000
 #define RM_IDLE          0x00FFFFFF
+/** @}*/
 
 /**
  * @name DVD Player buttons
@@ -96,11 +92,7 @@ struct remote_data
 #define RM_DVD_RIGHT     0x00D0D749
 /** @}*/
 
-/** @name PS2 buttons
- */
-/** @{ */
-
-/** @name Commands that works only on dragon models
+/** @name Commands that works only on Dragon models
  */
 /** @{ */
 #define RM_PS2_RESET     0x0050D1DA /* 21 */
@@ -128,8 +120,6 @@ struct remote_data
 #define RM_PS2_CIRCLE    0x00D0D5DA
 #define RM_PS2_CROSS     0x00E0D5DA
 #define RM_PS2_SQUARE    0x00F0D5DA
-/** @} */
-/** @} */
 /** @} */
 
 #ifdef _cplusplus
