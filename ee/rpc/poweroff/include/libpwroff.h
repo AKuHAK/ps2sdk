@@ -41,7 +41,7 @@ int poweroffInit(void);
  *  @brief Set callback function
  *
  *  @param [in] cb Function that will be called when power button is pressed.
- *  @param [in] arg Arguments that are sent to cb function (can be NULL)
+ *  @param [in] arg Arguments that are sent to cb function (can be <b>NULL</b>)
  *
  *  @details Callback function should be defined elsewhere. There are some
  *  standart specifications. Last function inside callback should be
@@ -51,7 +51,7 @@ int poweroffInit(void);
  *  ~~~~~~~~~~~~~~~{.c}
  *  fileXioDevctl("pfs:", PDIOC_CLOSEALL, NULL, 0, NULL, 0)
  *  ~~~~~~~~~~~~~~~
- *  Shut down DEV9 (Network module), if you used it.
+ *  Shut down DEV9 (Network module), if you used it:
  *  ~~~~~~~~~~~~~~~{.c}
  *  while(fileXioDevctl("dev9x:", DDIOC_OFF, NULL, 0, NULL, 0) < 0){};
  *  ~~~~~~~~~~~~~~~
@@ -60,7 +60,7 @@ void poweroffSetCallback(poweroff_callback cb, void *arg);
 
 /**
  *  @brief Immidiate console shutdown.
- *  @details No return value.
+ *  Do not call it without closing all stuff.
  *
  */
 void poweroffShutdown(void);
@@ -71,8 +71,8 @@ void poweroffShutdown(void);
  *  @details The callback thread runs at priority
  *  <b>POWEROFF_THREAD_PRIORITY</b> by default. You can change the priority
  *  by calling this function after poweroffSetCallback().
- *  You can call this function before `poweroffSetCallback` as well (but after
- *  `poweroffInit`). In that case `poweroffSetCallback` will be registered with
+ *  You can call this function before poweroffSetCallback() as well (but after
+ *  poweroffInit() ). In that case poweroffSetCallback() will be registered with
  *  the provided priority.
  */
 void poweroffChangeThreadPriority(int priority);

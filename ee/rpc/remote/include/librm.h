@@ -24,18 +24,27 @@ struct remote_data
     u32 button;
 };
 
-/* Status values (guess) */
+/**
+ * @defgroup status
+ * @{Status values (guess) */
+ */
 #define RM_INIT          0x000012FF
 #define RM_READY         0x005A12FF
 #define RM_KEYPRESSED    0x145A12FF
 #define RM_NOREMOTE      0xFFFFFFFF
+/** @}*/
 
-
-/* Button Values */
+/**
+ * @defgroup buttons
+ * @{Button Values */
+ */
 #define RM_RELEASED      0x00000000
 #define RM_IDLE          0x00FFFFFF
 
-/* DVD Player buttons */
+/**
+ * @defgroup dvdbuttons
+ * @{DVD Player buttons */
+ */
 #define RM_DVD_ONE       0x0000D049 /* 0 */
 #define RM_DVD_TWO       0x0010D049
 #define RM_DVD_THREE     0x0020D049
@@ -79,6 +88,7 @@ struct remote_data
 #define RM_DVD_DOWN      0x00B0D749
 #define RM_DVD_LEFT      0x00C0D749
 #define RM_DVD_RIGHT     0x00D0D749
+/** @}*/
 
 /* PS2 buttons */
 
@@ -104,6 +114,7 @@ struct remote_data
 #define RM_PS2_CIRCLE    0x00D0D5DA
 #define RM_PS2_CROSS     0x00E0D5DA
 #define RM_PS2_SQUARE    0x00F0D5DA
+/** @}*/
 
 #ifdef _cplusplus
 extern "C" {
