@@ -48,6 +48,7 @@ int poweroffInit(void);
  *  poweroffShutdown.\n
  *  You should close all files (close(fd)) and unmount all partitions. If you
  *  use PFS, close all files and unmount all partitions.
+ *  @see fileXioDevctl()
  *  ~~~~~~~~~~~~~~~{.c}
  *  fileXioDevctl("pfs:", PDIOC_CLOSEALL, NULL, 0, NULL, 0)
  *  ~~~~~~~~~~~~~~~
