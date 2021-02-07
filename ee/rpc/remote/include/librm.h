@@ -25,26 +25,29 @@ struct remote_data
 };
 
 /**
- * @defgroup status
- * @{Status values (guess)
+ * @name status
+ * Status values (guess)
  */
+/** @{ */
 #define RM_INIT          0x000012FF
 #define RM_READY         0x005A12FF
 #define RM_KEYPRESSED    0x145A12FF
 #define RM_NOREMOTE      0xFFFFFFFF
-/** @}*/
+/** @} */
 
 /**
- * @defgroup buttons
- * @{Button Values
+ * @name buttons
+ * Button Values
  */
+/** @{ */
 #define RM_RELEASED      0x00000000
 #define RM_IDLE          0x00FFFFFF
 
 /**
- * @defgroup dvdbuttons
- * @{DVD Player buttons
+ * @name dvdbuttons
+ * DVD Player buttons
  */
+/** @{ */
 #define RM_DVD_ONE       0x0000D049 /* 0 */
 #define RM_DVD_TWO       0x0010D049
 #define RM_DVD_THREE     0x0020D049
