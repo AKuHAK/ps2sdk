@@ -149,11 +149,11 @@ int RMMan_Init(void);
 int RMMan_End(void);
 
 /**
- *  @param port Port number to open (0 or 1)
- *  @param slot Slot to open (0 or 1: multitap not supported)
- *  @param pData The address of the buffer for storing the pad status.
- *                Must be a 256-byte region (2xsizeof(struct pad_data).
- *                Must be a 64-byte aligned address.
+ *  @param [in] port Port number to open (0 or 1)
+ *  @param [in] slot Slot to open (0 or 1: multitap not supported)
+ *  @param [out] pData The address of the buffer for storing the pad status.
+ *               Must be a 256-byte region (2xsizeof(struct pad_data).
+ *               Must be a 64-byte aligned address.
  *  @return != 0 => OK
  */
 int RMMan_Open(int port, int slot, void *pData);
