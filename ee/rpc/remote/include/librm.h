@@ -36,14 +36,14 @@ struct remote_data
 
 /**
  * @defgroup buttons
- * @{Button Values */
+ * @{Button Values
  */
 #define RM_RELEASED      0x00000000
 #define RM_IDLE          0x00FFFFFF
 
 /**
  * @defgroup dvdbuttons
- * @{DVD Player buttons */
+ * @{DVD Player buttons
  */
 #define RM_DVD_ONE       0x0000D049 /* 0 */
 #define RM_DVD_TWO       0x0010D049
