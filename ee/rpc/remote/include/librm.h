@@ -25,7 +25,6 @@ struct remote_data
 };
 
 /**
- * @name status
  * Status values (guess)
  */
 /** @{ */
@@ -36,7 +35,6 @@ struct remote_data
 /** @} */
 
 /**
- * @name buttons
  * Button Values
  */
 /** @{ */
@@ -44,7 +42,6 @@ struct remote_data
 #define RM_IDLE          0x00FFFFFF
 
 /**
- * @name dvdbuttons
  * DVD Player buttons
  */
 /** @{ */
@@ -93,13 +90,18 @@ struct remote_data
 #define RM_DVD_RIGHT     0x00D0D749
 /** @}*/
 
-/* PS2 buttons */
+/*
+ * PS2 commands
+ */
+/** @{ */
 
-/* Buttons that works only on slims */
+/** Commands that works only on dragon models */
+/** @{ */
 #define RM_PS2_RESET     0x0050D1DA /* 21 */
 #define RM_PS2_EJECT     0x0060D1DA
 #define RM_PS2_POWERON   0x00E0D2DA /* 46 */
 #define RM_PS2_POWEROFF  0x00F0D2DA
+/** @}*/
 
 #define RM_PS2_SELECT    0x0000D5DA /* 80 */
 #define RM_PS2_L3        0x0010D5DA
@@ -117,6 +119,7 @@ struct remote_data
 #define RM_PS2_CIRCLE    0x00D0D5DA
 #define RM_PS2_CROSS     0x00E0D5DA
 #define RM_PS2_SQUARE    0x00F0D5DA
+/** @} */
 /** @}*/
 
 #ifdef _cplusplus
