@@ -15,7 +15,10 @@ ifneq ($(EE_CC),gcc)
 EE_LIBS = -lpatches
 endif
 
-all: $(EE_BIN)
+all: $(EE_BIN) input
+
+input:
+	echo "hello world" > testfiles/dummy
 
 clean:
 	rm -rf $(EE_BIN) $(EE_OBJS) dummydir testfiles/dummy2
