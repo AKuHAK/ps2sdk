@@ -103,6 +103,7 @@ int main(int argc, char **argv)
 	SifInitRpc(0);
 
 	printf("libpadx sample");
+    printf("meow: %s , p: %p \n", argv[0], argv[0]);
 
 	if((argc == 2) && (strncmp(argv[1], "free", 4) == 0))
 	{
