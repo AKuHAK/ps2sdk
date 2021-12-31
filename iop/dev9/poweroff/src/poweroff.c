@@ -30,7 +30,17 @@
 
 #define MAX_CALLBACKS	8
 
-IRX_ID("Poweroff_Handler", 1, 1);
+#define MODNAME "Poweroff_Handler"
+IRX_ID(MODNAME, 1, 1);
+
+#define M_DEBUG(format, args...) \
+    printf(MODNAME ": " format, ##args)
+
+#ifdef DEBUG
+#define M_DEBUG M_DEBUG
+#else
+#define M_DEBUG(format, args...)
+#endif
 
 extern struct irx_export_table _exp_poweroff;
 
@@ -73,9 +83,7 @@ static int myCdHandler(void *param)
 		/* can't seem to register a sif cmd callback in ps2link so... */
 		/* Clear interrupt bit */
 		CDVDreg_PWOFF = 4;
-#ifdef DEBUG
-		printf("Poweroff!!!! %08x\n", CDVDreg_PWOFF);
-#endif
+		M_DEBUG("Poweroff!!!! %08x\n", CDVDreg_PWOFF);
 		if (poweroff_button_cb)
 			poweroff_button_cb(poweroff_button_data);
 	}
@@ -85,9 +93,7 @@ static int myCdHandler(void *param)
 
 static void Shutdown(void* data)
 {
-#ifdef DEBUG
-	printf("Shutdown\n");
-#endif
+	M_DEBUG("Shutdown\n");
 	int i;
 	/* Do callbacks in reverse order */
 	for(i = MAX_CALLBACKS-1; i >= 0; i--)
@@ -153,16 +159,14 @@ void AddPowerOffHandler(pwoffcb func, void* param)
 		{
 			CallbackTable[i].cb = func;
 			CallbackTable[i].data = param;
-#ifdef DEBUG
-			printf("Added callback at position %d\n", i);
-#endif
+			M_DEBUG("Added callback at position %d\n", i);
 			break;
 		}
 	}
 
 	if(i == MAX_CALLBACKS)
 	{
-		printf("Could not add poweroff callback\n");
+		M_DEBUG("Could not add poweroff callback\n");
 	}
 }
 
@@ -231,19 +235,19 @@ int _start(int argc, char* argv[])
 
 	if(RegisterLibraryEntries(&_exp_poweroff) != 0)
 	{
-		printf("Poweroff already registered\n");
+		M_DEBUG("Poweroff already registered\n");
 		return 1;
 	}
 
 	SetPowerButtonHandler(Shutdown, 0);
 
 	if (handlers[IOP_IRQ_CDVD].handler==0) {
-		printf("No CDROM handler. Run CDVDMAN first\n");
+		M_DEBUG("No CDROM handler. Run CDVDMAN first\n");
 		return 1;
 	}
 
 	if (((int)handlers[IOP_IRQ_CDVD].handler & 3) != TYPE_C){
-		printf("Cannot chain to non-C handler\n");
+		M_DEBUG("Cannot chain to non-C handler\n");
 		return 1;
 	}
 
@@ -262,15 +266,15 @@ int _start(int argc, char* argv[])
 
 	if (pid > 0) {
 		if ((i=StartThread(pid, NULL)) < 0) {
-			printf("StartThread failed (%d)\n", i);
+			M_DEBUG("StartThread failed (%d)\n", i);
 			return MODULE_NO_RESIDENT_END;
 		}
 	}
 	else {
-		printf("CreateThread failed (%d)\n", pid);
+		M_DEBUG("CreateThread failed (%d)\n", pid);
 		return MODULE_NO_RESIDENT_END;
 	}
 
-	printf("Poweroff installed\n");
+	M_DEBUG("Poweroff installed\n");
 	return MODULE_RESIDENT_END;
 }

@@ -25,7 +25,7 @@
 #include "fls.h"
 
 #define MODNAME "flash"
-#define M_PRINTF(format, args...)	\
+#define M_DEBUG(format, args...)	\
 	printf(MODNAME ": " format, ## args)
 
 IRX_ID(MODNAME, 0, 0);
@@ -78,17 +78,17 @@ int flash_detect(void)
 	u16 rev;
 
 	if ((DEV9_REG(DEV9_R_REV) & 0xf0) != DEV9_DEV9C_9611) {
-		M_PRINTF("CXD9611 required for flash interface.\n");
+		M_DEBUG("CXD9611 required for flash interface.\n");
 		return -1;
 	}
 
 	/* Check bit 5 of the revision register.  */
 	if ((rev = SPD_REG16(SPD_R_REV_3)) & SPD_CAPS_FLASH) {
-		M_PRINTF("Detected flash (rev3 0x%02x).\n", rev);
+		M_DEBUG("Detected flash (rev3 0x%02x).\n", rev);
 		return 0;
 	}
 
-	M_PRINTF("No flash detected (rev3 0x%02x).\n", rev);
+	M_DEBUG("No flash detected (rev3 0x%02x).\n", rev);
 	return -1;
 }
 
@@ -111,7 +111,7 @@ int flash_device_reset(void)
 			if (SPD_REG16(0x480c) & 0x01)
 				break;
 
-			M_PRINTF("Device erase: timed out.\n");
+			M_DEBUG("Device erase: timed out.\n");
 			return -3;
 		}
 	}
@@ -120,7 +120,7 @@ int flash_device_reset(void)
 
 	SPD_REG16(0x4804) = SM_CMD_GETSTATUS;
 	if (SPD_REG16(0x4814) & 0x01) {
-		M_PRINTF("Device erase: status error.\n");
+		M_DEBUG("Device erase: status error.\n");
 		return -6;
 	}
 
@@ -150,7 +150,7 @@ int flash_get_info(flash_info_t *info)
 			continue;
 
 		memcpy(info, &devices[i], sizeof(flash_info_t));
-		M_PRINTF("Device: ID 0x%02x, %ld Mbit, %ld bytes/page, %ld pages/block, %ld blocks total.\n",
+		M_DEBUG("Device: ID 0x%02x, %ld Mbit, %ld bytes/page, %ld pages/block, %ld blocks total.\n",
 				id, info->mbits, info->page_bytes, info->block_pages, info->blocks);
 		return 0;
 	}
@@ -211,7 +211,7 @@ int flash_page_erase(flash_info_t *info, u32 page)
 			if (SPD_REG16(0x480c) & 0x01)
 				break;
 
-			M_PRINTF("Page erase: timed out.\n");
+			M_DEBUG("Page erase: timed out.\n");
 			return -3;
 		}
 	}
@@ -220,7 +220,7 @@ int flash_page_erase(flash_info_t *info, u32 page)
 
 	SPD_REG16(0x4804) = SM_CMD_GETSTATUS;
 	if (SPD_REG16(0x4814) & 0x01) {
-		M_PRINTF("Page erase: status error.\n");
+		M_DEBUG("Page erase: status error.\n");
 		return -6;
 	}
 
@@ -277,7 +277,7 @@ int flash_page_read(flash_info_t *info, u32 page, u32 count, void *buf)
 				if (SPD_REG16(0x480c) & 0x01)
 					break;
 
-				M_PRINTF("Page read: timed out.\n");
+				M_DEBUG("Page read: timed out.\n");
 				return -3;
 			}
 		}
@@ -336,7 +336,7 @@ int flash_page_write(flash_info_t *info, u32 page, void *buf)
 			if (SPD_REG16(0x480c) & 0x01)
 				break;
 
-			M_PRINTF("Page write: timed out.\n");
+			M_DEBUG("Page write: timed out.\n");
 			return -3;
 		}
 	}
@@ -345,7 +345,7 @@ int flash_page_write(flash_info_t *info, u32 page, void *buf)
 
 	SPD_REG16(0x4804) = SM_CMD_GETSTATUS;
 	if (SPD_REG16(0x4814) & 0x01) {
-		M_PRINTF("Page write: status error.\n");
+		M_DEBUG("Page write: status error.\n");
 		return -6;
 	}
 

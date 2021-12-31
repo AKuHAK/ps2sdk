@@ -297,7 +297,7 @@ static int usb_bulk_manage_status(mass_dev* dev, unsigned int tag) {
 	int ret;
 	csw_packet csw;
 
-	//XPRINTF("USBHDFSD: usb_bulk_manage_status 1 ...\n");
+	//M_DEBUG("usb_bulk_manage_status 1 ...\n");
 	ret = usb_bulk_status(dev, &csw, tag); /* Attempt to read CSW from bulk in endpoint */
 	if (ret != USB_RC_OK) { /* STALL bulk in  -OR- Bulk error */
 		usb_bulk_clear_halt(dev, USB_BLK_EP_IN); /* clear the stall condition for bulk in */
@@ -569,7 +569,7 @@ static int usb_mass_probe(int devId)
 
     /* only one device supported */
     if ((mass_device != NULL) && (mass_device->status & USBMASS_DEV_STAT_CONN)) {
-        M_PRINTF("ERROR: Only one mass storage device allowed!\n");
+        M_DEBUG("ERROR: Only one mass storage device allowed!\n");
         return 0;
     }
 
@@ -620,17 +620,17 @@ static int usb_mass_connect(int devId)
     iop_sema_t SemaData;
     mass_dev* dev;
 
-    M_PRINTF("connect: devId=%i\n", devId);
+    M_DEBUG("connect: devId=%i\n", devId);
     dev = usb_mass_findDevice(devId, 1);
 
     if (dev == NULL) {
-        M_PRINTF("ERROR: Unable to allocate space!\n");
+        M_DEBUG("ERROR: Unable to allocate space!\n");
         return 1;
     }
 
     /* only one mass device allowed */
     if (dev->devId != -1) {
-        M_PRINTF("ERROR: Only one mass storage device allowed!\n");
+        M_DEBUG("ERROR: Only one mass storage device allowed!\n");
         return 1;
     }
 
@@ -663,7 +663,7 @@ static int usb_mass_connect(int devId)
     // Bail out if we do NOT have enough bulk endpoints.
     if (dev->bulkEpI < 0 || dev->bulkEpO < 0) {
         usb_mass_release(dev);
-        M_PRINTF("ERROR: connect failed: not enough bulk endpoints!\n");
+        M_DEBUG("ERROR: connect failed: not enough bulk endpoints!\n");
         return -1;
     }
 
@@ -672,7 +672,7 @@ static int usb_mass_connect(int devId)
     SemaData.option  = 0;
     SemaData.attr    = 0;
     if ((dev->ioSema = CreateSema(&SemaData)) < 0) {
-        M_PRINTF("ERROR: Failed to allocate I/O semaphore\n");
+        M_DEBUG("ERROR: Failed to allocate I/O semaphore\n");
         return -1;
     }
 
@@ -706,10 +706,10 @@ static int usb_mass_disconnect(int devId)
     mass_dev* dev;
     dev = usb_mass_findDevice(devId, 0);
 
-    M_PRINTF("disconnect: devId=%i\n", devId);
+    M_DEBUG("disconnect: devId=%i\n", devId);
 
     if (dev == NULL) {
-        M_PRINTF("ERROR: disconnect: no device storage!\n");
+        M_DEBUG("ERROR: disconnect: no device storage!\n");
         return 0;
     }
 
@@ -743,13 +743,13 @@ static void usb_mass_update(void* arg)
             if (dev->devId != -1 && (dev->status & USBMASS_DEV_STAT_CONN) && !(dev->status & USBMASS_DEV_STAT_CONF)) {
                 int ret;
                 if ((ret = usb_set_configuration(dev, dev->configId)) != USB_RC_OK) {
-                    M_PRINTF("ERROR: sending set_configuration %d\n", ret);
+                    M_DEBUG("ERROR: sending set_configuration %d\n", ret);
                     usb_mass_release(dev);
                     continue;
                 }
 
                 if ((ret = usb_set_interface(dev, dev->interfaceNumber, dev->interfaceAlt)) != USB_RC_OK) {
-                    M_PRINTF("ERROR: sending set_interface %d\n", ret);
+                    M_DEBUG("ERROR: sending set_interface %d\n", ret);
                     if (ret == USB_RC_STALL) {
                         /* USB Specification 1.1, section 9.4.10: Devices that only support a default setting for the specified interface may return a STALL.
                            As with Linux, we shall clear the halt state of the interface's pipes and continue. */
@@ -806,7 +806,7 @@ int usb_mass_init(void)
     ret = sceUsbdRegisterLdd(&driver);
     M_DEBUG("sceUsbdRegisterLdd=%i\n", ret);
     if (ret < 0) {
-        M_PRINTF("ERROR: register driver failed! ret=%d\n", ret);
+        M_DEBUG("ERROR: register driver failed! ret=%d\n", ret);
         return -1;
     }
 
@@ -818,13 +818,13 @@ int usb_mass_init(void)
 
     ret = CreateThread(&thread);
     if (ret < 0) {
-        M_PRINTF("ERROR: CreateThread failed! ret=%d\n", ret);
+        M_DEBUG("ERROR: CreateThread failed! ret=%d\n", ret);
         return -1;
     }
 
     ret = StartThread(ret, 0);
     if (ret < 0) {
-        M_PRINTF("ERROR: StartThread failed! ret=%d\n", ret);
+        M_DEBUG("ERROR: StartThread failed! ret=%d\n", ret);
         DeleteThread(ret);
         return -1;
     }

@@ -62,8 +62,8 @@ static int fio_init(iop_device_t *driver)
 
 static int fio_deinit(iop_device_t *f)
 {
-    DPRINTF("CDFS: fio_deinit called.\n");
-    DPRINTF("      kernel_fd.. %p\n", f);
+    M_DEBUG("CDFS: fio_deinit called.\n");
+    M_DEBUG("      kernel_fd.. %p\n", f);
     return cdfs_finish();
 }
 
@@ -72,10 +72,10 @@ static int fio_open(iop_file_t *f, const char *name, int mode)
     int j;
     static struct TocEntry tocEntry;
 
-    DPRINTF("CDFS: fio_open called.\n");
-    DPRINTF("      kernel_fd.. %p\n", f);
-    DPRINTF("      name....... %s %x\n", name, (int)name);
-    DPRINTF("      mode....... %d\n\n", mode);
+    M_DEBUG("CDFS: fio_open called.\n");
+    M_DEBUG("      kernel_fd.. %p\n", f);
+    M_DEBUG("      name....... %s %x\n", name, (int)name);
+    M_DEBUG("      mode....... %d\n\n", mode);
 
     // check if the file exists
     if (!cdfs_findfile(name, &tocEntry)) {
@@ -86,15 +86,15 @@ static int fio_open(iop_file_t *f, const char *name, int mode)
     if (mode != O_RDONLY) {
         printf("mode is different than O_RDONLY, expected %i, received %i\n\n", O_RDONLY, mode);
         return -2;
-    }   
+    }
 
-    DPRINTF("CDFS: fio_open TocEntry info\n");
-    DPRINTF("      TocEntry....... %p\n", &tocEntry);
-    DPRINTF("      fileLBA........ %i\n", tocEntry.fileLBA);
-    DPRINTF("      fileSize....... %i\n", tocEntry.fileSize);
-    DPRINTF("      fileProperties. %i\n", tocEntry.fileProperties);
-    DPRINTF("      dateStamp...... %s\n", tocEntry.dateStamp);
-    DPRINTF("      filename....... %s\n", tocEntry.filename);
+    M_DEBUG("CDFS: fio_open TocEntry info\n");
+    M_DEBUG("      TocEntry....... %p\n", &tocEntry);
+    M_DEBUG("      fileLBA........ %i\n", tocEntry.fileLBA);
+    M_DEBUG("      fileSize....... %i\n", tocEntry.fileSize);
+    M_DEBUG("      fileProperties. %i\n", tocEntry.fileProperties);
+    M_DEBUG("      dateStamp...... %s\n", tocEntry.dateStamp);
+    M_DEBUG("      filename....... %s\n", tocEntry.filename);
 
     // set up a new file descriptor
     for (j = 0; j < MAX_FILES_OPENED; j++) {
@@ -122,8 +122,8 @@ static int fio_close(iop_file_t *f)
 {
     int i;
 
-    DPRINTF("CDFS: fio_close called.\n");
-    DPRINTF("      kernel fd.. %p\n\n", f);
+    M_DEBUG("CDFS: fio_close called.\n");
+    M_DEBUG("      kernel fd.. %p\n\n", f);
 
     i = (int)f->privdata;
 
@@ -148,10 +148,10 @@ static int fio_read(iop_file_t *f, void *buffer, int size)
     int read = 0;
     static u8 local_buffer[9 * 2048];
 
-    DPRINTF("CDFS: fio_read called\n\n");
-    DPRINTF("      kernel_fd... %p\n", f);
-    DPRINTF("      buffer...... 0x%X\n", (int)buffer);
-    DPRINTF("      size........ %d\n\n", size);
+    M_DEBUG("CDFS: fio_read called\n\n");
+    M_DEBUG("      kernel_fd... %p\n", f);
+    M_DEBUG("      buffer...... 0x%X\n", (int)buffer);
+    M_DEBUG("      size........ %d\n\n", size);
 
     i = (int)f->privdata;
 
@@ -182,7 +182,7 @@ static int fio_read(iop_file_t *f, void *buffer, int size)
     num_sectors = (off_sector + size);
     num_sectors = (num_sectors >> 11) + ((num_sectors & 2047) != 0);
 
-    DPRINTF("fio_read: read sectors %d to %d\n", start_sector, start_sector + num_sectors);
+    M_DEBUG("fio_read: read sectors %d to %d\n", start_sector, start_sector + num_sectors);
 
     // Skip a Sector for equal (use the last sector in buffer)
     if (start_sector == lastsector) {
@@ -197,9 +197,9 @@ static int fio_read(iop_file_t *f, void *buffer, int size)
 
     if (read == 0 || (read == 1 && num_sectors > 1)) {
         if (!cdfs_readSect(start_sector + read, num_sectors - read, local_buffer + ((read) << 11))) {
-            DPRINTF("Couldn't Read from file for some reason\n");
+            M_DEBUG("Couldn't Read from file for some reason\n");
         }
-        
+
         last_bk = num_sectors - 1;
     }
 
@@ -223,15 +223,15 @@ static int fio_lseek(iop_file_t *f, int offset, int whence)
 {
     int i;
 
-    DPRINTF("CDFS: fio_lseek called.\n");
-    DPRINTF("      kernel_fd... %p\n", f);
-    DPRINTF("      offset...... %d\n", offset);
-    DPRINTF("      whence...... %d\n\n", whence);
+    M_DEBUG("CDFS: fio_lseek called.\n");
+    M_DEBUG("      kernel_fd... %p\n", f);
+    M_DEBUG("      offset...... %d\n", offset);
+    M_DEBUG("      whence...... %d\n\n", whence);
 
     i = (int) f->privdata;
 
     if (i >= 16) {
-        DPRINTF("fio_lseek: ERROR: File does not appear to be open!\n");
+        M_DEBUG("fio_lseek: ERROR: File does not appear to be open!\n");
         return -1;
     }
 
@@ -264,11 +264,11 @@ static int fio_lseek(iop_file_t *f, int offset, int whence)
 static int fio_openDir(iop_file_t *f, const char *path) {
    int j;
 
-    DPRINTF("CDFS: fio_openDir called.\n");
-    DPRINTF("      kernel_fd.. %p\n", f);
-    DPRINTF("      name....... %s\n", f->device->name);
-    DPRINTF("      mode....... %d\n\n", f->mode);
-    DPRINTF("      path....... %s\n\n", path);
+    M_DEBUG("CDFS: fio_openDir called.\n");
+    M_DEBUG("      kernel_fd.. %p\n", f);
+    M_DEBUG("      name....... %s\n", f->device->name);
+    M_DEBUG("      mode....... %d\n\n", f->mode);
+    M_DEBUG("      path....... %s\n\n", path);
 
     // set up a new file descriptor
     for (j = 0; j < MAX_FOLDERS_OPENED; j++) {
@@ -289,33 +289,33 @@ static int fio_openDir(iop_file_t *f, const char *path) {
     fod_table[j].fd = f;
     fod_used[j] = 1;
 
-    DPRINTF("ITEMS %i\n\n", fod_table[j].files);
+    M_DEBUG("ITEMS %i\n\n", fod_table[j].files);
 #ifdef DEBUG
     int index = 0;
     for (index=0; index < fod_table[j].files; index++) {
         struct TocEntry tocEntry = fod_table[j].entries[index];
-        
-        DPRINTF("CDFS: fio_openDir index=%d TocEntry info\n", index);
-        DPRINTF("      TocEntry....... %p\n", &tocEntry);
-        DPRINTF("      fileLBA........ %i\n", tocEntry.fileLBA);
-        DPRINTF("      fileSize....... %i\n", tocEntry.fileSize);
-        DPRINTF("      fileProperties. %i\n", tocEntry.fileProperties);
-        DPRINTF("      dateStamp....... %s\n", tocEntry.dateStamp);
-        DPRINTF("      filename....... %s\n", tocEntry.filename);
+
+        M_DEBUG("CDFS: fio_openDir index=%d TocEntry info\n", index);
+        M_DEBUG("      TocEntry....... %p\n", &tocEntry);
+        M_DEBUG("      fileLBA........ %i\n", tocEntry.fileLBA);
+        M_DEBUG("      fileSize....... %i\n", tocEntry.fileSize);
+        M_DEBUG("      fileProperties. %i\n", tocEntry.fileProperties);
+        M_DEBUG("      dateStamp....... %s\n", tocEntry.dateStamp);
+        M_DEBUG("      filename....... %s\n", tocEntry.filename);
     }
 #endif
-   
+
     f->privdata = (void *)j;
 
     return j;
 }
 
-static int fio_closeDir(iop_file_t *fd) 
+static int fio_closeDir(iop_file_t *fd)
 {
     int i;
 
-    DPRINTF("CDFS: fio_closeDir called.\n");
-    DPRINTF("      kernel_fd.. %p\n", fd);
+    M_DEBUG("CDFS: fio_closeDir called.\n");
+    M_DEBUG("      kernel_fd.. %p\n", fd);
 
     i = (int)fd->privdata;
 
@@ -334,9 +334,9 @@ static int fio_dread(iop_file_t *fd, io_dirent_t *dirent)
     int filesIndex;
     struct TocEntry entry;
 
-    DPRINTF("CDFS: fio_dread called.\n");
-    DPRINTF("      kernel_fd.. %p\n", fd);
-    DPRINTF("      mode....... %p\n\n", dirent);
+    M_DEBUG("CDFS: fio_dread called.\n");
+    M_DEBUG("      kernel_fd.. %p\n", fd);
+    M_DEBUG("      mode....... %p\n\n", dirent);
 
     i = (int)fd->privdata;
 
@@ -353,13 +353,13 @@ static int fio_dread(iop_file_t *fd, io_dirent_t *dirent)
 
     entry = fod_table[i].entries[filesIndex];
 
-    DPRINTF("fio_dread: fod_table index=%i, fileIndex=%i\n\n", i, filesIndex);
-    DPRINTF("fio_dread: entries=%i\n\n", fod_table[i].files);
-    DPRINTF("fio_dread: reading entry\n\n");
-    DPRINTF("      entry.. %p\n", entry);
-    DPRINTF("      filesize....... %i\n\n", entry.fileSize);
-    DPRINTF("      filename....... %s\n\n", entry.filename);
-    DPRINTF("      fileproperties.. %i\n\n", entry.fileProperties);
+    M_DEBUG("fio_dread: fod_table index=%i, fileIndex=%i\n\n", i, filesIndex);
+    M_DEBUG("fio_dread: entries=%i\n\n", fod_table[i].files);
+    M_DEBUG("fio_dread: reading entry\n\n");
+    M_DEBUG("      entry.. %p\n", entry);
+    M_DEBUG("      filesize....... %i\n\n", entry.fileSize);
+    M_DEBUG("      filename....... %s\n\n", entry.filename);
+    M_DEBUG("      fileproperties.. %i\n\n", entry.fileProperties);
 
     dirent->stat.mode = (entry.fileProperties == CDFS_FILEPROPERTY_DIR) ? FIO_SO_IFDIR : FIO_SO_IFREG;
     dirent->stat.attr = entry.fileProperties;
@@ -369,26 +369,26 @@ static int fio_dread(iop_file_t *fd, io_dirent_t *dirent)
     memcpy(dirent->stat.mtime, entry.dateStamp, 8);
     strncpy(dirent->name, entry.filename, 128);
     dirent->unknown = 0;
-    
+
     fod_table[i].filesIndex++;
     return fod_table[i].filesIndex;
 }
 
-static int fio_getstat(iop_file_t *fd, const char *name, io_stat_t *stat) 
+static int fio_getstat(iop_file_t *fd, const char *name, io_stat_t *stat)
 {
     struct TocEntry entry;
     int ret = -1;
 
-    DPRINTF("CDFS: fio_getstat called.\n");
-    DPRINTF("      kernel_fd.. %p\n", fd);
-    DPRINTF("      name....... %s\n\n", name);
+    M_DEBUG("CDFS: fio_getstat called.\n");
+    M_DEBUG("      kernel_fd.. %p\n", fd);
+    M_DEBUG("      name....... %s\n\n", name);
 
     ret = cdfs_findfile(name, &entry);
 
-    DPRINTF("      entry.. %p\n", entry);
-    DPRINTF("      filesize....... %i\n\n", entry.fileSize);
-    DPRINTF("      filename....... %s\n\n", entry.filename);
-    DPRINTF("      fileproperties.. %i\n\n", entry.fileProperties);
+    M_DEBUG("      entry.. %p\n", entry);
+    M_DEBUG("      filesize....... %i\n\n", entry.fileSize);
+    M_DEBUG("      filename....... %s\n\n", entry.filename);
+    M_DEBUG("      fileproperties.. %i\n\n", entry.fileProperties);
 
     stat->mode = (entry.fileProperties == CDFS_FILEPROPERTY_DIR) ? FIO_SO_IFDIR : FIO_SO_IFREG;
     stat->attr = entry.fileProperties;
@@ -401,7 +401,7 @@ static int fio_getstat(iop_file_t *fd, const char *name, io_stat_t *stat)
 }
 
 static int cdfs_dummy() {
-    DPRINTF("CDFS: dummy function called\n\n");
+    M_DEBUG("CDFS: dummy function called\n\n");
     return -5;
 }
 

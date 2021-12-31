@@ -15,9 +15,9 @@
 #include "lwip/sockets.h"
 
 #ifdef DEBUG
-#define	dbgprintf(args...)	printf(args)
+#define	M_DEBUG(args...)	printf(args)
 #else
-#define	dbgprintf(args...)
+#define	M_DEBUG(args...)
 #endif
 
 //This structure is also found in common/tcpip.h, but that header file cannot be imported because it will conflict with the full LWIP header files.

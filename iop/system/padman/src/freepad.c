@@ -78,7 +78,7 @@ static int ParseParams(int argc, char *argv[])
 					}
 
 					if(new_thpri_lo < new_thpri_hi)
-						M_PRINTF("high prio thread must be higher than low prio thread\n");
+						M_DEBUG("high prio thread must be higher than low prio thread\n");
 				}
 				else
 				{
@@ -102,23 +102,23 @@ int _start(int argc, char *argv[])
 	thpri_hi = PADMAN_THPRI_HI;
 	thpri_lo = PADMAN_THPRI_LO;
 
-	D_PRINTF("Debug Version\n");
+	M_DEBUG("Debug Version\n");
 
 	if(argc >= 2)
 		ParseParams(argc, argv);
 
 	if(thpri_hi != PADMAN_THPRI_HI || thpri_lo != PADMAN_THPRI_LO)
-		M_PRINTF("thread priority: high=%d, low=%d\n", thpri_hi, thpri_lo);
+		M_DEBUG("thread priority: high=%d, low=%d\n", thpri_hi, thpri_lo);
 
 	if(RegisterLibraryEntries(&_exp_padman) != 0)
 	{
-		M_PRINTF("RegisterLibraryEntries failed.\n");
+		M_DEBUG("RegisterLibraryEntries failed.\n");
 		return MODULE_NO_RESIDENT_END;
 	}
 
 	if(InitRpcServers(thpri_lo) == 0)
 	{
-		M_PRINTF("Failed to init RPC servers.\n");
+		M_DEBUG("Failed to init RPC servers.\n");
 		return MODULE_NO_RESIDENT_END;
 	}
 

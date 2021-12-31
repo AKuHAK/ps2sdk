@@ -6,6 +6,8 @@
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
 
+# IOP_CFLAGS += -DDEBUG
+
 IOP_OBJS = fakehost.o nprintf.o imports.o
 
 include $(PS2SDKSRC)/Defs.make

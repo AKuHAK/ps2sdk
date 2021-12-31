@@ -212,7 +212,7 @@ static void* RpcServer(int fno, void *buffer, int length)
 		case PAD_RPCCMD_GET_SLOTMAX:	return RpcPadGetSlotMax(data);
 
 		default:
-			M_PRINTF("invalid function code (%03x)\n", (int)data[0]);
+			M_DEBUG("invalid function code (%03x)\n", (int)data[0]);
 		break;
 	}
 
@@ -221,7 +221,7 @@ static void* RpcServer(int fno, void *buffer, int length)
 
 static void* RpcServerExt(int fno, void *buffer, int length)
 {
-	M_PRINTF("Extend Service: This service is not supported.\n");
+	M_DEBUG("Extend Service: This service is not supported.\n");
 
 	return buffer;
 }
@@ -231,7 +231,7 @@ static void RpcThread(void *arg)
 {
 	if( sceSifCheckInit() == 0)
 	{
-		M_PRINTF("Sif not initialized.\n");
+		M_DEBUG("Sif not initialized.\n");
 		sceSifInit();
 	}
 
@@ -246,7 +246,7 @@ static void RpcThreadExt(void *arg)
 {
 	if( sceSifCheckInit() == 0)
 	{
-		M_PRINTF("Sif not initialized.\n");
+		M_DEBUG("Sif not initialized.\n");
 		sceSifInit();
 	}
 

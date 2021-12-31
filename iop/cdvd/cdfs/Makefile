@@ -6,7 +6,7 @@
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
 
-# IOP_CFLAGS += -DSIO_DEBUG -DDEBUG
+# IOP_CFLAGS += -DDEBUG
 
 IOP_OBJS = main.o cdfs_iop.o imports.o
 

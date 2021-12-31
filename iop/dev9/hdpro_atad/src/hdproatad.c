@@ -27,7 +27,7 @@
 #define MODNAME "hdcombo_driver"
 IRX_ID(MODNAME, 1, 1);
 
-#define M_PRINTF(format, args...)	\
+#define M_DEBUG(format, args...)	\
 	printf(MODNAME ": " format, ## args)
 
 #define BANNER "ATA device driver for HD Pro Kit %s\n"
@@ -216,24 +216,24 @@ int _start(int argc, char *argv[])
 	printf(BANNER, VERSION);
 
 	if (!hdpro_io_start()) {
-		M_PRINTF("Failed to detect HD Pro, exiting.\n");
+		M_DEBUG("Failed to detect HD Pro, exiting.\n");
 		goto out;
 	}
 
 	hdpro_io_finish();
 
 	if ((ata_evflg = ata_create_event_flag()) < 0) {
-		M_PRINTF("Couldn't create event flag, exiting.\n");
+		M_DEBUG("Couldn't create event flag, exiting.\n");
 		goto out;
 	}
 
 	if ((res = RegisterLibraryEntries(&_exp_atad)) != 0) {
-		M_PRINTF("Library is already registered, exiting.\n");
+		M_DEBUG("Library is already registered, exiting.\n");
 		goto out;
 	}
 
 	res = MODULE_RESIDENT_END;
-	M_PRINTF("Driver loaded.\n");
+	M_DEBUG("Driver loaded.\n");
 
 out:
 	return res;
@@ -302,7 +302,7 @@ static int gen_ata_wait_busy(int bits)
 	}
 
 	res = ATA_RES_ERR_TIMEOUT;
-	M_PRINTF("Timeout while waiting on busy (0x%02x).\n", bits);
+	M_DEBUG("Timeout while waiting on busy (0x%02x).\n", bits);
 
 out:
 	hdpro_io_start();
@@ -494,7 +494,7 @@ int ata_io_start(void *buf, u32 blkcount, u16 feature, u16 nsector, u16 sector, 
 			case ATA_C_IDENTIFY_PACKET_DEVICE:
 				break;
 			default:
-				M_PRINTF("Error: Device %d is not ready.\n", device);
+				M_DEBUG("Error: Device %d is not ready.\n", device);
 				return ATA_RES_ERR_NOTREADY;
 		}
 	}
@@ -563,7 +563,7 @@ static int ata_pio_transfer(ata_cmd_state_t *cmd_state)
 	u16 status = hdpro_io_read(ATAreg_STATUS_RD);
 
 	if (status & ATA_STAT_ERR) {
-		M_PRINTF("Error: Command error: status 0x%02x, error 0x%02x.\n", status, ata_get_error());
+		M_DEBUG("Error: Command error: status 0x%02x, error 0x%02x.\n", status, ata_get_error());
 		return ATA_RES_ERR_IO;
 	}
 
@@ -772,7 +772,7 @@ static int ata_init_devices(ata_devinfo_t *devinfo)
 
 	ata_device_probe(&devinfo[0]);
 	if (!devinfo[0].exists) {
-		M_PRINTF("Error: Unable to detect HDD 0.\n");
+		M_DEBUG("Error: Unable to detect HDD 0.\n");
 		devinfo[1].exists = 0;
 		return ATA_RES_ERR_NODEV;	//Returns 0 in v1.04.
 	}
@@ -873,7 +873,7 @@ int ata_io_finish(void)
 			if(PollEventFlag(ata_evflg, ATA_EV_TIMEOUT | ATA_EV_COMPLETE, WEF_CLEAR|WEF_OR, &bits) == 0)
 			{
 				if (bits & ATA_EV_TIMEOUT) {	/* Timeout.  */
-					M_PRINTF("Error: ATA timeout on a non-data command.\n");
+					M_DEBUG("Error: ATA timeout on a non-data command.\n");
 					return ATA_RES_ERR_TIMEOUT;
 				}
 			}
@@ -904,7 +904,7 @@ int ata_io_finish(void)
 	if (hdpro_io_read(ATAreg_STATUS_RD) & ATA_STAT_BUSY)
 		res = ata_wait_busy();
 	if ((stat = hdpro_io_read(ATAreg_STATUS_RD)) & ATA_STAT_ERR) {
-		M_PRINTF("Error: Command error: status 0x%02x, error 0x%02x.\n", stat, ata_get_error());
+		M_DEBUG("Error: Command error: status 0x%02x, error 0x%02x.\n", stat, ata_get_error());
 		res = ATA_RES_ERR_IO;
 	}
 

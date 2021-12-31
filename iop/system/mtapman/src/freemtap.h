@@ -13,7 +13,7 @@
 #define _FREEMTAP_H_
 
 #define MODNAME "freemtap"
-#define M_PRINTF(format, args...)	printf(MODNAME ": " format, ## args)
+#define M_DEBUG(format, args...)	printf(MODNAME ": " format, ## args)
 
 // rpcservers.c
 s32 InitRpcServers();

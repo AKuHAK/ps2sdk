@@ -253,8 +253,8 @@ static void iLinkIntrCBHandlingThread(void* arg)
         if ((nNodes = iLinkGetNodeCount()) < 0)
             M_DEBUG("Critical error: Failure getting the number of nodes!\n"); /* Error. */
 
-        M_PRINTF("BUS RESET DETECTED. Nodes: %d\n", nNodes);
-        M_PRINTF("Local Node: 0x%08x.\n", iLinkGetLocalNodeID());
+        M_DEBUG("BUS RESET DETECTED. Nodes: %d\n", nNodes);
+        M_DEBUG("Local Node: 0x%08x.\n", iLinkGetLocalNodeID());
 
         //DelayThread(500000); /* Give the devices on the bus some time to initialize themselves (The SBP-2 standard states that a maximum of 5 seconds may be given). */
 
@@ -266,7 +266,7 @@ static void iLinkIntrCBHandlingThread(void* arg)
                 break;
             }
 
-            M_PRINTF("Attempting to initialize unit %d...\n", i);
+            M_DEBUG("Attempting to initialize unit %d...\n", i);
 
             /* 16-bit node ID = BUS NUMBER (Upper 10 bits) followed by the NODE ID (Lower 6 bits). */
             if ((nodeID = iLinkFindUnit(i, 0x0609e, 0x010483)) < 0) {
@@ -274,11 +274,11 @@ static void iLinkIntrCBHandlingThread(void* arg)
                 continue;
             }
 
-            M_PRINTF("Detected SBP-2 device.\n");
+            M_DEBUG("Detected SBP-2 device.\n");
 
             SBP2Devices[targetDeviceID].InitiatorNodeID = iLinkGetLocalNodeID();
 
-            M_PRINTF("Local Node: 0x%08x.\n", SBP2Devices[targetDeviceID].InitiatorNodeID);
+            M_DEBUG("Local Node: 0x%08x.\n", SBP2Devices[targetDeviceID].InitiatorNodeID);
 
 #if 0
 		if(SBP2Devices[targetDeviceID].IsConnected){ /* Already connected to the device. */
@@ -308,11 +308,11 @@ static void iLinkIntrCBHandlingThread(void* arg)
             SBP2Devices[targetDeviceID].trContext = iLinkTrAlloc(nodeID, iLinkGetNodeMaxSpeed(nodeID));
 
             if (SBP2Devices[targetDeviceID].trContext >= 0) {
-                M_PRINTF("Connected device as node 0x%08x.\n", SBP2Devices[targetDeviceID].nodeID);
-                M_PRINTF("Generation number: %d.\n", iLinkGetGenerationNumber());
+                M_DEBUG("Connected device as node 0x%08x.\n", SBP2Devices[targetDeviceID].nodeID);
+                M_DEBUG("Generation number: %d.\n", iLinkGetGenerationNumber());
 
                 SBP2Devices[targetDeviceID].speed = iLinkGetNodeTrSpeed(SBP2Devices[targetDeviceID].trContext);
-                M_PRINTF("Current speed: %d.\n", SBP2Devices[targetDeviceID].speed);
+                M_DEBUG("Current speed: %d.\n", SBP2Devices[targetDeviceID].speed);
 
                 SBP2Devices[targetDeviceID].max_payload = PayloadSizeLookupTable[SBP2Devices[targetDeviceID].speed];
 
@@ -591,7 +591,7 @@ static int ProcessStatus(void)
     result = (((status == 0) || (status == 0x0B)) && (resp == 0) && (!dead) && (len == 1)) ? 0 : -sense;
 
     if (result < 0) {
-        M_PRINTF("result: 0x%08lx; status: 0x%02x; RESP: 0x%02x; Dead: %u; len: 0x%02x; sense: 0x%02x.\n", statusFIFO_result, status, resp, dead, len, sense);
+        M_DEBUG("result: 0x%08lx; status: 0x%02x; RESP: 0x%02x; Dead: %u; len: 0x%02x; sense: 0x%02x.\n", statusFIFO_result, status, resp, dead, len, sense);
     }
 
     return result;

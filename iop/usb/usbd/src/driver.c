@@ -158,11 +158,11 @@ int doUnregisterDriver(sceUsbdLddOps *drv) {
 
 void connectNewDevice(Device *dev) {
 	sceUsbdLddOps *drv;
-	dbg_printf("searching driver for dev %d, FA %02X\n", dev->id, dev->functionAddress);
+	M_DEBUG("searching driver for dev %d, FA %02X\n", dev->id, dev->functionAddress);
 	for (drv = drvListStart; drv != NULL; drv = drv->next)
 		if (callUsbDriverFunc(drv->probe, dev->id, drv->gp) != 0) {
 			dev->devDriver = drv;
-			dbg_printf("Driver found (%s)\n", drv->name);
+			M_DEBUG("Driver found (%s)\n", drv->name);
 			callUsbDriverFunc(drv->connect, dev->id, drv->gp);
 			return;
 		}
@@ -173,13 +173,13 @@ void connectNewDevice(Device *dev) {
 
 		if(callUsbDriverFunc(drv->probe, dev->id, drv->gp) != 0) {
 			dev->devDriver = drv;
-			dbg_printf("(autoloader) Driver found (%s)\n", drv->name);
+			M_DEBUG("(autoloader) Driver found (%s)\n", drv->name);
 			callUsbDriverFunc(drv->connect, dev->id, drv->gp);
 			return;
 		}
 	}
 
-	dbg_printf("no driver found\n");
+	M_DEBUG("no driver found\n");
 }
 
 void signalCallbackThreadFunc(IoRequest *req) {

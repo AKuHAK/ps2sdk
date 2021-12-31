@@ -5,7 +5,7 @@
 
 //#define DEBUG  //comment out this line when not debugging
 #include "module_debug.h"
-#define SPISD_LOG M_PRINTF
+#define SPISD_LOG M_DEBUG
 
 /* Private types -------------------------------------------------------------*/
 typedef enum card_type_e {

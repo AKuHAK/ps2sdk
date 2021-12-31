@@ -67,7 +67,7 @@ void freeTd(HcTD *argTd) {
 Device *attachChildDevice(Device *parent, u32 portNum) {
 	Device *newDev = memPool.freeDeviceListStart;
 	if (!newDev) {
-		dbg_printf("Ran out of device handles\n");
+		M_DEBUG("Ran out of device handles\n");
 		return NULL;
 	}
 
@@ -216,7 +216,7 @@ IoRequest *allocIoRequest(void) {
 			memPool.freeIoReqList = res->next;
 		res->prev = res->next = NULL;
 	} else
-		dbg_printf("ran out of IoReqs\n");
+		M_DEBUG("ran out of IoReqs\n");
 	return res;
 }
 

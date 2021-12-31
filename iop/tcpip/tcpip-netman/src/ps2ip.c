@@ -152,7 +152,7 @@ ps2ip_setconfig(const t_ip_info* pInfo)
 
 static void InitDone(void* pvArg)
 {
-	dbgprintf("InitDone: TCPIP initialized\n");
+	M_DEBUG("InitDone: TCPIP initialized\n");
 	sys_sem_signal((sys_sem_t*)pvArg);
 }
 
@@ -391,25 +391,25 @@ static inline int InitializeLWIP(void){
 	sys_sem_t	Sema;
 	int		result;
 
-	dbgprintf("PS2IP: Module Loaded.\n");
+	M_DEBUG("PS2IP: Module Loaded.\n");
 
 	if ((result = RegisterLibraryEntries(&_exp_ps2ip))!=0)
 	{
 		printf("PS2IP: RegisterLibraryEntries returned: %d\n", result);
 	} else {
 		sys_sem_new(&Sema, 0);
-		dbgprintf("PS2IP: Calling tcpip_init\n");
+		M_DEBUG("PS2IP: Calling tcpip_init\n");
 		tcpip_init(InitDone,&Sema);
 
 		sys_arch_sem_wait(&Sema, 0);
 		sys_sem_free(&Sema);
 
-		dbgprintf("PS2IP: tcpip_init called\n");
+		M_DEBUG("PS2IP: tcpip_init called\n");
 #if NOSYS
 		InitTimer();
 #endif
 
-		dbgprintf("PS2IP: System Initialised\n");
+		M_DEBUG("PS2IP: System Initialised\n");
 
 		result = 0;
 	}
@@ -449,7 +449,7 @@ int _start(int argc, char *argv[]){
 	//Parse IP address arguments.
 	if(argc>=4)
 	{
-		dbgprintf("SMAP: %s %s %s\n", argv[1],argv[2],argv[3]);
+		M_DEBUG("SMAP: %s %s %s\n", argv[1],argv[2],argv[3]);
 		IP.addr=inet_addr(argv[1]);
 		NM.addr=inet_addr(argv[2]);
 		GW.addr=inet_addr(argv[3]);

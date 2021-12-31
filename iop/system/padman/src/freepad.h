@@ -16,13 +16,13 @@
 #include "types.h"
 
 #define MODNAME "freepad"
-#define M_PRINTF(format, args...)	printf(MODNAME ": " format, ## args)
+#define M_DEBUG(format, args...)	printf(MODNAME ": " format, ## args)
 #define M_KPRINTF(format, args...)	Kprintf(MODNAME ": " format, ## args)
 
 #ifdef DEBUG
-#define D_PRINTF(format, args...)	printf(MODNAME ": " format, ## args)
+#define M_DEBUG(format, args...)	printf(MODNAME ": " format, ## args)
 #else
-#define D_PRINTF(a...)		(void)0
+#define M_DEBUG(format, args...)
 #endif
 
 #define PADMAN_THPRI_LO	46

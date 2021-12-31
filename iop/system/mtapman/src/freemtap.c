@@ -143,7 +143,7 @@ s32 get_slot_number(u32 port, u32 retries)
 		if((slots == -2) || (slots >= 0)) return slots;
 
 		i++;
-		//M_PRINTF("get_slot_number retry %i.\n", (int)i);
+		//M_DEBUG("get_slot_number retry %i.\n", (int)i);
 	}
 
 	return -4;
@@ -391,13 +391,13 @@ s32 _start(char **argv, int argc)
 
 	if(RegisterLibraryEntries(&_exp_mtapman) != 0)
 	{
-		M_PRINTF("RegisterLibraryEntries failed.\n");
+		M_DEBUG("RegisterLibraryEntries failed.\n");
 		return 1;
 	}
 
 	if(InitRpcServers() == 0)
 	{
-		M_PRINTF("Failed to setup RPC Servers.\n");
+		M_DEBUG("Failed to setup RPC Servers.\n");
 		return 1;
 	}
 
@@ -408,7 +408,7 @@ s32 _start(char **argv, int argc)
 
 	if(event_flag < 0)
 	{
-		M_PRINTF("Could not create event flag (%i)\n.", (int)event_flag);
+		M_DEBUG("Could not create event flag (%i)\n.", (int)event_flag);
 		return 1;
 	}
 
@@ -421,7 +421,7 @@ s32 _start(char **argv, int argc)
 
 	if(threadid_main < 0)
 	{
-		M_PRINTF("Could not create thread (%i)\n.", (int)threadid_main);
+		M_DEBUG("Could not create thread (%i)\n.", (int)threadid_main);
 		return 1;
 	}
 
@@ -526,7 +526,7 @@ s32 mtapChangeSlot(u32 port, u32 slot)
 
 	if(state_open[port] == 0)
 	{
-		M_PRINTF("mtap manager doesn't work\n");
+		M_DEBUG("mtap manager doesn't work\n");
 		return -1;
 	}
 
@@ -543,12 +543,12 @@ s32 mtapChangeSlot(u32 port, u32 slot)
 
 	if(data[port] < 0)
 	{
-		M_PRINTF("Failed to change slot.\n");
+		M_DEBUG("Failed to change slot.\n");
 		return data[port];
 	}
 	else
 	{
-		M_PRINTF("Change slot complete.\n");
+		M_DEBUG("Change slot complete.\n");
 		return 1;
 	}
 }

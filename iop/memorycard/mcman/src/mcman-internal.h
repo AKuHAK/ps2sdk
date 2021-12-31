@@ -29,21 +29,26 @@
 #endif
 #include "sio2man_imports.h"
 
-#ifdef SIO_DEBUG
-	#include <sior.h>
-	#define DEBUG
-	#define DPRINTF(args...)	sio_printf(args)
-#else
-	#define DPRINTF(args...)	printf(args)
-#endif
-
 #ifndef BUILDING_XFROMMAN
 #define MODNAME "mcman_cex"
-#endif
-#ifdef BUILDING_XFROMMAN
+#else
 #define MODNAME "xfromman"
 #endif
 #define MODVER  0x20b
+
+#ifdef SIO_DEBUG
+	#include <sior.h>
+	#define DEBUG
+	#define M_DEBUG(format, args...)	sio_printf(MODNAME ": " format, ##args)
+#else
+	#define M_DEBUG(format, args...)	printf(MODNAME ": " format, ##args)
+#endif
+
+#ifdef DEBUG
+	#define M_DEBUG M_DEBUG
+#else
+	#define M_DEBUG(format, args...)
+#endif
 
 typedef struct _MCCacheDir {
 	int  cluster;   // 0

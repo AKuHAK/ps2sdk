@@ -16,17 +16,17 @@ extern int usb_mass_init(void);
 
 int _start(int argc, char* argv[])
 {
-    M_PRINTF("USB MASS Driver v%d.%d\n", MAJOR_VER, MINOR_VER);
+    M_DEBUG("USB MASS Driver v%d.%d\n", MAJOR_VER, MINOR_VER);
 
     // initialize the SCSI driver
     if (scsi_init() != 0) {
-        M_PRINTF("ERROR: initializing SCSI driver!\n");
+        M_DEBUG("ERROR: initializing SCSI driver!\n");
         return MODULE_NO_RESIDENT_END;
     }
 
     // initialize the USB driver
     if (usb_mass_init() != 0) {
-        M_PRINTF("ERROR: initializing USB driver!\n");
+        M_DEBUG("ERROR: initializing USB driver!\n");
         return MODULE_NO_RESIDENT_END;
     }
 

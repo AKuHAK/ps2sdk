@@ -22,7 +22,7 @@
 
 #include "log.h"
 
-#define DPRINTF(format, args...) printf("%s: " format, __FUNCTION__ , ## args)
+#define M_DEBUG(format, args...) printf("%s: " format, __FUNCTION__ , ## args)
 
 #define FLUSH_COUNT_MAX	4
 #define DMA_MAX		1024

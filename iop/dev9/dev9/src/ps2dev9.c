@@ -35,7 +35,7 @@
 // This is version from last SDK 3.1.0
 IRX_ID(MODNAME, 2, 8);
 
-#define M_PRINTF(format, args...) \
+#define M_DEBUG(format, args...) \
     printf(MODNAME ": " format, ##args)
 
 #define VERSION "1.0"
@@ -226,14 +226,14 @@ int _start(int argc, char **argv)
     dev9hw = DEV9_REG(DEV9_R_REV) & 0xf0;
     if (dev9hw == 0x20) { /* CXD9566 (PCMCIA) */
         dev9type = DEV9_TYPE_PCMCIA;
-        M_PRINTF("CXD9566 detected.\n");
+        M_DEBUG("CXD9566 detected.\n");
         res = pcmcia_init(semaAttrGlobal);
     } else if (dev9hw == 0x30) { /* CXD9611 (Expansion Bay) */
         dev9type = DEV9_TYPE_EXPBAY;
-        M_PRINTF("CXD9611 detected.\n");
+        M_DEBUG("CXD9611 detected.\n");
         res = expbay_init(semaAttrGlobal);
     } else {
-        M_PRINTF("unknown dev9 hardware.\n");
+        M_DEBUG("unknown dev9 hardware.\n");
         res = MODULE_NO_RESIDENT_END;
     }
 
@@ -551,7 +551,7 @@ int dev9GetEEPROM(u16 *buf)
 // The anode has a 10kohm pull-up to Vcc, and is connected to the base of an PNP transistor,
 // with collector grounded and emitter, connecting through a 240ohm resistor to the ACS_LED
 // pin (90) of the Expansion Bay connector. It connects to the cathode of the HDD Activity LED
-// in the PS2, the anode of which connects through 180ohm resistor to +5V.  
+// in the PS2, the anode of which connects through 180ohm resistor to +5V.
 
 // The specific LED part used is the Citizen CITILED CL-200TLY-C, which has a "Lemon Yellow" color.
 
@@ -845,7 +845,7 @@ static int speed_device_init(void)
     for (i = 0; i < 8; i++) {
 #endif
         if (dev9_device_probe() < 0) {
-            M_PRINTF("No device.\n");
+            M_DEBUG("No device.\n");
             return -1;
         }
 
@@ -854,10 +854,10 @@ static int speed_device_init(void)
         /* Locate the SPEED Lite chip and get the bus ready for the
            PCMCIA device.  */
         if ((res = dev9_card_find_manfid(0xf15300)))
-            M_PRINTF("SPEED Lite not found.\n");
+            M_DEBUG("SPEED Lite not found.\n");
 
         if (!res && (res = dev9_ssbus_mode(5)))
-            M_PRINTF("Unable to change SSBUS mode.\n");
+            M_DEBUG("Unable to change SSBUS mode.\n");
 
         if (res) {
             dev9Shutdown();
@@ -874,7 +874,7 @@ static int speed_device_init(void)
     }
 
     if (res) {
-        M_PRINTF("SMAP initialization failed: %d\n", res);
+        M_DEBUG("SMAP initialization failed: %d\n", res);
         eeprom_data[0] = -1;
     }
 #endif
@@ -887,7 +887,7 @@ static int speed_device_init(void)
     else if (spdrev < 9 || (spdrev < 16 || spdrev > 17))
         idx = 0; /* Unknown revision */
 
-    M_PRINTF("SPEED chip '%s', revision %0x\n", spdnames[idx], spdrev);
+    M_DEBUG("SPEED chip '%s', revision %0x\n", spdnames[idx], spdrev);
     return 0;
 }
 
@@ -1008,7 +1008,7 @@ static int pcmcia_device_probe(void)
     pcic_cardtype = pcic_get_cardtype();
     voltage = (pcic_voltage == PC_CARD_VOLTAGE_5V ? 5 : (pcic_voltage == PC_CARD_VOLTAGE_3V ? 3 : 0));
 
-    M_PRINTF("%s PCMCIA card detected. Vcc = %dV\n",
+    M_DEBUG("%s PCMCIA card detected. Vcc = %dV\n",
              pcic_ct_names[pcic_cardtype], voltage);
 
     if (pcic_voltage == PC_CARD_VOLTAGE_04h || pcic_cardtype != PC_CARD_TYPE_PCMCIA)
@@ -1082,17 +1082,17 @@ static int card_find_manfid(u32 manfid)
                     SPD_REG8(spdaddr + 4);
             if (manfid == tuple)
                 return 0;
-            M_PRINTF("MANFID 0x%08lx doesn't match expected 0x%08lx\n",
+            M_DEBUG("MANFID 0x%08lx doesn't match expected 0x%08lx\n",
                      tuple, manfid);
             return -1;
         }
         spdaddr = next;
     }
 
-    M_PRINTF("MANFID 0x%08lx not found.\n", manfid);
+    M_DEBUG("MANFID 0x%08lx not found.\n", manfid);
     return -1;
 error:
-    M_PRINTF("Invalid tuples at offset 0x%08lx.\n", spdaddr - SPD_REGBASE);
+    M_DEBUG("Invalid tuples at offset 0x%08lx.\n", spdaddr - SPD_REGBASE);
     return -1;
 }
 
@@ -1150,13 +1150,13 @@ static int pcmcia_init(int sema_attr)
     /* If we are a T10K, then we go through AIF.  */
     if ((mode = QueryBootMode(6)) != NULL) {
         if ((*(u16 *)mode & 0xfe) == 0x60) {
-            M_PRINTF("T10K detected.\n");
+            M_DEBUG("T10K detected.\n");
 
             if (aif_regs[AIF_IDENT] == 0xa1) {
                 aif_regs[AIF_INTEN] = AIF_INTR_PCMCIA;
                 using_aif = 1;
             } else {
-                M_PRINTF("AIF not detected.\n");
+                M_DEBUG("AIF not detected.\n");
                 return 1;
             }
         }
@@ -1196,7 +1196,7 @@ static int pcmcia_init(int sema_attr)
     if (RegisterLibraryEntries(&_exp_dev9) != 0)
         return 1;
 
-    M_PRINTF("CXD9566 (PCMCIA) driver start.\n");
+    M_DEBUG("CXD9566 (PCMCIA) driver start.\n");
     return 0;
 }
 
@@ -1277,6 +1277,6 @@ static int expbay_init(int sema_attr)
     if (RegisterLibraryEntries(&_exp_dev9) != 0)
         return 1;
 
-    M_PRINTF("CXD9611 (SSBUS Buffer) driver start.\n");
+    M_DEBUG("CXD9611 (SSBUS Buffer) driver start.\n");
     return 0;
 }

@@ -20,13 +20,13 @@ int _start(int argc, char* argv[])
     printf("Block Device Manager (BDM) v%d.%d\n", MAJOR_VER, MINOR_VER);
 
     if (RegisterLibraryEntries(&_exp_bdm) != 0) {
-        M_PRINTF("ERROR: Already registered!\n");
+        M_DEBUG("ERROR: Already registered!\n");
         return MODULE_NO_RESIDENT_END;
     }
 
     // initialize the block device manager
     if (bdm_init() < 0) {
-        M_PRINTF("ERROR: BDM init failed!\n");
+        M_DEBUG("ERROR: BDM init failed!\n");
         return MODULE_NO_RESIDENT_END;
     }
 

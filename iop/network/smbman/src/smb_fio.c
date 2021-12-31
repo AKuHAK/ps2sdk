@@ -475,7 +475,7 @@ int smb_remove(iop_file_t *f, const char *filename)
 
 	smb_io_lock();
 
-	DPRINTF("smb_remove: filename=%s\n", filename);
+	M_DEBUG("smb_remove: filename=%s\n", filename);
 
 	r = smb_Delete(UID, TID, path);
 
@@ -758,7 +758,7 @@ int smb_rename(iop_file_t *f, const char *oldname, const char *newname)
 
 	smb_io_lock();
 
-	DPRINTF("smb_rename: oldname=%s newname=%s\n", oldname, newname);
+	M_DEBUG("smb_rename: oldname=%s newname=%s\n", oldname, newname);
 
 	r = smb_Rename(UID, TID, oldpath, newpath);
 

@@ -36,7 +36,7 @@
 #define MODNAME "devfs"
 IRX_ID(MODNAME, 1, 1);
 
-#define M_PRINTF(format, args...)       printf(MODNAME ": " format, ## args)
+#define M_DEBUG(format, args...)    printf(MODNAME ": " format, ## args)
 
 #define BANNER "DEVFS %s\n"
 #define VERSION "v0.1"
@@ -75,7 +75,7 @@ typedef struct _ioman_data
 {
    HDEV hDev;
    /** Pointer to the main device, set to NULL if device closed */
-   devfs_device_t *dev;  
+   devfs_device_t *dev;
    int subdev;
    u32 mode;
    devfs_loc_t loc;
@@ -377,7 +377,7 @@ int devfs_open(iop_file_t *file, const char *name, int mode, int unused)
    //printf("devfs_open file=%p name=%s mode=%d\n", file, name, mode);
    if(name == NULL)
    {
-      M_PRINTF("open: Name is NULL\n");
+      M_DEBUG("open: Name is NULL\n");
       return -1;
    }
 
@@ -398,7 +398,7 @@ int devfs_open(iop_file_t *file, const char *name, int mode, int unused)
 
       if(name_len == strlen(name)) /* If this is has not got a subnumber */
       {
-        M_PRINTF("open: No subdevice number in filename %s\n", name);
+        M_DEBUG("open: No subdevice number in filename %s\n", name);
         return -1;
       }
 
@@ -407,21 +407,21 @@ int devfs_open(iop_file_t *file, const char *name, int mode, int unused)
         || (subdev >= DEVFS_MAX_SUBDEVS))
          /* Invalid number */
       {
-         M_PRINTF("open: Invalid subdev number %d\n", subdev);
+         M_DEBUG("open: Invalid subdev number %d\n", subdev);
          return -1;
       }
 
       if(*endp)
       /* Extra charactes after filename */
       {
-         M_PRINTF("open: Invalid filename\n");
+         M_DEBUG("open: Invalid filename\n");
          return -1;
       }
 
       if(!dev->subdevs[subdev].valid)
       /* No subdev */
       {
-        M_PRINTF("open: No subdev registered\n");
+        M_DEBUG("open: No subdev registered\n");
         return -1;
       }
 
@@ -429,34 +429,34 @@ int devfs_open(iop_file_t *file, const char *name, int mode, int unused)
         && (dev->subdevs[subdev].open_refcount > 0))
       /* Already opened in exclusive mode */
       {
-         M_PRINTF("open: Exclusive subdevice already opened\n");
+         M_DEBUG("open: Exclusive subdevice already opened\n");
          return -1;
       }
 
       if(dev->subdevs[subdev].open_refcount == MAX_OPENFILES)
       {
-         M_PRINTF("open: Reached open file limit for sub device\n");
+         M_DEBUG("open: Reached open file limit for sub device\n");
       }
 
       /* Tried to open read but not allowed */
       if(((mode & O_RDONLY) || ((mode & O_RDWR) == O_RDWR))
         && !(dev->subdevs[subdev].mode & DEVFS_MODE_R))
       {
-         M_PRINTF("open: Read mode requested but not permitted\n");
+         M_DEBUG("open: Read mode requested but not permitted\n");
          return -1;
       }
 
       if(((mode & O_WRONLY) || ((mode & O_RDWR) == O_RDWR))
         && !(dev->subdevs[subdev].mode & DEVFS_MODE_W))
       {
-         M_PRINTF("open: Write mode requested but not permitted\n");
+         M_DEBUG("open: Write mode requested but not permitted\n");
          return -1;
       }
 
       file->privdata = AllocSysMemory(ALLOC_FIRST, sizeof(ioman_data_t), NULL);
       if(file->privdata == NULL)
       {
-         M_PRINTF("open: Allocation failure\n");
+         M_DEBUG("open: Allocation failure\n");
          return -1;
       }
 
@@ -475,17 +475,17 @@ int devfs_open(iop_file_t *file, const char *name, int mode, int unused)
       if(loop == MAX_OPENFILES)
       {
          FreeSysMemory(file->privdata);
-         M_PRINTF("open: Inconsistency between number of open files and available slot\n");
+         M_DEBUG("open: Inconsistency between number of open files and available slot\n");
          return -1;
       }
 
       dev->subdevs[subdev].open_files[loop] = file->privdata;
       dev->open_refcount++;
-      M_PRINTF("open: Opened device %s subdev %d\n", dev->node.name, subdev);
+      M_DEBUG("open: Opened device %s subdev %d\n", dev->node.name, subdev);
    }
    else
    {
-      M_PRINTF("open: Couldn't find the device\n");
+      M_DEBUG("open: Couldn't find the device\n");
       return -1;
    }
 
@@ -532,10 +532,10 @@ int devfs_close(iop_file_t *file)
          }
          else
          {
-            M_PRINTF("close: Could not find opened file\n");
+            M_DEBUG("close: Could not find opened file\n");
          }
 
-         M_PRINTF("close: Closing device %s subdev %d\n", dev->node.name, data->subdev);
+         M_DEBUG("close: Closing device %s subdev %d\n", dev->node.name, data->subdev);
          FreeSysMemory(data);
       }
       else
@@ -856,11 +856,11 @@ int devfs_dopen(iop_file_t *file, const char *name)
 
    if((name == NULL) && (name[0] != '\\') && (name[0] != '/'))
    {
-      M_PRINTF("dopen: Not a valid directory name\n");
+      M_DEBUG("dopen: Not a valid directory name\n");
       return -1;
    }
 
-   //M_PRINTF("dopen: file=%p name=%s\n", file, name);
+   //M_DEBUG("dopen: file=%p name=%s\n", file, name);
    for(dir_loop = 0; dir_loop < MAX_OPEN_DIRFILES; dir_loop++)
    {
       if(!open_dirfiles[dir_loop].opened)
@@ -883,7 +883,7 @@ int devfs_dclose(iop_file_t *file)
 {
    directory_file_t *dir;
 
-   //M_PRINTF("dclose: file=%p\n", file);
+   //M_DEBUG("dclose: file=%p\n", file);
    dir = (directory_file_t *) file->privdata;
 
    if((dir) && (dir->hDev == INVALID_HDEV))
@@ -904,7 +904,7 @@ int devfs_dread(iop_file_t *file, iox_dirent_t *buf)
    directory_file_t *dir;
    int ret = 0;
 
-   //M_PRINTF("dread: file=%p buf=%p\n", file, buf);
+   //M_DEBUG("dread: file=%p buf=%p\n", file, buf);
    dir = (directory_file_t *) file->privdata;
    if((dir) && (dir->hDev == INVALID_HDEV) && (buf))
    {
@@ -960,7 +960,7 @@ int devfs_getstat(iop_file_t *file, const char *name, iox_stat_t *stat)
 
       if(name_len == strlen(name)) /* If this is has not got a subnumber */
       {
-        M_PRINTF("getstat: No subdevice number in filename %s\n", name);
+        M_DEBUG("getstat: No subdevice number in filename %s\n", name);
         return -1;
       }
 
@@ -969,20 +969,20 @@ int devfs_getstat(iop_file_t *file, const char *name, iox_stat_t *stat)
         || (subdev >= DEVFS_MAX_SUBDEVS))
          /* Invalid number */
       {
-         M_PRINTF("getstat: Invalid subdev number %d\n", subdev);
+         M_DEBUG("getstat: Invalid subdev number %d\n", subdev);
          return -1;
       }
 
       if(*endp)
       /* Extra charactes after filename */
       {
-         M_PRINTF("getstat: Invalid filename\n");
+         M_DEBUG("getstat: Invalid filename\n");
          return -1;
       }
 
       if(!dev->subdevs[subdev].valid)
       {
-        M_PRINTF("getstat: No subdev registered\n");
+        M_DEBUG("getstat: No subdev registered\n");
         return -1;
       }
 
@@ -1060,7 +1060,7 @@ int _start(int argc, char **argv)
    printf(BANNER, VERSION);
 
    if ((res = RegisterLibraryEntries(&_exp_devfs)) != 0) {
-      M_PRINTF("Library is already registered, exiting.\n");
+      M_DEBUG("Library is already registered, exiting.\n");
       printf("res=%d\n", res);
    }
    else
@@ -1068,8 +1068,8 @@ int _start(int argc, char **argv)
       res = init_devfs();
    }
 
-   M_PRINTF("devfs_device_t size=%d\n", sizeof(devfs_device_t));
-   M_PRINTF("Driver loaded.\n");
+   M_DEBUG("devfs_device_t size=%d\n", sizeof(devfs_device_t));
+   M_DEBUG("Driver loaded.\n");
 
    return res;
 }
@@ -1123,26 +1123,26 @@ HDEV DevFSAddDevice(const devfs_node_t *node)
    //printf("AddDevice node=%p\n", node);
    if(node == NULL)
    {
-      M_PRINTF("AddDevice: node == NULL\n");
+      M_DEBUG("AddDevice: node == NULL\n");
       return INVALID_HDEV;
    }
 
    if(!devfs_check_devname(node->name))
    {
-      M_PRINTF("AddDevice: node name invalid\n");
+      M_DEBUG("AddDevice: node name invalid\n");
       return INVALID_HDEV;
    }
 
    if(devfs_find_devicename(node->name))
    {
-     M_PRINTF("AddDevice: cannot add new device. Already exists\n");
+     M_DEBUG("AddDevice: cannot add new device. Already exists\n");
      return INVALID_HDEV;
    }
 
    dev = devfs_create_device(node);
    if(dev == NULL)
    {
-      M_PRINTF("AddDevice: failed to allocate device structure\n");
+      M_DEBUG("AddDevice: failed to allocate device structure\n");
       return INVALID_HDEV;
    }
    if(root_device == NULL)
@@ -1162,7 +1162,7 @@ HDEV DevFSAddDevice(const devfs_node_t *node)
 
    dev->hDev = dev_count++;
    if(dev_count == INVALID_HDEV) dev_count++;
-   M_PRINTF("AddDevice: Registered device (%s)\n", node->name);
+   M_DEBUG("AddDevice: Registered device (%s)\n", node->name);
 
    return dev->hDev;
 }
@@ -1223,19 +1223,19 @@ int DevFSAddSubDevice(HDEV hDev, u32 subdev_no, s32 mode, devfs_loc_t extent, vo
 {
    devfs_device_t *dev;
 
-   //M_PRINTF("AddSubDevice hDev=%d subdev_no=%d data=%p\n", hDev, subdev_no, data);
+   //M_DEBUG("AddSubDevice hDev=%d subdev_no=%d data=%p\n", hDev, subdev_no, data);
    dev = devfs_find_deviceid(hDev);
    if(dev != NULL)
    {
       if(subdev_no >= DEVFS_MAX_SUBDEVS)
       {
-         M_PRINTF("AddSubDevice: Sub device number too big\n");
+         M_DEBUG("AddSubDevice: Sub device number too big\n");
          return -1;
       }
 
       if(dev->subdevs[subdev_no].valid)
       {
-         M_PRINTF("AddSubDevice: Sub device already created\n");
+         M_DEBUG("AddSubDevice: Sub device already created\n");
          return -1;
       }
 
@@ -1249,7 +1249,7 @@ int DevFSAddSubDevice(HDEV hDev, u32 subdev_no, s32 mode, devfs_loc_t extent, vo
    }
    else
    {
-      M_PRINTF("AddSubDevice: Couldn't find device ID\n");
+      M_DEBUG("AddSubDevice: Couldn't find device ID\n");
       return -1;
    }
 
@@ -1268,13 +1268,13 @@ int DevFSDelSubDevice(HDEV hDev, u32 subdev_no)
    {
       if(subdev_no >= DEVFS_MAX_SUBDEVS)
       {
-         M_PRINTF("DelSubDevice: Sub device number too big\n");
+         M_DEBUG("DelSubDevice: Sub device number too big\n");
          return -1;
       }
 
       if(!dev->subdevs[subdev_no].valid)
       {
-         M_PRINTF("DelSubDevice: Sub device not created\n");
+         M_DEBUG("DelSubDevice: Sub device not created\n");
          return -1;
       }
 

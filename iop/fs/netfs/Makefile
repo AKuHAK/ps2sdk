@@ -6,6 +6,8 @@
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
 
+# IOP_CFLAGS += -DDEBUG
+
 IOP_BIN ?= ps2netfs.irx
 
 IOP_INCS += -I$(PS2SDKSRC)/iop/system/iopmgr/include -I$(PS2SDKSRC)/iop/tcpip/tcpip/include

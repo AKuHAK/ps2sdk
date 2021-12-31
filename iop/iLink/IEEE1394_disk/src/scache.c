@@ -98,7 +98,7 @@ int getIndexWrite(cache_set* cache, unsigned int sector) {
 
 	//this sector is dirty - we need to flush it first
 	if (cache->rec[index].writeDirty) {
-		XPRINTF("scache: getIndexWrite: sector is dirty : %d   index=%d \n", cache->rec[index].sector, index);
+		M_DEBUG("scache: getIndexWrite: sector is dirty : %d   index=%d \n", cache->rec[index].sector, index);
 		ret = WRITE_SECTOR(cache->dev, cache->rec[index].sector, cache->sectorBuf + (index * BLOCK_SIZE), BLOCK_SIZE/cache->dev->sectorSize);
 		cache->rec[index].writeDirty = 0;
 		//TODO - error handling
@@ -123,11 +123,11 @@ int scache_flushSectors(cache_set* cache) {
 	int i,ret;
 	int counter = 0;
 
-	XPRINTF("cache: flushSectors devId = %i \n", cache->dev->nodeID);
+	M_DEBUG("cache: flushSectors devId = %i \n", cache->dev->nodeID);
 
 	//cache->flushCounter = 0;
 
-	XPRINTF("scache: flushSectors writeFlag=%d\n", cache->writeFlag);
+	M_DEBUG("scache: flushSectors writeFlag=%d\n", cache->writeFlag);
 	//no write operation occured since last flush
 	if (cache->writeFlag==0) {
 		return 0;
@@ -135,7 +135,7 @@ int scache_flushSectors(cache_set* cache) {
 
 	for (i = 0; i < CACHE_SIZE; i++) {
 		if (cache->rec[i].writeDirty) {
-			XPRINTF("scache: flushSectors dirty index=%d sector=%d \n", i, cache->rec[i].sector);
+			M_DEBUG("scache: flushSectors dirty index=%d sector=%d \n", i, cache->rec[i].sector);
 			ret = WRITE_SECTOR(cache->dev, cache->rec[i].sector, cache->sectorBuf + (i * BLOCK_SIZE), BLOCK_SIZE);
 			cache->rec[i].writeDirty = 0;
 			//TODO - error handling
@@ -156,7 +156,7 @@ int scache_readSector(cache_set* cache, unsigned int sector, void** buf) {
 	int ret;
 	unsigned int alignedSector;
 
-	XPRINTF("cache: readSector devId = %i %X sector = %i \n", cache->dev->nodeID, (int) cache, sector);
+	M_DEBUG("cache: readSector devId = %i %X sector = %i \n", cache->dev->nodeID, (int) cache, sector);
     if (cache == NULL) {
         printf("cache: devId cache not created = %i \n", cache->dev->nodeID);
         return -1;
@@ -164,11 +164,11 @@ int scache_readSector(cache_set* cache, unsigned int sector, void** buf) {
 
 	cache->cacheAccess ++;
 	index = getIndexRead(cache, sector);
-	XPRINTF("cache: indexRead=%i \n", index);
+	M_DEBUG("cache: indexRead=%i \n", index);
 	if (index >= 0) { //sector found in cache
 		cache->cacheHits ++;
 		*buf = cache->sectorBuf + (index * cache->sectorSize);
-		XPRINTF("cache: hit and done reading sector \n");
+		M_DEBUG("cache: hit and done reading sector \n");
 
 		return cache->sectorSize;
 	}
@@ -176,7 +176,7 @@ int scache_readSector(cache_set* cache, unsigned int sector, void** buf) {
 	//compute alignedSector - to prevent storage of duplicit sectors in slots
 	alignedSector = (sector/cache->indexLimit)*cache->indexLimit;
 	index = getIndexWrite(cache, alignedSector);
-	XPRINTF("cache: indexWrite=%i slot=%d  alignedSector=%i\n", index, index / cache->indexLimit, alignedSector);
+	M_DEBUG("cache: indexWrite=%i slot=%d  alignedSector=%i\n", index, index / cache->indexLimit, alignedSector);
 	ret = READ_SECTOR(cache->dev, alignedSector, cache->sectorBuf + (index * cache->sectorSize), BLOCK_SIZE/cache->dev->sectorSize);
 
 	if (ret < 0) {
@@ -184,7 +184,7 @@ int scache_readSector(cache_set* cache, unsigned int sector, void** buf) {
 		return ret;
 	}
 	*buf = cache->sectorBuf + (index * cache->sectorSize) + ((sector%cache->indexLimit) * cache->sectorSize);
-	XPRINTF("cache: done reading physical sector \n");
+	M_DEBUG("cache: done reading physical sector \n");
 
 	//write precaution
 	//cache->flushCounter++;
@@ -202,22 +202,22 @@ int scache_allocSector(cache_set* cache, unsigned int sector, void** buf) {
 	//int ret;
 	unsigned int alignedSector;
 
-	XPRINTF("cache: allocSector devId = %i sector = %i \n", cache->dev->nodeID, sector);
+	M_DEBUG("cache: allocSector devId = %i sector = %i \n", cache->dev->nodeID, sector);
 
 	index = getIndexRead(cache, sector);
-	XPRINTF("cache: indexRead=%i \n", index);
+	M_DEBUG("cache: indexRead=%i \n", index);
 	if (index >= 0) { //sector found in cache
 		*buf = cache->sectorBuf + (index * cache->sectorSize);
-		XPRINTF("cache: hit and done allocating sector \n");
+		M_DEBUG("cache: hit and done allocating sector \n");
 		return cache->sectorSize;
 	}
 
 	//compute alignedSector - to prevent storage of duplicit sectors in slots
 	alignedSector = (sector/cache->indexLimit)*cache->indexLimit;
 	index = getIndexWrite(cache, alignedSector);
-	XPRINTF("cache: indexWrite=%i \n", index);
+	M_DEBUG("cache: indexWrite=%i \n", index);
 	*buf = cache->sectorBuf + (index * cache->sectorSize) + ((sector%cache->indexLimit) * cache->sectorSize);
-	XPRINTF("cache: done allocating sector\n");
+	M_DEBUG("cache: done allocating sector\n");
 	return cache->sectorSize;
 }
 
@@ -227,14 +227,14 @@ int scache_writeSector(cache_set* cache, unsigned int sector) {
 	int index; //index is given in single sectors not octal sectors
 	//int ret;
 
-	XPRINTF("cache: writeSector devId = %i sector = %i \n", cache->dev->nodeID, sector);
+	M_DEBUG("cache: writeSector devId = %i sector = %i \n", cache->dev->nodeID, sector);
 
 	index = getSlot(cache, sector);
 	if (index <  0) { //sector not found in cache
 		printf("cache: writeSector: ERROR! the sector is not allocated! \n");
 		return -1;
 	}
-	XPRINTF("cache: slotFound=%i \n", index);
+	M_DEBUG("cache: slotFound=%i \n", index);
 
 	//prefere written sectors to stay in cache longer than read sectors
 	cache->rec[index].tax += 2;
@@ -243,7 +243,7 @@ int scache_writeSector(cache_set* cache, unsigned int sector) {
 	cache->rec[index].writeDirty = 1;
 	cache->writeFlag++;
 
-	XPRINTF("cache: done soft writing sector \n");
+	M_DEBUG("cache: done soft writing sector \n");
 
 	//write precaution
 	//cache->flushCounter++;
@@ -258,7 +258,7 @@ int scache_writeSector(cache_set* cache, unsigned int sector) {
 cache_set* scache_init(struct SBP2Device* dev, int sectSize)
 {
 	cache_set* cache;
-	XPRINTF("cache: init devId = %i sectSize = %i \n", dev->nodeID, sectSize);
+	M_DEBUG("cache: init devId = %i sectSize = %i \n", dev->nodeID, sectSize);
 
 	cache = malloc(sizeof(cache_set));
 	if (cache == NULL) {
@@ -266,17 +266,17 @@ cache_set* scache_init(struct SBP2Device* dev, int sectSize)
 		return NULL;
 	}
 
-    XPRINTF("scache init! \n");
+    M_DEBUG("scache init! \n");
     cache->dev = dev;
 
-    XPRINTF("sectorSize: 0x%x\n", cache->sectorSize);
+    M_DEBUG("sectorSize: 0x%x\n", cache->sectorSize);
     cache->sectorBuf = (unsigned char*) malloc(BLOCK_SIZE * CACHE_SIZE);
     if (cache->sectorBuf == NULL) {
         printf("Sector cache: can't alloate memory of size:%d \n", BLOCK_SIZE * CACHE_SIZE);
         free(cache);
         return NULL;
     }
-    XPRINTF("Sector cache: allocated memory at:%p of size:%d \n", cache->sectorBuf, BLOCK_SIZE * CACHE_SIZE);
+    M_DEBUG("Sector cache: allocated memory at:%p of size:%d \n", cache->sectorBuf, BLOCK_SIZE * CACHE_SIZE);
 
     //added by Hermes
     cache->sectorSize = sectSize;
@@ -296,7 +296,7 @@ void scache_getStat(cache_set* cache, unsigned int* access, unsigned int* hits) 
 //---------------------------------------------------------------------------
 void scache_kill(cache_set* cache) //dlanor: added for disconnection events (flush impossible)
 {
-	XPRINTF("cache: kill devId = %i \n", cache->dev->nodeID);
+	M_DEBUG("cache: kill devId = %i \n", cache->dev->nodeID);
 	if(cache->sectorBuf != NULL)
 	{
 		free(cache->sectorBuf);
@@ -307,7 +307,7 @@ void scache_kill(cache_set* cache) //dlanor: added for disconnection events (flu
 //---------------------------------------------------------------------------
 void scache_close(cache_set* cache)
 {
-	XPRINTF("cache: close devId = %i \n", cache->dev->nodeID);
+	M_DEBUG("cache: close devId = %i \n", cache->dev->nodeID);
 	scache_flushSectors(cache);
 	scache_kill(cache);
 }

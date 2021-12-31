@@ -87,7 +87,7 @@ int part_connect(struct SBP2Device* dev)
     part_table partTable;
     int count = 0;
     int i;
-    XPRINTF("USBHDFSD: part_connect devId %i \n", dev->nodeID);
+    M_DEBUG("part_connect devId %i \n", dev->nodeID);
 
     if (part_getPartitionTable(dev, &partTable) < 0)
         return -1;
@@ -102,7 +102,7 @@ int part_connect(struct SBP2Device* dev)
             partTable.record[ i ].sid == 0x0C ||  // fat 32
             partTable.record[ i ].sid == 0x0E)    // fat 16 LBA
         {
-            XPRINTF("USBHDFSD: mount partition %d\n", i);
+            M_DEBUG("mount partition %d\n", i);
             if (fat_mount(dev, partTable.record[i].start, partTable.record[i].count) >= 0)
                 count++;
         }

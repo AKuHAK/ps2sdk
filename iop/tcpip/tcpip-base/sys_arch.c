@@ -120,18 +120,18 @@ sys_thread_t sys_thread_new(const char *name, lwip_thread_fn thread, void *arg, 
 
 	if((tid = CreateThread(&thp)) < 0)
 	{
-		dbgprintf("sys_thread_new: CreateThread failed, EC: %d\n", tid);
+		M_DEBUG("sys_thread_new: CreateThread failed, EC: %d\n", tid);
 		return ERR_MEM;
 	}
 
 	if((rv = StartThread(tid, arg)) < 0)
 	{
-		dbgprintf("sys_thread_new: StartThread failed, EC: %d\n", rv);
+		M_DEBUG("sys_thread_new: StartThread failed, EC: %d\n", rv);
 		DeleteThread(tid);
 		return ERR_MEM;
 	}
 
-	dbgprintf("sys_thread_new: thread %d\n", tid);
+	M_DEBUG("sys_thread_new: thread %d\n", tid);
 
 	return((sys_thread_t) tid);
 }
@@ -149,7 +149,7 @@ err_t sys_mbox_new(sys_mbox_t *mbox, int size)
 		return ERR_MEM;
 	}
 
-	dbgprintf("sys_mbox_new: mbox %d\n", *mbox);
+	M_DEBUG("sys_mbox_new: mbox %d\n", *mbox);
 
 	return ERR_OK;
 }
@@ -255,7 +255,7 @@ err_t sys_sem_new(sys_sem_t *sem, u8_t count)
 	}
 	else result=ERR_OK;
 
-	dbgprintf("sys_sem_new: CreateSema cnt %d sema %d\n", count, *sem);
+	M_DEBUG("sys_sem_new: CreateSema cnt %d sema %d\n", count, *sem);
 
 	return result;
 }

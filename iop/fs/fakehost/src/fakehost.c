@@ -17,7 +17,7 @@
  * pukklink, regarding host and naplink printf.
  */
 
-//#define DEBUG_T
+//#define DEBUG
 
 #include "types.h"
 #include "stdio.h"
@@ -104,7 +104,7 @@ int realfd( iop_io_file_t *f )
  */
 int dummy()
 {
-#ifdef DEBUG_T
+#ifdef DEBUG
 	printf("fakehost: dummy function called\n");
 #endif
 	return -5;
@@ -135,7 +135,7 @@ int fd_open( iop_io_file_t *f, const char *name, int mode)
 	char nameBuffer[ 250 ];
 	int fd;
 
-#ifdef DEBUG_T
+#ifdef DEBUG
 	printf( "fakehost: open %i %s %s\n", f->unit, name ,base);
 #endif
 	fd = open( fd_name( nameBuffer, name), mode, 0 );

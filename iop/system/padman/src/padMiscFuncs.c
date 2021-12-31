@@ -58,10 +58,10 @@ s32 padEnd(void)
 		DeleteThreadsEventFlag( &vblankData );
 
 		while(ReleaseVblankHandler(0, (void*)VblankStart) != 0)
-			M_PRINTF("Release VB_START failed.\n");
+			M_DEBUG("Release VB_START failed.\n");
 
 		while(ReleaseVblankHandler(1, VblankEnd) != 0)
-			M_PRINTF("Release VB_END failed.\n");
+			M_DEBUG("Release VB_END failed.\n");
 
 		pad_ee_addr = NULL;
 		padman_init = 0;
@@ -74,13 +74,13 @@ s32 padPortClose(s32 port, s32 slot, s32 wait)
 {
 	if(((openSlots[port] >> slot) & 1) == 0)
 	{
-		M_PRINTF("padPortClose: Port %i Slot %i is not open.\n", (int)port, (int)slot);
+		M_DEBUG("padPortClose: Port %i Slot %i is not open.\n", (int)port, (int)slot);
 		return 0;
 	}
 
 	if(padState[port][slot].reqState == PAD_RSTAT_BUSY)
 	{
-		M_PRINTF("padPortClose: Port %i Slot %i request failed.\n", (int)port, (int)slot);
+		M_DEBUG("padPortClose: Port %i Slot %i request failed.\n", (int)port, (int)slot);
 		return 0;
 	}
 

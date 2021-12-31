@@ -595,21 +595,21 @@ static int _msread_start(struct block_device* bd, u32 sector)
         // Wait idle
         rv = wait_equal(0xFF, 4000, PORT_NR);
         if (rv != SPISD_RESULT_OK) {
-            M_PRINTF("ERROR: card is not idle\n");
+            M_DEBUG("ERROR: card is not idle\n");
             goto recovery;
         }
 
         // Send multi block read command
         rv = spisd_read_multi_block_begin(sector);
         if (rv != SPISD_RESULT_OK) {
-            M_PRINTF("ERROR: failed to start multi-block read\n");
+            M_DEBUG("ERROR: failed to start multi-block read\n");
             goto recovery;
         }
 
         // Wait for first start token (first one takes a long time)
         rv = wait_equal(0xFE, 100000, PORT_NR);
         if (rv != SPISD_RESULT_OK) {
-            M_PRINTF("ERROR: no start token\n");
+            M_DEBUG("ERROR: no start token\n");
             goto recovery;
         }
         break;
@@ -654,7 +654,7 @@ static int _msread_do(struct block_device* bd, void* buffer, u16 count)
                     // - Signal ISR to stop reading
                     // - Wait for complete event from ISR
                     cmd.abort = 1;
-                    M_PRINTF("ERROR: crc invalid (0x%x != 0x%x) @ sector %d of %d -> 0x%x\n", crc_a, crc_b, cmd.sectors_reversed, count, (int)buffer);
+                    M_DEBUG("ERROR: crc invalid (0x%x != 0x%x) @ sector %d of %d -> 0x%x\n", crc_a, crc_b, cmd.sectors_reversed, count, (int)buffer);
                 }
 #endif
                 if (cmd.abort == 0)
@@ -691,7 +691,7 @@ static int spi_sdcard_read(struct block_device* bd, u32 sector, void* buffer, u1
     for (retry_count = 0; retry_count < MAX_RETRIES; retry_count++) {
         rv = _msread_start(bd, sector);
         if (rv != SPISD_RESULT_OK) {
-            M_PRINTF("ERROR: failed to start multi-block read (%d)\n", rv);
+            M_DEBUG("ERROR: failed to start multi-block read (%d)\n", rv);
             break;
         }
 
@@ -707,15 +707,15 @@ static int spi_sdcard_read(struct block_device* bd, u32 sector, void* buffer, u1
 
             if (rv != count_do) {
                 // Read failed, have outer loop retry
-                M_PRINTF("ERROR: _msread_do: %d != %d\n", rv, count_do);
-                M_PRINTF(" - %s(%d,%d)\n", __FUNCTION__, (int)sector, (int)count);
+                M_DEBUG("ERROR: _msread_do: %d != %d\n", rv, count_do);
+                M_DEBUG(" - %s(%d,%d)\n", __FUNCTION__, (int)sector, (int)count);
                 break;
             }
 
             if (count_left > 0) {
                 // Wait for next start token
                 if (wait_equal(0xFE, 200, PORT_NR) != SPISD_RESULT_OK) {
-                    M_PRINTF("ERROR: no start token\n");
+                    M_DEBUG("ERROR: no start token\n");
                     break;
                 }
             }
@@ -724,7 +724,7 @@ static int spi_sdcard_read(struct block_device* bd, u32 sector, void* buffer, u1
 
         rv = spisd_read_multi_block_end();
         if (rv != SPISD_RESULT_OK) {
-            M_PRINTF("ERROR: spisd_read_multi_block_end = %d\n", rv);
+            M_DEBUG("ERROR: spisd_read_multi_block_end = %d\n", rv);
             break;
         }
 
@@ -754,7 +754,7 @@ static int spi_sdcard_write(struct block_device* bd, u32 sector, const void* buf
 
     rv = spisd_write_multi_block(sector, buffer, count);
     if (rv != SPISD_RESULT_OK) {
-        M_PRINTF("ERROR: spisd_write_multi_block = %d\n", rv);
+        M_DEBUG("ERROR: spisd_write_multi_block = %d\n", rv);
         sio2_unlock();
         return 0;
     }
@@ -821,7 +821,7 @@ static void sd_detect()
 
     // Change state
     if ((card_inserted == 0) && (rv == SPISD_RESULT_OK)) {
-        M_PRINTF("card insertion detected\n");
+        M_DEBUG("card insertion detected\n");
         card_inserted = 1;
 
         sio2_lock();
@@ -829,7 +829,7 @@ static void sd_detect()
         sio2_unlock();
 
         if (rv != 0) {
-            M_PRINTF("ERROR: spisd_get_card_info returned %d\n", rv);
+            M_DEBUG("ERROR: spisd_get_card_info returned %d\n", rv);
             return;
         }
 
@@ -849,12 +849,12 @@ static void sd_detect()
             bd.sectorCount = (c_size + 1) * 1024;
         }
 
-        M_PRINTF("%u %u-byte logical blocks: (%uMB / %uMiB)\n", bd.sectorCount, bd.sectorSize, bd.sectorCount / ((1000 * 1000) / bd.sectorSize), bd.sectorCount / ((1024 * 1024) / bd.sectorSize));
+        M_DEBUG("%u %u-byte logical blocks: (%uMB / %uMiB)\n", bd.sectorCount, bd.sectorSize, bd.sectorCount / ((1000 * 1000) / bd.sectorSize), bd.sectorCount / ((1024 * 1024) / bd.sectorSize));
 
         // Connect to block device manager
         bdm_connect_bd(&bd);
     } else if ((card_inserted == 1) && (rv != SPISD_RESULT_OK)) {
-        M_PRINTF("card removal detected\n");
+        M_DEBUG("card removal detected\n");
         card_inserted = 0;
 
         // Disconnect from block device manager
@@ -865,7 +865,7 @@ static void sd_detect()
 // SD card detection thread
 static void sd_detect_thread(void* arg)
 {
-    M_PRINTF("card detection thread running\n");
+    M_DEBUG("card detection thread running\n");
 
     while (1) {
         // Sleep for 1 second
@@ -890,9 +890,9 @@ int module_start(int argc, char* argv[])
     iop_thread_t thread;
     int i, rv;
 
-    M_PRINTF("Starting module\n");
+    M_DEBUG("Starting module\n");
     for (i = 0; i < argc; i++)
-        M_PRINTF(" - argv[%d] = %s\n", i, argv[i]);
+        M_DEBUG(" - argv[%d] = %s\n", i, argv[i]);
 
     // Create default tranfer descriptor
     _init_td(&global_td, PORT_NR);
@@ -903,13 +903,13 @@ int module_start(int argc, char* argv[])
     event.bits   = 0;
     rv = event_flag = CreateEventFlag(&event);
     if (rv < 0) {
-        M_PRINTF("ERROR: CreateEventFlag returned %d\n", rv);
+        M_DEBUG("ERROR: CreateEventFlag returned %d\n", rv);
         goto error1;
     }
 
     rv = sio2man_hook_init();
     if (rv < 0) {
-        M_PRINTF("ERROR: sio2man_hook_init returned %d\n", rv);
+        M_DEBUG("ERROR: sio2man_hook_init returned %d\n", rv);
         goto error2;
     }
 
@@ -935,14 +935,14 @@ int module_start(int argc, char* argv[])
     thread.stacksize = 0x1000; // 4KiB
     rv = sd_detect_thread_id = CreateThread(&thread);
     if (rv < 0) {
-        M_PRINTF("ERROR: CreateThread returned %d\n", rv);
+        M_DEBUG("ERROR: CreateThread returned %d\n", rv);
         goto error3;
     }
 
     // Start thread
     rv = StartThread(sd_detect_thread_id, NULL);
     if (rv < 0) {
-        M_PRINTF("ERROR: StartThread returned %d\n", rv);
+        M_DEBUG("ERROR: StartThread returned %d\n", rv);
         goto error4;
     }
 
@@ -975,9 +975,9 @@ int module_stop(int argc, char* argv[])
 {
     int i;
 
-    M_PRINTF("Stopping module\n");
+    M_DEBUG("Stopping module\n");
     for (i = 0; i < argc; i++)
-        M_PRINTF(" - argv[%d] = %s\n", i, argv[i]);
+        M_DEBUG(" - argv[%d] = %s\n", i, argv[i]);
 
     DeleteThread(sd_detect_thread_id);
     sio2man_hook_deinit();
@@ -988,7 +988,7 @@ int module_stop(int argc, char* argv[])
 
 int _start(int argc, char* argv[])
 {
-    M_PRINTF(WELCOME_STR);
+    M_DEBUG(WELCOME_STR);
 
     if (argc >= 0)
         return module_start(argc, argv);

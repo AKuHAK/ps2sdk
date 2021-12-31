@@ -22,9 +22,6 @@
 #include <ioman.h>
 #include <sifcmd.h>
 #include <sifman.h>
-#ifdef SIO_DEBUG
-#include <sior.h>
-#endif
 #include <stdio.h>
 #include <sysclib.h>
 #include <sysmem.h>

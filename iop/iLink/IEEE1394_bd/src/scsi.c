@@ -130,28 +130,28 @@ static int scsi_warmup(struct block_device* bd)
 
     memset(&id, 0, sizeof(inquiry_data));
     if ((stat = scsi_cmd_inquiry(bd, &id, sizeof(inquiry_data))) < 0) {
-        M_PRINTF("ERROR: scsi_cmd_inquiry %d\n", stat);
+        M_DEBUG("ERROR: scsi_cmd_inquiry %d\n", stat);
         return -1;
     }
 
-    M_PRINTF("Vendor: %.8s\n", id.vendor);
-    M_PRINTF("Product: %.16s\n", id.product);
-    M_PRINTF("Revision: %.4s\n", id.revision);
+    M_DEBUG("Vendor: %.8s\n", id.vendor);
+    M_DEBUG("Product: %.16s\n", id.product);
+    M_DEBUG("Revision: %.4s\n", id.revision);
 
     while ((stat = scsi_cmd_test_unit_ready(bd)) != 0) {
-        M_PRINTF("ERROR: scsi_cmd_test_unit_ready %d\n", stat);
+        M_DEBUG("ERROR: scsi_cmd_test_unit_ready %d\n", stat);
 
         stat = scsi_cmd_request_sense(bd, &sd, sizeof(sense_data));
         if (stat != 0)
-            M_PRINTF("ERROR: scsi_cmd_request_sense %d\n", stat);
+            M_DEBUG("ERROR: scsi_cmd_request_sense %d\n", stat);
 
         if ((sd.error_code == 0x70) && (sd.sense_key != 0x00)) {
-            M_PRINTF("Sense Data key: %02X code: %02X qual: %02X\n", sd.sense_key, sd.add_sense_code, sd.add_sense_qual);
+            M_DEBUG("Sense Data key: %02X code: %02X qual: %02X\n", sd.sense_key, sd.add_sense_code, sd.add_sense_qual);
 
             if ((sd.sense_key == 0x02) && (sd.add_sense_code == 0x04) && (sd.add_sense_qual == 0x02)) {
-                M_PRINTF("ERROR: Additional initalization is required for this device!\n");
+                M_DEBUG("ERROR: Additional initalization is required for this device!\n");
                 if ((stat = scsi_cmd_start_stop_unit(bd, 1)) != 0) {
-                    M_PRINTF("ERROR: scsi_cmd_start_stop_unit %d\n", stat);
+                    M_DEBUG("ERROR: scsi_cmd_start_stop_unit %d\n", stat);
                     return -1;
                 }
             }
@@ -159,14 +159,14 @@ static int scsi_warmup(struct block_device* bd)
     }
 
     if ((stat = scsi_cmd_read_capacity(bd, &rcd, sizeof(read_capacity_data))) != 0) {
-        M_PRINTF("ERROR: scsi_cmd_read_capacity %d\n", stat);
+        M_DEBUG("ERROR: scsi_cmd_read_capacity %d\n", stat);
         return -1;
     }
 
     bd->sectorSize   = getBI32(&rcd.block_length);
     bd->sectorOffset = 0;
     bd->sectorCount  = getBI32(&rcd.last_lba);
-    M_PRINTF("%u %u-byte logical blocks: (%uMB / %uMiB)\n", bd->sectorCount, bd->sectorSize, bd->sectorCount / ((1000 * 1000) / bd->sectorSize), bd->sectorCount / ((1024 * 1024) / bd->sectorSize));
+    M_DEBUG("%u %u-byte logical blocks: (%uMB / %uMiB)\n", bd->sectorCount, bd->sectorSize, bd->sectorCount / ((1000 * 1000) / bd->sectorSize), bd->sectorCount / ((1024 * 1024) / bd->sectorSize));
 
     return 0;
 }
@@ -242,7 +242,7 @@ static int scsi_stop(struct block_device* bd)
     M_DEBUG("%s\n", __func__);
 
     if ((stat = scsi_cmd_start_stop_unit(bd, 0)) != 0) {
-        M_PRINTF("ERROR: scsi_cmd_start_stop_unit %d\n", stat);
+        M_DEBUG("ERROR: scsi_cmd_start_stop_unit %d\n", stat);
     }
 
     return stat;

@@ -111,7 +111,7 @@ static int getIndexWrite(cache_set* cache, unsigned int sector)
         M_DEBUG("scache: getIndexWrite: sector is dirty : %u   index=%d \n", cache->rec[index].sector, index);
         ret = WRITE_SECTOR(cache, cache->rec[index].sector, cache->sectorBuf + (index * BLOCK_SIZE), BLOCK_SIZE / cache->sectorSize);
         if (ret < 0) {
-            M_PRINTF("scache: ERROR writing sector to disk! sector=%u\n", sector);
+            M_DEBUG("scache: ERROR writing sector to disk! sector=%u\n", sector);
             return ret;
         }
 
@@ -145,7 +145,7 @@ int scache_flushSectors(cache_set* cache)
             M_DEBUG("scache: flushSectors dirty index=%d sector=%u \n", i, cache->rec[i].sector);
             ret = WRITE_SECTOR(cache, cache->rec[i].sector, cache->sectorBuf + (i * BLOCK_SIZE), BLOCK_SIZE / cache->sectorSize);
             if (ret < 0) {
-                M_PRINTF("scache: ERROR writing sector to disk! sector=%u\n", cache->rec[i].sector);
+                M_DEBUG("scache: ERROR writing sector to disk! sector=%u\n", cache->rec[i].sector);
                 return ret;
             }
 
@@ -166,7 +166,7 @@ int scache_readSector(cache_set* cache, unsigned int sector, void** buf)
 
     M_DEBUG("scache: readSector devId = %i %p sector = %u \n", cache->bd->devNr, cache, sector);
     if (cache == NULL) {
-        M_PRINTF("scache: devId cache not created = %i \n", cache->bd->devNr);
+        M_DEBUG("scache: devId cache not created = %i \n", cache->bd->devNr);
         return -1;
     }
 
@@ -192,7 +192,7 @@ int scache_readSector(cache_set* cache, unsigned int sector, void** buf)
     ret = READ_SECTOR(cache, alignedSector, cache->sectorBuf + (index * cache->sectorSize), BLOCK_SIZE / cache->sectorSize);
 
     if (ret < 0) {
-        M_PRINTF("scache: ERROR reading sector from disk! sector=%u\n", alignedSector);
+        M_DEBUG("scache: ERROR reading sector from disk! sector=%u\n", alignedSector);
         return ret;
     }
     *buf = cache->sectorBuf + (index * cache->sectorSize) + ((sector % cache->indexLimit) * cache->sectorSize);
@@ -250,7 +250,7 @@ int scache_writeSector(cache_set* cache, unsigned int sector)
 
     index = getSlot(cache, sector);
     if (index < 0) { //sector not found in cache
-        M_PRINTF("scache: writeSector: ERROR! the sector is not allocated! \n");
+        M_DEBUG("scache: writeSector: ERROR! the sector is not allocated! \n");
         return -1;
     }
     M_DEBUG("scache: slotFound=%i \n", index);
@@ -281,7 +281,7 @@ cache_set* scache_init(struct block_device* bd)
 
     cache = malloc(sizeof(cache_set));
     if (cache == NULL) {
-        M_PRINTF("scache init! Sector cache: can't alloate cache!\n");
+        M_DEBUG("scache init! Sector cache: can't alloate cache!\n");
         return NULL;
     }
 
@@ -290,7 +290,7 @@ cache_set* scache_init(struct block_device* bd)
 
     cache->sectorBuf = (unsigned char*)malloc(BLOCK_SIZE * CACHE_SIZE);
     if (cache->sectorBuf == NULL) {
-        M_PRINTF("scache: can't alloate memory of size:%d \n", BLOCK_SIZE * CACHE_SIZE);
+        M_DEBUG("scache: can't alloate memory of size:%d \n", BLOCK_SIZE * CACHE_SIZE);
         free(cache);
         return NULL;
     }

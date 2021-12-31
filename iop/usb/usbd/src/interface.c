@@ -321,7 +321,7 @@ int sceUsbdTransferPipe(int id, void *data, u32 len, void *option, sceUsbdDoneCa
 
 	ep = fetchEndpointById(id);
 	if (!ep) {
-		dbg_printf("sceUsbdTransferPipe: Endpoint %d not found\n", id);
+		M_DEBUG("sceUsbdTransferPipe: Endpoint %d not found\n", id);
 		res = USB_RC_BADPIPE;
 	}
 
@@ -336,7 +336,7 @@ int sceUsbdTransferPipe(int id, void *data, u32 len, void *option, sceUsbdDoneCa
 	if (res == 0) {
 		req = allocIoRequest();
 		if (!req) {
-			dbg_printf("Ran out of IoReqs\n");
+			M_DEBUG("Ran out of IoReqs\n");
 			res = USB_RC_IOREQ;
 		}
 	}

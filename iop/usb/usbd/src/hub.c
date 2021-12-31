@@ -47,7 +47,7 @@ int initHubDriver(void) {
 
 	hubBufferList = (UsbHub *)AllocSysMemory(ALLOC_FIRST, needMem, 0);
 	if (!hubBufferList) {
-		dbg_printf("ERROR: unable to alloc hub buffer\n");
+		M_DEBUG("ERROR: unable to alloc hub buffer\n");
 		return -1;
 	}
 	memset(hubBufferList, 0, needMem);
@@ -94,7 +94,7 @@ void HubControlTransfer(UsbHub *hubDev, u8 requestType, u8 request, u16 value,
 			requestType, request, value, index, length, destData,
 			callback);
 	} else
-		dbg_printf("ERROR: HubControlTransfer %p: ioReq busy\n", hubDev);
+		M_DEBUG("ERROR: HubControlTransfer %p: ioReq busy\n", hubDev);
 }
 
 void hubGetHubStatusCallback(IoRequest *req);
@@ -137,7 +137,7 @@ void hubStatusChangeCallback(IoRequest *req) {
 			getHubStatusChange(dev);
 		}
 	} else
-		dbg_printf("hubStatusChangeCallback, iores %d\n", req->resultCode);
+		M_DEBUG("hubStatusChangeCallback, iores %d\n", req->resultCode);
 }
 
 void hubGetHubStatusCallback(IoRequest *req) {
@@ -292,7 +292,7 @@ void hubDeviceResetCallback(IoRequest *arg) {
 	if (arg->resultCode == USB_RC_OK)
 		getHubStatusChange((UsbHub *)arg->userCallbackArg);
 	else
-		dbg_printf("port reset err: %d\n", arg->resultCode);
+		M_DEBUG("port reset err: %d\n", arg->resultCode);
 }
 
 int hubResetDevice(Device *dev) {
@@ -407,7 +407,7 @@ void fetchConfigDescriptors(IoRequest *req) {
 			readLen = 4;
 
 		if ((u8*)dev->staticDeviceDescEndPtr + readLen > (u8*)dev->staticDeviceDescPtr + usbConfig.maxStaticDescSize) {
-			dbg_printf("USBD: Device ignored, Device descriptors too large\n");
+			M_DEBUG("USBD: Device ignored, Device descriptors too large\n");
 			return; // buffer is too small, silently ignore the device
 		}
 
@@ -438,7 +438,7 @@ void requestDevDescrptCb(IoRequest *req) {
 			fetchConfigDescriptors(req);
 		}
 	} else {
-		dbg_printf("unable to read device descriptor, err %d\n", req->resultCode);
+		M_DEBUG("unable to read device descriptor, err %d\n", req->resultCode);
 		killDevice(dev, ep);
 	}
 }
@@ -468,7 +468,7 @@ void hubSetFuncAddressCB(IoRequest *req) {
 	Device *dev = ep->correspDevice;
 
 	if (req->resultCode == USB_RC_NORESPONSE) {
-		dbg_printf("device not responding\n");
+		M_DEBUG("device not responding\n");
 		dev->functionDelay <<= 1;
 		if (dev->functionDelay <= 0x500)
 			addTimerCallback(&dev->timer, (TimerCallback)hubSetFuncAddress, ep, dev->functionDelay);
@@ -501,7 +501,7 @@ void hubGetPortStatusCallback(IoRequest *req) {
 	UsbHub *dev = (UsbHub *)req->userCallbackArg;
 	Device *port;
 	if (req->resultCode == USB_RC_OK) {
-		dbg_printf("port status change: %d: %08X\n", dev->portCounter, dev->portStatusChange);
+		M_DEBUG("port status change: %d: %08X\n", dev->portCounter, dev->portStatusChange);
 		if (dev->portStatusChange & BIT(C_PORT_CONNECTION))
 			feature = C_PORT_CONNECTION;
 		else if (dev->portStatusChange & BIT(C_PORT_ENABLE))
@@ -522,34 +522,34 @@ void hubGetPortStatusCallback(IoRequest *req) {
 			port = fetchPortElemByNumber(dev->controlEp->correspDevice, dev->portCounter);
 			if (port) {
 				if (dev->portStatusChange & BIT(PORT_CONNECTION)) {
-					dbg_printf("Hub Port CCS\n");
+					M_DEBUG("Hub Port CCS\n");
 					if (port->deviceStatus == DEVICE_NOTCONNECTED) {
-						dbg_printf("resetting dev\n");
+						M_DEBUG("resetting dev\n");
 						port->deviceStatus = DEVICE_CONNECTED;
 						addTimerCallback(&port->timer, (TimerCallback)hubResetDevice, port, 500);
 						return;
 					} else if (port->deviceStatus == DEVICE_RESETPENDING) {
 						if (dev->portStatusChange & BIT(PORT_ENABLE)) {
-							dbg_printf("hub port reset done, opening control EP\n");
+							M_DEBUG("hub port reset done, opening control EP\n");
 							port->deviceStatus = DEVICE_RESETCOMPLETE;
 							port->isLowSpeedDevice = (dev->portStatusChange >> PORT_LOW_SPEED) & 1;
 
 							if (openDeviceEndpoint(port, NULL, 0))
 								hubTimedSetFuncAddress(port);
 							else
-								dbg_printf("Can't open default control ep.\n");
+								M_DEBUG("Can't open default control ep.\n");
 							dev->hubStatusCounter = 0;
 						}
 					}
 				} else {
-					dbg_printf("disconnected; flushing port\n");
+					M_DEBUG("disconnected; flushing port\n");
 					flushPort(port);
 				}
 			}
 			hubStatusChangeCallback(&dev->statusIoReq);
 		}
 	} else
-		dbg_printf("HubGetPortStatusCallback res %d\n", req->resultCode);
+		M_DEBUG("HubGetPortStatusCallback res %d\n", req->resultCode);
 }
 
 void getHubStatusChange(UsbHub *dev) {
@@ -557,7 +557,7 @@ void getHubStatusChange(UsbHub *dev) {
 		attachIoReqToEndpoint(dev->statusChangeEp, &dev->statusIoReq,
 			dev->statusChangeInfo, (dev->numChildDevices + 8) >> 3, hubStatusChangeCallback);
 	} else
-		dbg_printf("getHubStatusChange: StatusChangeEP IoReq is busy!\n");
+		M_DEBUG("getHubStatusChange: StatusChangeEP IoReq is busy!\n");
 }
 
 void hubSetPortPower(IoRequest *req) {
@@ -603,7 +603,7 @@ void hubCheckPorts(IoRequest *req) {
 				USB_DIR_IN | USB_RT_HUB, USB_REQ_GET_STATUS, 0, 0, 4,
 				&dev->hubStatus, hubSetupPorts);
 		} else
-			dbg_printf("Hub has too many ports (%d > %d)\n", dev->desc.bNbrPorts, usbConfig.maxPortsPerHub);
+			M_DEBUG("Hub has too many ports (%d > %d)\n", dev->desc.bNbrPorts, usbConfig.maxPortsPerHub);
 	}
 }
 

@@ -2,9 +2,9 @@
 #define _MASS_DEBUG_H 1
 
 #ifdef DEBUG
-#define XPRINTF(args...) printf(args)
+#define M_DEBUG(format, args...)	printf("USBHDFSD: " format, ##args)
 #else
-#define XPRINTF(args...)
+#define M_DEBUG(args...)
 #endif
 
 #endif  /* _MASS_DEBUG_H */

@@ -119,7 +119,7 @@ static void QueryPadThread(void *arg)
 	pstate->modeCurId = 0;
 
 
-	D_PRINTF("QueryPadThread: Checking for pad (%i,%i)\n", pstate->port, pstate->slot);
+	M_DEBUG("QueryPadThread: Checking for pad (%i,%i)\n", pstate->port, pstate->slot);
 
 	do
 	{
@@ -156,7 +156,7 @@ static void QueryPadThread(void *arg)
 			pstate->ee_actAlignData.data[i] = 0xFF;
 	}
 
-	D_PRINTF("Found pad (%i,%i) - modeCurId: 0x%x\n", (int)pstate->port, (int)pstate->slot, (int)modeCurId);
+	M_DEBUG("Found pad (%i,%i) - modeCurId: 0x%x\n", (int)pstate->port, (int)pstate->slot, (int)modeCurId);
 
 	res = 0;
 
@@ -171,7 +171,7 @@ static void QueryPadThread(void *arg)
 
 	if( res != 1 )
 	{
-		D_PRINTF("EnterConfigMode (%i, %i): Failed\n", (int)pstate->port, (int)pstate->slot);
+		M_DEBUG("EnterConfigMode (%i, %i): Failed\n", (int)pstate->port, (int)pstate->slot);
 
 		pstate->modeConfig = MODE_CONFIG_QUERY_PAD;
 		pstate->modeCurId = modeCurId;
@@ -180,7 +180,7 @@ static void QueryPadThread(void *arg)
 		ExitThread();
 	}
 
-	D_PRINTF("EnterConfigMode (%i, %i): Success\n", (int)pstate->port, (int)pstate->slot);
+	M_DEBUG("EnterConfigMode (%i, %i): Success\n", (int)pstate->port, (int)pstate->slot);
 
 	for(i=0,res=0; res != 1; i++)
 	{
@@ -189,7 +189,7 @@ static void QueryPadThread(void *arg)
 
 		if((res != 1) && (i >= 10))
 		{
-			D_PRINTF("QueryModel (%i, %i): Failed\n",(int)pstate->port, (int)pstate->slot);
+			M_DEBUG("QueryModel (%i, %i): Failed\n",(int)pstate->port, (int)pstate->slot);
 
 			pstate->modeCurId = 0;
 			pstate->currentTask = TASK_UPDATE_PAD;
@@ -197,7 +197,7 @@ static void QueryPadThread(void *arg)
 		}
 	}
 
-	D_PRINTF("QueryModel (%i, %i): Success\n", (int)pstate->port, (int)pstate->slot);
+	M_DEBUG("QueryModel (%i, %i): Success\n", (int)pstate->port, (int)pstate->slot);
 
 	if( (pstate->disconnected == 1) && (pstate->modeCurOffs != 0))
 	{
@@ -212,8 +212,8 @@ static void QueryPadThread(void *arg)
 
 			if(res == 1)
 			{
-				D_PRINTF("SetMainMode (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
-				D_PRINTF("QueryPadThread: Done (%i,%i)\n", (int)pstate->port, (int)pstate->slot);
+				M_DEBUG("SetMainMode (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
+				M_DEBUG("QueryPadThread: Done (%i,%i)\n", (int)pstate->port, (int)pstate->slot);
 
 				pstate->modeCurId = 0;
 				pstate->currentTask = TASK_UPDATE_PAD;
@@ -224,7 +224,7 @@ static void QueryPadThread(void *arg)
 			{
 				if(i >= 10)
 				{
-					D_PRINTF("SetMainMode (%i, %i): Failed\n", (int)pstate->port, (int)pstate->slot);
+					M_DEBUG("SetMainMode (%i, %i): Failed\n", (int)pstate->port, (int)pstate->slot);
 
 					pstate->reqState = PAD_RSTAT_FAILED;
 					pstate->currentTask = TASK_UPDATE_PAD;
@@ -244,7 +244,7 @@ static void QueryPadThread(void *arg)
 
 			if((res != 1) && (i >= 10))
 			{
-				D_PRINTF("QueryAct (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
+				M_DEBUG("QueryAct (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
 
 				pstate->modeCurId = 0;
 				pstate->currentTask = TASK_UPDATE_PAD;
@@ -253,7 +253,7 @@ static void QueryPadThread(void *arg)
 		}
 	}
 
-	D_PRINTF("QueryAct (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
+	M_DEBUG("QueryAct (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
 
 	for(count=0; count < pstate->numActComb; count++)
 	{
@@ -265,7 +265,7 @@ static void QueryPadThread(void *arg)
 
 			if((res != 1) && (i >= 10))
 			{
-				D_PRINTF("QueryComb (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
+				M_DEBUG("QueryComb (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
 
 				pstate->modeCurId = 0;
 				pstate->currentTask = TASK_UPDATE_PAD;
@@ -274,7 +274,7 @@ static void QueryPadThread(void *arg)
 		}
 	}
 
-	D_PRINTF("QueryComb (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
+	M_DEBUG("QueryComb (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
 
 	for(count=0; count < pstate->numModes; count++)
 	{
@@ -286,7 +286,7 @@ static void QueryPadThread(void *arg)
 
 			if((res != 1) && (i >= 10))
 			{
-				D_PRINTF("QueryMode (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
+				M_DEBUG("QueryMode (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
 
 				pstate->modeCurId = 0;
 				pstate->currentTask = TASK_UPDATE_PAD;
@@ -295,7 +295,7 @@ static void QueryPadThread(void *arg)
 		}
 	}
 
-	D_PRINTF("QueryMode (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
+	M_DEBUG("QueryMode (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
 
 	for(i=0,res=0; res != 1; i++)
 	{
@@ -305,7 +305,7 @@ static void QueryPadThread(void *arg)
 
 		if((res != 1) && (i >= 10))
 		{
-			D_PRINTF("SetActAlign (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
+			M_DEBUG("SetActAlign (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
 
 			pstate->reqState = PAD_RSTAT_FAILED;
 			pstate->currentTask = TASK_UPDATE_PAD;
@@ -313,7 +313,7 @@ static void QueryPadThread(void *arg)
 		}
 	}
 
-	D_PRINTF("SetActAlign (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
+	M_DEBUG("SetActAlign (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
 
 	if(((pstate->modeConfig & 0xFF) == 0x02) &&
 		((pstate->model & 0x02) == 0x02))
@@ -326,7 +326,7 @@ static void QueryPadThread(void *arg)
 
 			if((res != 1) && (i >= 10))
 			{
-				D_PRINTF("QueryButtonMask (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
+				M_DEBUG("QueryButtonMask (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
 
 				pstate->modeCurId = 0;
 				pstate->currentTask = TASK_UPDATE_PAD;
@@ -334,7 +334,7 @@ static void QueryPadThread(void *arg)
 			}
 		}
 
-		D_PRINTF("QueryButtonMask (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
+		M_DEBUG("QueryButtonMask (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
 	}
 
 	for(i=0,res=0; res != 1; i++)
@@ -345,7 +345,7 @@ static void QueryPadThread(void *arg)
 
 		if((res != 1) && (i >= 10))
 		{
-			D_PRINTF("ExitConfigMode (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
+			M_DEBUG("ExitConfigMode (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
 
 			pstate->modeCurId = 0;
 			pstate->currentTask = TASK_UPDATE_PAD;
@@ -353,7 +353,7 @@ static void QueryPadThread(void *arg)
 		}
 	}
 
-	D_PRINTF("ExitConfigMode (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
+	M_DEBUG("ExitConfigMode (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
 
 	for(i=0,res=0; res != 1; i++)
 	{
@@ -363,7 +363,7 @@ static void QueryPadThread(void *arg)
 
 		if((res != 1) && (i >= 10))
 		{
-			D_PRINTF("PadIsSupported (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
+			M_DEBUG("PadIsSupported (%i,%i): Failed\n", (int)pstate->port, (int)pstate->slot);
 
 			pstate->modeCurId = 0;
 			pstate->currentTask = TASK_UPDATE_PAD;
@@ -371,9 +371,9 @@ static void QueryPadThread(void *arg)
 		}
 	}
 
-	D_PRINTF("PadIsSupported (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
+	M_DEBUG("PadIsSupported (%i,%i): Success\n", (int)pstate->port, (int)pstate->slot);
 
-	D_PRINTF("QueryPadThread: Done (%i,%i)\n", (int)pstate->port, (int)pstate->slot);
+	M_DEBUG("QueryPadThread: Done (%i,%i)\n", (int)pstate->port, (int)pstate->slot);
 
 	modeCurId = pstate->modeCurId;
 	pstate->state = PAD_STATE_EXECCMD;
@@ -654,13 +654,13 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 
 	if(port > 2)
 	{
-		M_PRINTF("Invalid port number: %d\n", (int)port);
+		M_DEBUG("Invalid port number: %d\n", (int)port);
 		return 0;
 	}
 
 	if(slot > 4)
 	{
-		M_PRINTF("Invalid slot number: %d\n", (int)port);
+		M_DEBUG("Invalid slot number: %d\n", (int)port);
 		return 0;
 	}
 
@@ -671,7 +671,7 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 
 	if( (openSlots[port] >> slot) & 0x1)
 	{
-		M_PRINTF("The slot will be refreshed: (%d, %d)\n", (int)port, (int)slot);
+		M_DEBUG("The slot will be refreshed: (%d, %d)\n", (int)port, (int)slot);
 		padPortClose(port, slot, 1);
 	}
 
@@ -700,7 +700,7 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 
 	if((padState[port][slot].eventflag = CreateEventFlag(&event)) == 0)
 	{
-		M_PRINTF("Port open failed (CreateEventFlag).\n");
+		M_DEBUG("Port open failed (CreateEventFlag).\n");
 		return 0;
 	}
 
@@ -716,7 +716,7 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 
 	if(padState[port][slot].updatepadTid == 0)
 	{
-		M_PRINTF("Port open failed (CreateThread UpdatePadThread).\n");
+		M_DEBUG("Port open failed (CreateThread UpdatePadThread).\n");
 		return 0;
 	}
 
@@ -731,7 +731,7 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 
 	if(padState[port][slot].querypadTid == 0)
 	{
-		M_PRINTF("Port open failed (CreateThread QueryPadThread).\n");
+		M_DEBUG("Port open failed (CreateThread QueryPadThread).\n");
 		return 0;
 	}
 
@@ -746,7 +746,7 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 
 	if(padState[port][slot].setmainmodeTid == 0)
 	{
-		M_PRINTF("Port open failed (CreateThread SetMainModeThread)\n.");
+		M_DEBUG("Port open failed (CreateThread SetMainModeThread)\n.");
 		return 0;
 	}
 
@@ -761,7 +761,7 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 
 	if(padState[port][slot].setactalignTid == 0)
 	{
-		M_PRINTF("Port open failed (CreateThread SetActAlignThread).\n");
+		M_DEBUG("Port open failed (CreateThread SetActAlignThread).\n");
 		return 0;
 	}
 
@@ -776,7 +776,7 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 
 	if(padState[port][slot].setbuttoninfoTid == 0)
 	{
-		M_PRINTF("Port open failed (CreateThread SetButtonInfoThread).\n");
+		M_DEBUG("Port open failed (CreateThread SetButtonInfoThread).\n");
 		return 0;
 	}
 
@@ -791,7 +791,7 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 
 	if(padState[port][slot].setvrefparamTid == 0)
 	{
-		M_PRINTF("Port open failed (CreateThread SetVrefParamThread).\n");
+		M_DEBUG("Port open failed (CreateThread SetVrefParamThread).\n");
 		return 0;
 	}
 
@@ -802,7 +802,7 @@ s32 padPortOpen(s32 port, s32 slot, s32 pad_area_ee_addr, u32 *buf)
 	}
 	else
 	{
-		M_PRINTF("Port open failed, busy.\n");
+		M_DEBUG("Port open failed, busy.\n");
 		return 0;
 	}
 

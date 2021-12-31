@@ -14,11 +14,11 @@ IRX_ID(MODNAME, MAJOR_VER, MINOR_VER);
 
 int _start(int argc, char** argv)
 {
-    M_PRINTF("IEEE1394 Driver v%d.%d\n", MAJOR_VER, MINOR_VER);
+    M_DEBUG("IEEE1394 Driver v%d.%d\n", MAJOR_VER, MINOR_VER);
 
     // initialize the SCSI driver
     if (scsi_init() != 0) {
-        M_PRINTF("ERROR: initializing SCSI driver!\n");
+        M_DEBUG("ERROR: initializing SCSI driver!\n");
         return MODULE_NO_RESIDENT_END;
     }
 

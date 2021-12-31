@@ -238,7 +238,7 @@ void handleTimerList(void) {
 			timer->delayCount--;
 
 		while (memPool.timerListStart && (memPool.timerListStart->delayCount == 0)) {
-			dbg_printf("timer expired\n");
+			M_DEBUG("timer expired\n");
 			timer = memPool.timerListStart;
 
 			memPool.timerListStart = timer->next;
@@ -376,10 +376,10 @@ int _start(int argc, char *argv[]) {
 
 	printf(WELCOME_STR);
 
-	dbg_printf("library entries...\n");
+	M_DEBUG("library entries...\n");
 
 	if (RegisterLibraryEntries(&_exp_usbd) != 0) {
-		dbg_printf("RegisterLibraryEntries failed\n");
+		M_DEBUG("RegisterLibraryEntries failed\n");
 		return MODULE_NO_RESIDENT_END;
 	}
 
@@ -391,7 +391,7 @@ int _start(int argc, char *argv[]) {
 
 	hcdInit();
 
-	dbg_printf("Init done\n");
+	M_DEBUG("Init done\n");
 	return MODULE_RESIDENT_END;
 }
 

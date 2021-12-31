@@ -660,7 +660,7 @@ s32 padInit(void * ee_addr)
 
 	if(padman_init == 1)
 	{
-		M_PRINTF("Refresh request from EE\n.");
+		M_DEBUG("Refresh request from EE\n.");
 		padEnd();
 	}
 
@@ -700,7 +700,7 @@ s32 padInit(void * ee_addr)
 
 	if( vblankData.eventflag == 0)
 	{
-		M_PRINTF("padInit: CreateEventFlag failed (%d).\n", vblankData.eventflag);
+		M_DEBUG("padInit: CreateEventFlag failed (%d).\n", vblankData.eventflag);
 		return 0;
 	}
 
@@ -713,7 +713,7 @@ s32 padInit(void * ee_addr)
 
 	if(vblankData.tid_2 == 0)
 	{
-		M_PRINTF("padInit: CreateThread TransferThread failed (%d)\n.", vblankData.tid_2);
+		M_DEBUG("padInit: CreateThread TransferThread failed (%d)\n.", vblankData.tid_2);
 		return 0;
 	}
 
@@ -728,7 +728,7 @@ s32 padInit(void * ee_addr)
 
 	if(vblankData.tid_1 == 0)
 	{
-		M_PRINTF("padInit: CreateThread MainThread failed (%d)\n.", vblankData.tid_1);
+		M_DEBUG("padInit: CreateThread MainThread failed (%d)\n.", vblankData.tid_1);
 		return 0;
 	}
 

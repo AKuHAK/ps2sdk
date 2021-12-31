@@ -18,7 +18,7 @@
 #define MODNAME "AHXplayer" // module name
 #define MODVERSION "1.0b"   // module version
 #define MODAUTHOR  "Raizor"   // module author
-#define M_PRINTF(format, args...)	printf(MODNAME ": " format, ## args) // module printf
+#define M_DEBUG(format, args...)	printf(MODNAME ": " format, ## args) // module printf
 
 // LIBSD defines
 #define SD_CORE_1			1
@@ -125,7 +125,7 @@ void AHX_Thread(void* param)
 	// check sema created successfully, or exit
 	if(transfer_sema <= 0) {
 		#ifndef COMPACT_CODE
-			M_PRINTF("FATAL - Failed to create semaphore!\n");
+			M_DEBUG("FATAL - Failed to create semaphore!\n");
 		#endif
 		ExitDeleteThread();
 	}
@@ -135,20 +135,20 @@ void AHX_Thread(void* param)
 	pcmbuf = AllocSysMemory(0, 0xF00*8, NULL); // enough to hold 8 full AHX-PCM decoded chunks (0xF00 per chunk)
 	if(spubuf == NULL) {
 		#ifndef COMPACT_CODE
-		M_PRINTF("FATAL - Failed to allocate memory for sound buffer!\n");
+		M_DEBUG("FATAL - Failed to allocate memory for sound buffer!\n");
 		#endif
 		ExitDeleteThread();
 	}
 
 	// print version #
 	#ifndef COMPACT_CODE
-		M_PRINTF("AHXplayer %s Started\n", MODVERSION);
+		M_DEBUG("AHXplayer %s Started\n", MODVERSION);
 	#endif
 
 	AHX_ClearSoundBuffers();
 
 	#ifndef COMPACT_CODE
-		M_PRINTF("Memory Allocated. %d bytes left.\n",QueryTotalFreeMemSize());
+		M_DEBUG("Memory Allocated. %d bytes left.\n",QueryTotalFreeMemSize());
 	#endif
 
 	// Init the RPC server
@@ -355,7 +355,7 @@ void* AHX_Init(unsigned int* sbuff)
 	if (play_tid > 0) StartThread(play_tid,0);
 	else {
 		#ifndef COMPACT_CODE
-		M_PRINTF("FATAL - Failed to start playing thread!\n");
+		M_DEBUG("FATAL - Failed to start playing thread!\n");
 		#endif
 		ExitDeleteThread();
 	}
@@ -402,7 +402,7 @@ void* AHX_LoadSong(unsigned int* sbuff)
 	AHX_Play(sbuff);
 
 	#ifndef COMPACT_CODE
-		M_PRINTF("Memory Allocated. %d bytes left.\n",QueryTotalFreeMemSize());
+		M_DEBUG("Memory Allocated. %d bytes left.\n",QueryTotalFreeMemSize());
 	#endif
 
 	return sbuff; // return number of subsongs

@@ -6,6 +6,8 @@
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
 
+# IOP_CFLAGS += -DDEBUG
+
 IOP_BIN ?= fileXio.irx
 
 IOP_OBJS = fileXio_iop.o imports.o

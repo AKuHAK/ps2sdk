@@ -31,7 +31,7 @@ extern struct irx_export_table _exp_libsd;
 // 0x01,0x01
 IRX_ID(MODNAME, 1, 1);
 
-#define M_PRINTF(format, args...)	printf(MODNAME ": " format, ## args)
+#define M_DEBUG(format, args...)	printf(MODNAME ": " format, ## args)
 
 // block.c
 extern u32 BlockTransBuff[2];

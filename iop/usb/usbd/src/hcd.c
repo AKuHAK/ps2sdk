@@ -72,7 +72,7 @@ Endpoint *openDeviceEndpoint(Device *dev, UsbEndpointDescriptor *endpDesc, u32 a
 	Endpoint *newEp = allocEndpointForDevice(dev, alignFlag);
 
 	if (!newEp) {
-		dbg_printf("ran out of endpoints\n");
+		M_DEBUG("ran out of endpoints\n");
 		return NULL;
 	}
 
@@ -85,7 +85,7 @@ Endpoint *openDeviceEndpoint(Device *dev, UsbEndpointDescriptor *endpDesc, u32 a
 			td = (HcTD *)allocIsoTd();
 			if (!td) {
 				cleanUpFunc(dev, newEp);
-				dbg_printf("Open ISOC EP: no TDs left\n");
+				M_DEBUG("Open ISOC EP: no TDs left\n");
 				return NULL;
 			}
 		} else if (type == USB_ENDPOINT_XFER_CONTROL) {
@@ -110,7 +110,7 @@ Endpoint *openDeviceEndpoint(Device *dev, UsbEndpointDescriptor *endpDesc, u32 a
 
 				// todo: add bandwidth scheduling
 
-				dbg_printf("opening INT endpoint (%d - %p), interval %d, list %d\n", newEp->id, newEp, endpDesc->bInterval, endpType);
+				M_DEBUG("opening INT endpoint (%d - %p), interval %d, list %d\n", newEp->id, newEp, endpDesc->bInterval, endpType);
 			} else
 				endpType = TYPE_BULK;
 
@@ -149,7 +149,7 @@ Endpoint *openDeviceEndpoint(Device *dev, UsbEndpointDescriptor *endpDesc, u32 a
 	if (!td) {
 		td = allocTd();
 		if (!td) {
-			dbg_printf("Ran out of TDs\n");
+			M_DEBUG("Ran out of TDs\n");
 			cleanUpFunc(dev, newEp);
 			return NULL;
 		}
@@ -236,7 +236,7 @@ void hcdProcessIntr(void) {
 	intrFlags = memPool.ohciRegs->HcInterruptStatus & memPool.ohciRegs->HcInterruptEnable;
 
 	if (intrFlags & OHCI_INT_SO) {
-		dbg_printf("HC: Scheduling overrun\n");
+		M_DEBUG("HC: Scheduling overrun\n");
 		memPool.ohciRegs->HcInterruptStatus = OHCI_INT_SO;
 		intrFlags &= ~OHCI_INT_SO;
 	}
@@ -280,7 +280,7 @@ void hcdProcessIntr(void) {
 	}
 
 	if (intrFlags & OHCI_INT_RHSC) {
-		dbg_printf("RHSC\n");
+		M_DEBUG("RHSC\n");
 		memPool.ohciRegs->HcInterruptStatus = OHCI_INT_RHSC;
 		handleRhsc();
 		intrFlags &= ~OHCI_INT_RHSC;
@@ -288,7 +288,7 @@ void hcdProcessIntr(void) {
 
 	intrFlags &= ~OHCI_INT_MIE;
 	if (intrFlags) {
-		dbg_printf("Disable intr: %d\n", intrFlags);
+		M_DEBUG("Disable intr: %d\n", intrFlags);
 		memPool.ohciRegs->HcInterruptDisable = intrFlags;
 	}
 }
@@ -321,7 +321,7 @@ int usbdIntrHandler(void *arg) {
 int initHardware(void) {
 	unsigned int i;
 
-	dbg_printf("Host Controller...\n");
+	M_DEBUG("Host Controller...\n");
 	memPool.ohciRegs->HcInterruptDisable = ~0;
 	memPool.ohciRegs->HcCommandStatus = OHCI_COM_HCR;
 	memPool.ohciRegs->HcControl = 0;
@@ -331,7 +331,7 @@ int initHardware(void) {
 
 		asm volatile("lw $zero, 0xffffffffbfc00000\n");
 	}
-	dbg_printf("HC reset done\n");
+	M_DEBUG("HC reset done\n");
 	*(volatile u32*)0xBF801570 |= 0x800 << 16;
 	*(volatile u32*)0xBF801680 = 1;
 
@@ -345,7 +345,7 @@ int initHcdStructs(void) {
 
 	initHardware();
 
-	dbg_printf("Structs...\n");
+	M_DEBUG("Structs...\n");
 
 	memPool.hcHCCA = NULL;
 	memPool.hcIsoTdBuf			= (HcIsoTD *)	((u8*)memPool.hcHCCA + sizeof(HcCA));
@@ -487,11 +487,11 @@ int hcdInit(void) {
 	iop_event_t event;
 	iop_thread_t thread;
 
-	dbg_printf("Threads and events...\n");
+	M_DEBUG("Threads and events...\n");
 	event.attr = event.option = event.bits = 0;
 	hcdIrqEvent = CreateEventFlag(&event);
 
-	dbg_printf("Intr handler...\n");
+	M_DEBUG("Intr handler...\n");
 	DisableIntr(IOP_IRQ_USB, &irqRes);
 	if (RegisterIntrHandler(IOP_IRQ_USB, 1, usbdIntrHandler, (void *)hcdIrqEvent) != 0) {
 		if (irqRes == IOP_IRQ_USB)
@@ -499,7 +499,7 @@ int hcdInit(void) {
 		return 1;
 	}
 
-	dbg_printf("HCD thread...\n");
+	M_DEBUG("HCD thread...\n");
 	thread.attr = TH_C;
 	thread.option = 0;
 	thread.thread = hcdIrqThread;
@@ -508,16 +508,16 @@ int hcdInit(void) {
 	hcdTid = CreateThread(&thread);
 	StartThread(hcdTid, (void *)hcdIrqEvent);
 
-	dbg_printf("Callback thread...\n");
+	M_DEBUG("Callback thread...\n");
 	initCallbackThread();
 
-	dbg_printf("HCD init...\n");
+	M_DEBUG("HCD init...\n");
 	initHcdStructs();
 
-	dbg_printf("Hub driver...\n");
+	M_DEBUG("Hub driver...\n");
 	initHubDriver();
 
-	dbg_printf("Enabling interrupts...\n");
+	M_DEBUG("Enabling interrupts...\n");
 	EnableIntr(IOP_IRQ_USB);
 
 	return 0;

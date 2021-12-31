@@ -381,7 +381,7 @@ static int fat_getPartitionBootSector(struct block_device* bd, unsigned int sect
         partBpb->dataStart  = partBpb->rootDirStart;
     }
 
-    M_PRINTF("Fat type %u Id %s \n", partBpb->fatType, partBpb->fatId);
+    M_DEBUG("Fat type %u Id %s \n", partBpb->fatType, partBpb->fatId);
     free(sbuf);
     return 1;
 }
@@ -1013,17 +1013,17 @@ int fat_mount(struct block_device* bd)
     }
 
     if (fatd == NULL) {
-        M_PRINTF("unable to allocate drive!\n");
+        M_DEBUG("unable to allocate drive!\n");
         return -1;
     }
 
     if (fatd->bd != NULL) {
-        M_PRINTF("mount ERROR: alread mounted\n");
+        M_DEBUG("mount ERROR: alread mounted\n");
         fat_forceUnmount(fatd->bd);
     }
 
     if (fatd->cache != NULL) {
-        M_PRINTF("ERROR: cache already created\n");
+        M_DEBUG("ERROR: cache already created\n");
         scache_kill(fatd->cache);
         fatd->cache = NULL;
     }
@@ -1033,7 +1033,7 @@ int fat_mount(struct block_device* bd)
 
     fatd->cache = scache_init(bd);
     if (fatd->cache == NULL) {
-        M_PRINTF("Error - scache_init failed\n");
+        M_DEBUG("Error - scache_init failed\n");
         return -1;
     }
 

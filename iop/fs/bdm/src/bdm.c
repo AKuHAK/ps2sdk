@@ -47,7 +47,7 @@ void bdm_connect_bd(struct block_device* bd)
 {
     int i;
 
-    M_PRINTF("connecting device %s%dp%d id=0x%x\n", bd->name, bd->devNr, bd->parNr, bd->parId);
+    M_DEBUG("connecting device %s%dp%d id=0x%x\n", bd->name, bd->devNr, bd->parNr, bd->parId);
 
     for (i = 0; i < MAX_CONNECTIONS; ++i) {
         if (g_mount[i].bd == NULL) {
@@ -63,12 +63,12 @@ void bdm_disconnect_bd(struct block_device* bd)
 {
     int i;
 
-    M_PRINTF("disconnecting device %s%dp%d id=0x%x\n", bd->name, bd->devNr, bd->parNr, bd->parId);
+    M_DEBUG("disconnecting device %s%dp%d id=0x%x\n", bd->name, bd->devNr, bd->parNr, bd->parId);
 
     for (i = 0; i < MAX_CONNECTIONS; ++i) {
         if (g_mount[i].bd == bd) {
             g_mount[i].fs->disconnect_bd(bd);
-            M_PRINTF("%s%dp%d unmounted from %s\n", bd->name, bd->devNr, bd->parNr, g_mount[i].fs->name);
+            M_DEBUG("%s%dp%d unmounted from %s\n", bd->name, bd->devNr, bd->parNr, g_mount[i].fs->name);
             g_mount[i].bd = NULL;
             g_mount[i].fs = NULL;
             if (g_cb != NULL)
@@ -81,7 +81,7 @@ void bdm_connect_fs(struct file_system* fs)
 {
     int i;
 
-    M_PRINTF("connecting fs %s\n", fs->name);
+    M_DEBUG("connecting fs %s\n", fs->name);
 
     for (i = 0; i < MAX_CONNECTIONS; ++i) {
         if (g_fs[i] == NULL) {
@@ -98,7 +98,7 @@ void bdm_disconnect_fs(struct file_system* fs)
 {
     int i;
 
-    M_PRINTF("disconnecting fs %s\n", fs->name);
+    M_DEBUG("disconnecting fs %s\n", fs->name);
 
     // Unmount fs from block devices
     for (i = 0; i < MAX_CONNECTIONS; ++i) {
@@ -138,7 +138,7 @@ static void bdm_try_mount(struct bdm_mounts* mount)
     for (i = 0; i < MAX_CONNECTIONS; ++i) {
         if (g_fs[i] != NULL) {
             if (g_fs[i]->connect_bd(mount->bd) == 0) {
-                M_PRINTF("%s%dp%d mounted to %s\n", mount->bd->name, mount->bd->devNr, mount->bd->parNr, g_fs[i]->name);
+                M_DEBUG("%s%dp%d mounted to %s\n", mount->bd->name, mount->bd->devNr, mount->bd->parNr, g_fs[i]->name);
                 mount->fs = g_fs[i];
                 if (g_cb != NULL)
                     SetEventFlag(bdm_event, BDM_EVENT_CB_MOUNT);
@@ -153,7 +153,7 @@ static void bdm_thread(void* arg)
     u32 EFBits;
     int i;
 
-    M_PRINTF("BDM event thread running\n");
+    M_DEBUG("BDM event thread running\n");
 
     while (1) {
         WaitEventFlag(bdm_event, BDM_EVENT_CB_MOUNT | BDM_EVENT_CB_UMOUNT | BDM_EVENT_MOUNT, WEF_OR | WEF_CLEAR, &EFBits);

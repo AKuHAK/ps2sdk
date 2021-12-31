@@ -59,7 +59,7 @@ void rpc_thread_change_slot()
 {
 	if( sceSifCheckInit() == 0)
 	{
-		M_PRINTF("Sif not initialized.\n");
+		M_DEBUG("Sif not initialized.\n");
 		sceSifInit();
 	}
 
@@ -82,7 +82,7 @@ void rpc_thread_get_slot_number()
 {
 	if( sceSifCheckInit() == 0)
 	{
-		M_PRINTF("Sif not initialized.\n");
+		M_DEBUG("Sif not initialized.\n");
 		sceSifInit();
 	}
 
@@ -103,7 +103,7 @@ void RpcThreadGetConnection()
 {
 	if( sceSifCheckInit() == 0)
 	{
-		M_PRINTF("Sif not initialized.\n");
+		M_DEBUG("Sif not initialized.\n");
 		sceSifInit();
 	}
 
@@ -124,7 +124,7 @@ void RpcThreadPortClose()
 {
 	if( sceSifCheckInit() == 0)
 	{
-		M_PRINTF("Sif not initialized.\n");
+		M_DEBUG("Sif not initialized.\n");
 		sceSifInit();
 	}
 
@@ -146,7 +146,7 @@ void RpcThreadPortOpen()
 {
 	if( sceSifCheckInit() == 0)
 	{
-		M_PRINTF("Sif not initialized.\n");
+		M_DEBUG("Sif not initialized.\n");
 		sceSifInit();
 	}
 

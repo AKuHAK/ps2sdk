@@ -149,7 +149,7 @@ ps2ip_setconfig(const t_ip_info* pInfo)
 
 static void InitDone(void* pvArg)
 {
-	dbgprintf("InitDone: TCPIP initialized\n");
+	M_DEBUG("InitDone: TCPIP initialized\n");
 	sys_sem_signal((sys_sem_t*)pvArg);
 }
 
@@ -225,7 +225,7 @@ int _start(int argc, char *argv[]){
 	sys_sem_t	Sema;
 	int		result;
 
-	dbgprintf("PS2IP: Module Loaded.\n");
+	M_DEBUG("PS2IP: Module Loaded.\n");
 
 	if ((result = RegisterLibraryEntries(&_exp_ps2ip)) != 0)
 	{
@@ -233,18 +233,18 @@ int _start(int argc, char *argv[]){
 		return MODULE_NO_RESIDENT_END;
 	} else {
 		sys_sem_new(&Sema, 0);
-		dbgprintf("PS2IP: Calling tcpip_init\n");
+		M_DEBUG("PS2IP: Calling tcpip_init\n");
 		tcpip_init(InitDone,&Sema);
 
 		sys_arch_sem_wait(&Sema, 0);
 		sys_sem_free(&Sema);
 
-		dbgprintf("PS2IP: tcpip_init called\n");
+		M_DEBUG("PS2IP: tcpip_init called\n");
 #if NOSYS
 		InitTimer();
 #endif
 
-		dbgprintf("PS2IP: System Initialised\n");
+		M_DEBUG("PS2IP: System Initialised\n");
 	}
 
 	return MODULE_RESIDENT_END;

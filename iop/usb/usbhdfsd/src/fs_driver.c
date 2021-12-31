@@ -222,7 +222,7 @@ static int fs_open(iop_file_t* fd, const char *name, int flags, int mode) {
 
 	_fs_lock();
 
-	XPRINTF("USBHDFSD: fs_open called: %s flags=%X mode=%X \n", name, flags, mode) ;
+	M_DEBUG("fs_open called: %s flags=%X mode=%X \n", name, flags, mode) ;
 
 	fatd = fat_getData(fd->unit);
 	if (fatd == NULL) { _fs_unlock(); return -ENODEV; }
@@ -233,7 +233,7 @@ static int fs_open(iop_file_t* fd, const char *name, int flags, int mode) {
 
 	//find the file
 	cluster = 0; //allways start from root
-	XPRINTF("USBHDFSD: Calling fat_getFileStartCluster from fs_open\n");
+	M_DEBUG("Calling fat_getFileStartCluster from fs_open\n");
 	ret = fat_getFileStartCluster(fatd, name, &cluster, &rec->dirent.fatdir);
 	if (ret < 0 && ret != -ENOENT) {
 		_fs_unlock();
@@ -255,7 +255,7 @@ static int fs_open(iop_file_t* fd, const char *name, int flags, int mode) {
 
 		escapeNotExist = 1;
 		if (flags & O_CREAT) {
-			XPRINTF("USBHDFSD: FAT I: O_CREAT detected!\n");
+			M_DEBUG("FAT I: O_CREAT detected!\n");
 			escapeNotExist = 0;
 		}
 
@@ -269,11 +269,11 @@ static int fs_open(iop_file_t* fd, const char *name, int flags, int mode) {
 		}
 		//the file already exist but flags is set to truncate
 		if (ret == EEXIST && (flags & O_TRUNC)) {
-			XPRINTF("USBHDFSD: FAT I: O_TRUNC detected!\n");
+			M_DEBUG("FAT I: O_TRUNC detected!\n");
 			ret = fat_truncateFile(fatd, cluster, rec->sfnSector, rec->sfnOffset);
 			if (ret < 0) {
 				FLUSH_SECTORS(fatd);
-				XPRINTF("USBHDFSD: FAT E: failed to truncate!\n");
+				M_DEBUG("FAT E: failed to truncate!\n");
 				_fs_unlock();
 				return ret;
 			}
@@ -281,7 +281,7 @@ static int fs_open(iop_file_t* fd, const char *name, int flags, int mode) {
 
 		//find the file
 		cluster = 0; //allways start from root
-		XPRINTF("USBHDFSD: Calling fat_getFileStartCluster from fs_open after file creation\n");
+		M_DEBUG("Calling fat_getFileStartCluster from fs_open after file creation\n");
 		ret = fat_getFileStartCluster(fatd, name, &cluster, &rec->dirent.fatdir);
 	}
 
@@ -302,7 +302,7 @@ static int fs_open(iop_file_t* fd, const char *name, int flags, int mode) {
 	rec->sizeChange  = 0;
 
 	if ((flags & O_APPEND) && (flags & O_WRONLY)) {
-		XPRINTF("USBHDFSD: FAT I: O_APPEND detected!\n");
+		M_DEBUG("FAT I: O_APPEND detected!\n");
 		rec->filePos = rec->dirent.fatdir.size;
 	}
 
@@ -496,7 +496,7 @@ static int fs_remove(iop_file_t *fd, const char *name) {
 	}
 
 	cluster = 0; //allways start from root
-	XPRINTF("USBHDFSD: Calling fat_getFileStartCluster from fs_remove\n");
+	M_DEBUG("Calling fat_getFileStartCluster from fs_remove\n");
 	result = fat_getFileStartCluster(fatd, name, &cluster, &fatdir);
 	if (result < 0) {
 		_fs_unlock();
@@ -532,7 +532,7 @@ static int fs_mkdir(iop_file_t *fd, const char *name, int mode) {
 	fatd = fat_getData(fd->unit);
 	if (fatd == NULL) { _fs_unlock(); return -ENODEV; }
 
-	XPRINTF("USBHDFSD: fs_mkdir: name=%s \n",name);
+	M_DEBUG("fs_mkdir: name=%s \n",name);
 	ret = fat_createFile(fatd, name, 1, 0, &cluster,  &sfnSector, &sfnOffset);
 
 	//directory of the same name already exist
@@ -570,7 +570,7 @@ static int fs_dopen(iop_file_t *fd, const char *name)
 
 	_fs_lock();
 
-	XPRINTF("USBHDFSD: fs_dopen called: unit %d name %s\n", fd->unit, name);
+	M_DEBUG("fs_dopen called: unit %d name %s\n", fd->unit, name);
 
 	fatd = fat_getData(fd->unit);
 	if (fatd == NULL) { _fs_unlock(); return -ENODEV; }
@@ -608,7 +608,7 @@ static int fs_dclose(iop_file_t *fd)
 		return -EBADF;
 
 	_fs_lock();
-	XPRINTF("USBHDFSD: fs_dclose called: unit %d\n", fd->unit);
+	M_DEBUG("fs_dclose called: unit %d\n", fd->unit);
 	if (rec->dirent.file_flag != FS_FILE_FLAG_FOLDER) {
 		_fs_unlock();
 		return -ENOTDIR;
@@ -632,7 +632,7 @@ static int fs_dread(iop_file_t *fd, iox_dirent_t *buffer)
 
 	_fs_lock();
 
-	XPRINTF("USBHDFSD: fs_dread called: unit %d\n", fd->unit);
+	M_DEBUG("fs_dread called: unit %d\n", fd->unit);
 
 	fatd = fat_getData(fd->unit);
 	if (fatd == NULL) { _fs_unlock(); return -ENODEV; }
@@ -672,12 +672,12 @@ static int fs_getstat(iop_file_t *fd, const char *name, iox_stat_t *stat)
 
 	_fs_lock();
 
-	XPRINTF("USBHDFSD: fs_getstat called: unit %d name %s\n", fd->unit, name);
+	M_DEBUG("fs_getstat called: unit %d name %s\n", fd->unit, name);
 
 	fatd = fat_getData(fd->unit);
 	if (fatd == NULL) { _fs_unlock(); return -ENODEV; }
 
-	XPRINTF("USBHDFSD: Calling fat_getFileStartCluster from fs_getstat\n");
+	M_DEBUG("Calling fat_getFileStartCluster from fs_getstat\n");
 	ret = fat_getFileStartCluster(fatd, name, &cluster, &fatdir);
 	if (ret < 0) {
 		_fs_unlock();
@@ -750,7 +750,7 @@ int fs_rename(iop_file_t *fd, const char *path, const char *newpath)
 
 	//find the file
 	cluster = 0; //allways start from root
-	XPRINTF("USBHDFSD: Calling fat_getFileStartCluster from fs_rename\n");
+	M_DEBUG("Calling fat_getFileStartCluster from fs_rename\n");
 	ret = fat_getFileStartCluster(fatd, path, &cluster, &fatdir);
 	if (ret < 0 && ret != -ENOENT) {
 		_fs_unlock();

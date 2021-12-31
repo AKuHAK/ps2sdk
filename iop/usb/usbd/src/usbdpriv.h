@@ -22,9 +22,9 @@
 #define OHCI_REG_BASE 0xBF801600
 
 #ifdef DEBUG
-#define dbg_printf			printf
+#define M_DEBUG(format, args...)	printf("usbd: " format, ##args)
 #else
-#define dbg_printf(a...)	(void)0
+#define M_DEBUG(format, args...)
 #endif
 
 #define READ_UINT16(a) (((u8*)a)[0] | (((u8 *)a)[1] << 8))

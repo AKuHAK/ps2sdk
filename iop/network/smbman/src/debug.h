@@ -7,9 +7,9 @@
 #define __DEBUG_H__
 
 #ifdef DEBUG
-#define DPRINTF(args...)	printf(args)
+#define M_DEBUG(args...)	printf(args)
 #else
-#define DPRINTF(args...)	do { } while(0)
+#define M_DEBUG(args...)
 #endif
 
 #endif

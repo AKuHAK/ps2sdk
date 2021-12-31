@@ -252,7 +252,7 @@ int setupBulkTransfer(Endpoint *ep) {
 		return 1;
 	} else {
 		// endpoint error
-		dbg_printf("ERROR Endpoint error\n");
+		M_DEBUG("ERROR Endpoint error\n");
 		removeEndpointFromQueue(ep);
 		return 0;
 	}
@@ -298,7 +298,7 @@ int doControlTransfer(Endpoint *ep, IoRequest *req,
 					   void *destdata, void *callback)
 {
 	if (req->busyFlag) {
-		dbg_printf("ERROR: doControlTransfer: IoReq busy\n");
+		M_DEBUG("ERROR: doControlTransfer: IoReq busy\n");
 		return USB_RC_BUSY;
 	}
 

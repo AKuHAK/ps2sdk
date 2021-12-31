@@ -39,7 +39,7 @@
 // CRC32: C2337807
 IRX_ID(MODNAME, 2, 7);
 
-#define M_PRINTF(format, args...) \
+#define M_DEBUG(format, args...) \
     printf(MODNAME ": " format, ##args)
 
 #define BANNER  "ATA device driver %s - Copyright (c) 2003 Marcus R. Brown\n"
@@ -221,7 +221,7 @@ int _start(int argc, char *argv[])
     printf(BANNER, VERSION);
 
     if (!(SPD_REG16(SPD_R_REV_3) & SPD_CAPS_ATA) || !(SPD_REG16(SPD_R_REV_8) & 0x02)) {
-        M_PRINTF("HDD is not connected, exiting.\n");
+        M_DEBUG("HDD is not connected, exiting.\n");
         goto out;
     }
 
@@ -245,14 +245,14 @@ int _start(int argc, char *argv[])
         but the upper 8-bits contain some random value. Hence perform a 16-bit read instead. */
     if (SPD_REG16(0x20) != 1) {
         ata_gamestar_workaround = 1;
-        M_PRINTF("Compatible adaptor detected.\n");
+        M_DEBUG("Compatible adaptor detected.\n");
     } else {
         ata_gamestar_workaround = 0;
     }
 #endif
 
     if ((ata_evflg = ata_create_event_flag()) < 0) {
-        M_PRINTF("Couldn't create event flag, exiting.\n");
+        M_DEBUG("Couldn't create event flag, exiting.\n");
         res = 1;
         goto out;
     }
@@ -272,12 +272,12 @@ int _start(int argc, char *argv[])
     dev9RegisterShutdownCb(15, &ata_shutdown_cb);
 
     if ((res = RegisterLibraryEntries(&_exp_atad)) != 0) {
-        M_PRINTF("Library is already registered, exiting.\n");
+        M_DEBUG("Library is already registered, exiting.\n");
         goto out;
     }
 
     res = 0;
-    M_PRINTF("Driver loaded.\n");
+    M_DEBUG("Driver loaded.\n");
 out:
     return res;
 }
@@ -349,7 +349,7 @@ static int gen_ata_wait_busy(int bits)
         DelayThread(delay);
     }
 
-    M_PRINTF("Timeout while waiting on busy (0x%02x).\n", bits);
+    M_DEBUG("Timeout while waiting on busy (0x%02x).\n", bits);
     return ATA_RES_ERR_TIMEOUT;
 }
 
@@ -440,7 +440,7 @@ int ata_io_start(void *buf, u32 blkcount, u16 feature, u16 nsector, u16 sector, 
             case ATA_C_IDENTIFY_PACKET_DEVICE:
                 break;
             default:
-                M_PRINTF("Error: Device %d is not ready.\n", device);
+                M_DEBUG("Error: Device %d is not ready.\n", device);
                 return ATA_RES_ERR_NOTREADY;
         }
     }
@@ -513,7 +513,7 @@ static int ata_pio_transfer(ata_cmd_state_t *cmd_state)
     u16 status = ata_hwport->r_status & 0xff;
 
     if (status & ATA_STAT_ERR) {
-        M_PRINTF("Error: PIO cmd error: status 0x%02x, error 0x%02x.\n", status, ata_get_error());
+        M_DEBUG("Error: PIO cmd error: status 0x%02x, error 0x%02x.\n", status, ata_get_error());
         return ATA_RES_ERR_IO;
     }
 
@@ -571,18 +571,18 @@ static int ata_dma_complete(void *buf, u32 blkcount, int dir)
         WaitEventFlag(ata_evflg, ATA_EV_TIMEOUT | ATA_EV_COMPLETE, WEF_CLEAR | WEF_OR, &bits);
 
         if (bits & ATA_EV_TIMEOUT) { /* Timeout.  */
-            M_PRINTF("Error: DMA timeout.\n");
+            M_DEBUG("Error: DMA timeout.\n");
             return ATA_RES_ERR_TIMEOUT;
         }
         /* No DMA completion bit? Spurious interrupt.  */
         if (!(SPD_REG16(SPD_R_INTR_STAT) & 0x02)) {
             if (ata_hwport->r_control & 0x01) {
-                M_PRINTF("Error: Command error while doing DMA.\n");
-                M_PRINTF("Error: Command error status 0x%02x, error 0x%02x.\n", ata_hwport->r_status, ata_get_error());
+                M_DEBUG("Error: Command error while doing DMA.\n");
+                M_DEBUG("Error: Command error status 0x%02x, error 0x%02x.\n", ata_hwport->r_status, ata_get_error());
                 /* In v1.04, there was no check for ICRC. */
                 return ((ata_get_error() & ATA_ERR_ICRC) ? ATA_RES_ERR_ICRC : ATA_RES_ERR_IO);
             } else {
-                M_PRINTF("Warning: Got command interrupt, but not an error.\n");
+                M_DEBUG("Warning: Got command interrupt, but not an error.\n");
                 continue;
             }
         }
@@ -615,7 +615,7 @@ int ata_io_finish(void)
     if (type == 1 || type == 6) { /* Non-data commands.  */
         WaitEventFlag(ata_evflg, ATA_EV_TIMEOUT | ATA_EV_COMPLETE, WEF_CLEAR | WEF_OR, &bits);
         if (bits & ATA_EV_TIMEOUT) { /* Timeout.  */
-            M_PRINTF("Error: ATA timeout on a non-data command.\n");
+            M_DEBUG("Error: ATA timeout on a non-data command.\n");
             return ATA_RES_ERR_TIMEOUT;
         }
     } else if (type == 4) { /* DMA.  */
@@ -630,8 +630,8 @@ int ata_io_finish(void)
             dev9IntrEnable(SPD_INTR_ATA0);
             WaitEventFlag(ata_evflg, ATA_EV_TIMEOUT | ATA_EV_COMPLETE, WEF_CLEAR | WEF_OR, &bits);
             if (bits & ATA_EV_TIMEOUT) {
-                M_PRINTF("Error: ATA timeout on DMA completion, buffer stat %04x\n", SPD_REG16(0x38));
-                M_PRINTF("Error: istat %x, ienable %x\n", SPD_REG16(SPD_R_INTR_STAT), SPD_REG16(SPD_R_INTR_MASK));
+                M_DEBUG("Error: ATA timeout on DMA completion, buffer stat %04x\n", SPD_REG16(0x38));
+                M_DEBUG("Error: istat %x, ienable %x\n", SPD_REG16(SPD_R_INTR_STAT), SPD_REG16(SPD_R_INTR_MASK));
                 res = ATA_RES_ERR_TIMEOUT;
             }
         }
@@ -656,7 +656,7 @@ int ata_io_finish(void)
     if (ata_hwport->r_status & ATA_STAT_BUSY)
         res = ata_wait_busy();
     if ((stat = ata_hwport->r_status) & ATA_STAT_ERR) {
-        M_PRINTF("Error: Command error: status 0x%02x, error 0x%02x.\n", stat, ata_get_error());
+        M_DEBUG("Error: Command error: status 0x%02x, error 0x%02x.\n", stat, ata_get_error());
         /* In v1.04, there was no check for ICRC. */
         res = (ata_get_error() & ATA_ERR_ICRC) ? ATA_RES_ERR_ICRC : ATA_RES_ERR_IO;
     }
@@ -668,7 +668,7 @@ finish:
     dev9LEDCtl(0);
 
     if (res)
-        M_PRINTF("error: ATA failed, %d\n", res);
+        M_DEBUG("error: ATA failed, %d\n", res);
 
     return res;
 }
@@ -794,7 +794,7 @@ int ata_device_smart_get_status(int device)
 
     /* Check to see if the report exceeded the threshold.  */
     if (((ata_hwport->r_lcyl & 0xFF) != 0x4f) || ((ata_hwport->r_hcyl & 0xFF) != 0xc2)) {
-        M_PRINTF("Error: SMART report exceeded threshold.\n");
+        M_DEBUG("Error: SMART report exceeded threshold.\n");
         return 1;
     }
 
@@ -1021,7 +1021,7 @@ static int ata_init_devices(ata_devinfo_t *devinfo)
 
     ata_device_probe(&devinfo[0]);
     if (!devinfo[0].exists) {
-        M_PRINTF("Error: Unable to detect HDD 0.\n");
+        M_DEBUG("Error: Unable to detect HDD 0.\n");
         devinfo[1].exists = 0;
         return ATA_RES_ERR_NODEV; //Returns 0 in v1.04.
     }
@@ -1095,7 +1095,7 @@ static int ata_init_devices(ata_devinfo_t *devinfo)
         /* Call the proprietary identify command. */
 #ifdef ATA_SCE_AUTH_HDD
         if (ata_device_sce_identify_drive(i, ata_param) != 0) {
-            M_PRINTF("error: This is not SCE genuine HDD.\n");
+            M_DEBUG("error: This is not SCE genuine HDD.\n");
             memset(&devinfo[i], 0, sizeof(devinfo[i]));
         }
 #endif
