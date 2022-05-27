@@ -127,7 +127,7 @@ void trap(exception_type_t type, struct exception_frame *ex)
     TRAP_PRINTF("IOP Exception : %s\n", exception_type_name[type]);
     TRAP_PRINTF("EPC=%08x CAUSE=%08x SR=%08x BADVADDR=%08x DCIC=%08x\n", ex->epc, ex->cause, ex->sr, ex->badvaddr, ex->dcic);
     for (i = 0; i != 32; i += 4) {
-        TRAP_PRINTF("r[%02d]=%08x r[%02d]=%08x r[%02d]=%08x r[%02d]=%08x",
+        TRAP_PRINTF("r[%02d]=%08x r[%02d]=%08x r[%02d]=%08x r[%02d]=%08x\n",
                     i, ex->regs[i], i + 1, ex->regs[i + 1], i + 2, ex->regs[i + 2], i + 3, ex->regs[i + 3]);
     }
 
