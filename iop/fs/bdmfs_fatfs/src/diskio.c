@@ -7,52 +7,28 @@
 /* storage control modules to the FatFs module with a defined API.       */
 /*-----------------------------------------------------------------------*/
 
-#include "ff.h"			/* Obtains integer types */
-#include "diskio.h"		/* Declarations of disk functions */
+#include <bdm.h>
+#include <cdvdman.h>
 
-/* Definitions of physical drive number for each drive */
-#define DEV_USB		0	/* Example: Map USB to physical drive 0 */
-#define DEV_SD		1	/* Example: Map IEEE1394 to physical drive 1 */
-#define DEV_SDC		2	/* Example: Map MX4SIO to physical drive 2 */
+#include "ff.h"     /* Obtains integer types */
+#include "diskio.h" /* Declarations of disk functions */
 
+#include "fs_driver.h"
 
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */
 /*-----------------------------------------------------------------------*/
 
-DSTATUS disk_status (
-	BYTE pdrv		/* Physical drive number to identify the drive */
+DSTATUS disk_status(
+    BYTE pdrv /* Physical drive number to identify the drive */
 )
 {
-	DSTATUS stat;
-	int result;
+    DSTATUS stat;
+    int result;
 
-    result = 0;
+    result = (mounted_bd == NULL) ? STA_NODISK : FR_OK;
+
     return result;
-
-/* 	switch (pdrv) {
-	case DEV_USB :
-		result = USB_disk_status();
-
-		// translate the reslut code here
-
-		return stat;
-
-	case DEV_SD :
-		result = SD_disk_status();
-
-		// translate the reslut code here
-
-		return stat;
-
-	case DEV_SDC :
-		result = SDC_disk_status();
-
-		// translate the reslut code here
-
-		return stat;
-	}
-	return STA_NOINIT; */
 }
 
 
@@ -61,39 +37,16 @@ DSTATUS disk_status (
 /* Inidialize a Drive                                                    */
 /*-----------------------------------------------------------------------*/
 
-DSTATUS disk_initialize (
-	BYTE pdrv				/* Physical drive nmuber to identify the drive */
+DSTATUS disk_initialize(
+    BYTE pdrv /* Physical drive nmuber to identify the drive */
 )
 {
-	DSTATUS stat;
-	int result;
+    DSTATUS stat;
+    int result;
 
-    result = 0;
+    result = (mounted_bd == NULL) ? STA_NODISK : FR_OK;
+
     return result;
-
-	/* switch (pdrv) {
-	case DEV_USB :
-		result = USB_disk_initialize();
-
-		// translate the reslut code here
-
-		return stat;
-
-	case DEV_SD :
-		result = SD_disk_initialize();
-
-		// translate the reslut code here
-
-		return stat;
-
-	case DEV_SDC :
-		result = SDC_disk_initialize();
-
-		// translate the reslut code here
-
-		return stat;
-	}
-	return STA_NOINIT; */
 }
 
 
@@ -102,46 +55,18 @@ DSTATUS disk_initialize (
 /* Read Sector(s)                                                        */
 /*-----------------------------------------------------------------------*/
 
-DRESULT disk_read (
-	BYTE pdrv,		/* Physical drive nmuber to identify the drive */
-	BYTE *buff,		/* Data buffer to store read data */
-	LBA_t sector,	/* Start sector in LBA */
-	UINT count		/* Number of sectors to read */
+DRESULT disk_read(
+    BYTE pdrv,    /* Physical drive nmuber to identify the drive */
+    BYTE *buff,   /* Data buffer to store read data */
+    LBA_t sector, /* Start sector in LBA */
+    UINT count    /* Number of sectors to read */
 )
 {
-	DRESULT res;
-	int result;
+    DRESULT res;
 
-	switch (pdrv) {
-	case DEV_USB :
-		// translate the arguments here
+    res = mounted_bd->read(mounted_bd, sector, buff, count);
 
-		result = USB_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case DEV_SD :
-		// translate the arguments here
-
-		result = SD_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case DEV_SDC :
-		// translate the arguments here
-
-		result = SDC_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-	}
-
-	return RES_PARERR;
+    return (res == count) ? FR_OK : FR_DISK_ERR;
 }
 
 
@@ -152,46 +77,18 @@ DRESULT disk_read (
 
 #if FF_FS_READONLY == 0
 
-DRESULT disk_write (
-	BYTE pdrv,			/* Physical drive nmuber to identify the drive */
-	const BYTE *buff,	/* Data to be written */
-	LBA_t sector,		/* Start sector in LBA */
-	UINT count			/* Number of sectors to write */
+DRESULT disk_write(
+    BYTE pdrv,        /* Physical drive nmuber to identify the drive */
+    const BYTE *buff, /* Data to be written */
+    LBA_t sector,     /* Start sector in LBA */
+    UINT count        /* Number of sectors to write */
 )
 {
-	DRESULT res;
-	int result;
+    DRESULT res;
 
-	switch (pdrv) {
-	case DEV_USB :
-		// translate the arguments here
+    res = mounted_bd->write(mounted_bd, sector, buff, count);
 
-		result = USB_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case DEV_SD :
-		// translate the arguments here
-
-		result = SD_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case DEV_SDC :
-		// translate the arguments here
-
-		result = SDC_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-	}
-
-	return RES_PARERR;
+    return (res == count) ? FR_OK : FR_DISK_ERR;
 }
 
 #endif
@@ -201,35 +98,56 @@ DRESULT disk_write (
 /* Miscellaneous Functions                                               */
 /*-----------------------------------------------------------------------*/
 
-DRESULT disk_ioctl (
-	BYTE pdrv,		/* Physical drive nmuber (0..) */
-	BYTE cmd,		/* Control code */
-	void *buff		/* Buffer to send/receive control data */
+DRESULT disk_ioctl(
+    BYTE pdrv, /* Physical drive nmuber (0..) */
+    BYTE cmd,  /* Control code */
+    void *buff /* Buffer to send/receive control data */
 )
 {
-	DRESULT res;
-	int result;
+    DRESULT res;
 
-	switch (pdrv) {
-	case DEV_USB :
+    res = FR_OK;
 
-		// Process of the command for the RAM drive
+    switch (cmd) {
+        case CTRL_SYNC:
+            mounted_bd->flush(mounted_bd);
+            break;
+        case GET_SECTOR_COUNT:
+            *(unsigned int *)buff = mounted_bd->sectorCount;
+            break;
+        case GET_SECTOR_SIZE:
+            *(unsigned int *)buff = mounted_bd->sectorSize;
+            break;
+        case GET_BLOCK_SIZE:
+            *(unsigned int *)buff = 0;
+            break;
+    }
 
-		return res;
-
-	case DEV_SD :
-
-		// Process of the command for the MMC/SD card
-
-		return res;
-
-	case DEV_SDC :
-
-		// Process of the command the USB drive
-
-		return res;
-	}
-
-	return RES_PARERR;
+    return res;
 }
 
+DWORD get_fattime(void)
+{
+    // ps2 specific routine to get time and date
+    int year, month, day, hour, minute, sec;
+    sceCdCLOCK cdtime;
+
+    if (sceCdReadClock(&cdtime) != 0 && cdtime.stat == 0) {
+        sec = btoi(cdtime.second);
+        minute = btoi(cdtime.minute);
+        hour = btoi(cdtime.hour);
+        day = btoi(cdtime.day);
+        month = btoi(cdtime.month & 0x7F); // Ignore century bit (when an old CDVDMAN is used).
+        year = btoi(cdtime.year) + 2000;
+    } else {
+        year = 2005;
+        month = 1;
+        day = 6;
+        hour = 14;
+        minute = 12;
+        sec = 10;
+    }
+
+    /* Pack date and time into a DWORD variable */
+    return ((DWORD)(year - 1980) << 25) | ((DWORD)month << 21) | ((DWORD)day << 16) | ((DWORD)hour << 11) | ((DWORD)minute << 5) | ((DWORD)sec >> 1);
+}
