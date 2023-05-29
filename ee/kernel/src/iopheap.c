@@ -62,7 +62,7 @@ int SifInitIopHeap()
 void SifExitIopHeap()
 {
     _ih_caps = 0;
-    memset(&_ih_caps, 0, sizeof _ih_caps);
+    memset(&_ih_cd, 0, sizeof _ih_cd);
 }
 #endif
 
