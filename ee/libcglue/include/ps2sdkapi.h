@@ -18,36 +18,37 @@
 
 /** Inter-library helpers */
 extern int (*_ps2sdk_close)(int);
-extern int (*_ps2sdk_open)(const char*, int, ...);
-extern int (*_ps2sdk_read)(int, void*, int);
+extern int (*_ps2sdk_open)(const char *, int, ...);
+extern int (*_ps2sdk_read)(int, void *, int);
 extern int (*_ps2sdk_lseek)(int, int, int);
 extern int64_t (*_ps2sdk_lseek64)(int, int64_t, int);
-extern int (*_ps2sdk_write)(int, const void*, int);
-extern int (*_ps2sdk_ioctl)(int, int, void*);
-extern int (*_ps2sdk_remove)(const char*);
-extern int (*_ps2sdk_rename)(const char*, const char*);
-extern int (*_ps2sdk_mkdir)(const char*, int);
-extern int (*_ps2sdk_rmdir)(const char*);
+extern int (*_ps2sdk_write)(int, const void *, int);
+extern int (*_ps2sdk_ioctl)(int, int, void *);
+extern int (*_ps2sdk_remove)(const char *);
+extern int (*_ps2sdk_rename)(const char *, const char *);
+extern int (*_ps2sdk_mkdir)(const char *, int);
+extern int (*_ps2sdk_rmdir)(const char *);
 
 extern int (*_ps2sdk_stat)(const char *path, struct stat *buf);
 extern int (*_ps2sdk_readlink)(const char *path, char *buf, size_t bufsiz);
 extern int (*_ps2sdk_symlink)(const char *target, const char *linkpath);
 
-extern DIR * (*_ps2sdk_opendir)(const char *path);
-extern struct dirent * (*_ps2sdk_readdir)(DIR *dir);
+extern DIR *(*_ps2sdk_opendir)(const char *path);
+extern struct dirent *(*_ps2sdk_readdir)(DIR *dir);
 extern void (*_ps2sdk_rewinddir)(DIR *dir);
 extern int (*_ps2sdk_closedir)(DIR *dir);
 
-#define PS2_CLOCKS_PER_SEC kBUSCLKBY256 // 576.000
+#define PS2_CLOCKS_PER_SEC  kBUSCLKBY256                // 576.000
 #define PS2_CLOCKS_PER_MSEC (PS2_CLOCKS_PER_SEC / 1000) // 576
 
 /* Disable the auto start of pthread on init for reducing binary size if not used. */
 #define PS2_DISABLE_AUTOSTART_PTHREAD() \
-	void __libpthreadglue_init() {} \
+    void __libpthreadglue_init() {}     \
     void __libpthreadglue_deinit() {}
 
 typedef uint64_t ps2_clock_t;
-static inline ps2_clock_t ps2_clock(void) {
+static inline ps2_clock_t ps2_clock(void)
+{
     // DEPRECATED VERSION USE INSTEAD GetTimerSystemTime
     return (ps2_clock_t)(GetTimerSystemTime() >> 8);
 }

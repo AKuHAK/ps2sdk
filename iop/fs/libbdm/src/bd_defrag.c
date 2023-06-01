@@ -1,22 +1,22 @@
 #include <bd_defrag.h>
 
-//#define DEBUG  //comment out this line when not debugging
+// #define DEBUG  //comment out this line when not debugging
 #include "module_debug.h"
 
 
-int bd_defrag(struct block_device* bd, u32 fragcount, struct bd_fragment* fraglist, u64 sector, void* buffer, u16 count)
+int bd_defrag(struct block_device *bd, u32 fragcount, struct bd_fragment *fraglist, u64 sector, void *buffer, u16 count)
 {
     u64 sector_start = sector;
-    u16 count_left = count;
+    u16 count_left   = count;
 
     while (count_left > 0) {
         u16 count_read;
-        u64 offset = 0; // offset of fragment in bd/file
+        u64 offset            = 0; // offset of fragment in bd/file
         struct bd_fragment *f = NULL;
         int i;
 
         // Locate fragment containing start sector
-        for (i=0; (u32)i<fragcount; i++) {
+        for (i = 0; (u32)i < fragcount; i++) {
             f = &fraglist[i];
             if (offset <= sector_start && (offset + f->count) > sector_start) {
                 // Fragment found
@@ -46,7 +46,7 @@ int bd_defrag(struct block_device* bd, u32 fragcount, struct bd_fragment* fragli
         // Advance to next fragment
         sector_start += count_read;
         count_left -= count_read;
-        buffer = (u8*)buffer + (count_read * bd->sectorSize);
+        buffer = (u8 *)buffer + (count_read * bd->sectorSize);
     }
 
     return count;

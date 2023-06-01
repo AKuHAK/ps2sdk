@@ -19,32 +19,35 @@
 #include <tamtypes.h>
 
 /** Describes an IRX import list.  */
-typedef struct _slib_imp_list {
-	u8	magic;
-	struct _slib_imp_list *next;
-	u16	version;
-	u16	flags;
-	u8	name[8];
-	void	*imports[];
+typedef struct _slib_imp_list
+{
+    u8 magic;
+    struct _slib_imp_list *next;
+    u16 version;
+    u16 flags;
+    u8 name[8];
+    void *imports[];
 } slib_imp_list_t;
 
 /** Describes an IRX export library.  */
-typedef struct _slib_exp_lib {
-	struct _slib_exp_lib *prev;
-	struct _slib_imp_list *caller;
-	u16	version;
-	u16	flags;
-	u8	name[8];
-	void	*exports[];
+typedef struct _slib_exp_lib
+{
+    struct _slib_exp_lib *prev;
+    struct _slib_imp_list *caller;
+    u16 version;
+    u16 flags;
+    u8 name[8];
+    void *exports[];
 } slib_exp_lib_t;
 
 /**
  * The LOADCORE library has a routine that returns a pointer to the following
  * structure.  It keeps track of all libraries added to the system with RegisterLibraryEntries().
  */
-typedef struct _slib_exp_lib_list {
-	struct _slib_exp_lib *tail;
-	struct _slib_exp_lib *head;
+typedef struct _slib_exp_lib_list
+{
+    struct _slib_exp_lib *tail;
+    struct _slib_exp_lib *head;
 } slib_exp_lib_list_t;
 
 #ifdef __cplusplus

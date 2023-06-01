@@ -16,13 +16,13 @@
 #define __AUDSRV_C_H__
 
 /** Find the minimum value between A and B */
-#define MIN(a,b) ((a) <= (b)) ? (a) : (b)
+#define MIN(a, b) ((a) <= (b)) ? (a) : (b)
 
-//RPC service ID
-#define	AUDSRV_IRX            0x870884e
+// RPC service ID
+#define AUDSRV_IRX 0x870884e
 
-//DMA channel allocation
-#define AUDSRV_VOICE_DMA_CH	0
-#define AUDSRV_BLOCK_DMA_CH	1
+// DMA channel allocation
+#define AUDSRV_VOICE_DMA_CH 0
+#define AUDSRV_BLOCK_DMA_CH 1
 
 #endif

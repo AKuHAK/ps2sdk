@@ -21,9 +21,9 @@
 
 /* From any r3000's cop0 documentation */
 /** External Interrupt */
-#define IOP_EXCEPTION_INT	0
+#define IOP_EXCEPTION_INT  0
 /** TLB Modification Exception */
-#define IOP_EXCEPTION_MOD	1
+#define IOP_EXCEPTION_MOD  1
 /** TLB miss Exception (Load or instruction fetch) */
 #define IOP_EXCEPTION_TLBL 2
 /** TLB miss exception (Store) */
@@ -41,28 +41,28 @@
 /** Breakpoint Exception */
 #define IOP_EXCEPTION_BP   9
 /** Reserved Instruction Exception */
-#define IOP_EXCEPTION_RI  10
+#define IOP_EXCEPTION_RI   10
 /** Co-Processor Unusable Exception */
-#define IOP_EXCEPTION_CPU 11
+#define IOP_EXCEPTION_CPU  11
 /** Arithmetic Overflow Exception */
-#define IOP_EXCEPTION_OVF 12
+#define IOP_EXCEPTION_OVF  12
 /** Reserved 13 */
-#define IOP_EXCEPTION_R13 13
+#define IOP_EXCEPTION_R13  13
 /** Reserved 14. This is FPE though, but won't be useful on IOP. */
-#define IOP_EXCEPTION_R14 14
+#define IOP_EXCEPTION_R14  14
 /** Hardware DeBug(aka "Hardware Breakpoint") */
-#define IOP_EXCEPTION_HDB 15
+#define IOP_EXCEPTION_HDB  15
 
 typedef struct _exception_handler_struct_t
 {
-	void* next;
-	int info;
-	u32 funccode[];
+    void *next;
+    int info;
+    u32 funccode[];
 } exception_handler_struct_t;
 
-typedef exception_handler_struct_t* exception_handler_t;
+typedef exception_handler_struct_t *exception_handler_t;
 
-void* GetExHandlersTable();
+void *GetExHandlersTable();
 
 /** will call RegisterPriorityExceptionHandler with prio = 2 */
 int RegisterExceptionHandler(int exception, exception_handler_t);
@@ -72,13 +72,13 @@ int ReleaseExceptionHandler(int exception, exception_handler_t);
 int ReleaseDefaultExceptionHandler(exception_handler_t);
 
 #define excepman_IMPORTS_start DECLARE_IMPORT_TABLE(excepman, 1, 2)
-#define excepman_IMPORTS_end END_IMPORT_TABLE
+#define excepman_IMPORTS_end   END_IMPORT_TABLE
 
-#define I_GetExHandlersTable DECLARE_IMPORT(3, GetExHandlersTable)
-#define I_RegisterExceptionHandler DECLARE_IMPORT(4, RegisterExceptionHandler)
+#define I_GetExHandlersTable               DECLARE_IMPORT(3, GetExHandlersTable)
+#define I_RegisterExceptionHandler         DECLARE_IMPORT(4, RegisterExceptionHandler)
 #define I_RegisterPriorityExceptionHandler DECLARE_IMPORT(5, RegisterPriorityExceptionHandler)
-#define I_RegisterDefaultExceptionHandler DECLARE_IMPORT(6, RegisterDefaultExceptionHandler)
-#define I_ReleaseExceptionHandler DECLARE_IMPORT(7, ReleaseExceptionHandler)
-#define I_ReleaseDefaultExceptionHandler DECLARE_IMPORT(8, ReleaseDefaultExceptionHandler)
+#define I_RegisterDefaultExceptionHandler  DECLARE_IMPORT(6, RegisterDefaultExceptionHandler)
+#define I_ReleaseExceptionHandler          DECLARE_IMPORT(7, ReleaseExceptionHandler)
+#define I_ReleaseDefaultExceptionHandler   DECLARE_IMPORT(8, ReleaseDefaultExceptionHandler)
 
 #endif /* __EXCEPMAN_H__ */

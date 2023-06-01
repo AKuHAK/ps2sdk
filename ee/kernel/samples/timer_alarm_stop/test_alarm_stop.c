@@ -18,13 +18,15 @@
 struct timer_alarm_t alarm, alarm2;
 int flag = 0, flag2 = 0;
 
-void usercb1(struct timer_alarm_t *trigalarm, void *arg) {
-    *(int*)arg = 1;
+void usercb1(struct timer_alarm_t *trigalarm, void *arg)
+{
+    *(int *)arg = 1;
     iStartTimerAlarm(trigalarm);
 }
 
-void usercb2(struct timer_alarm_t *trigalarm, void *arg) {
-    *(int*)arg = 1;
+void usercb2(struct timer_alarm_t *trigalarm, void *arg)
+{
+    *(int *)arg = 1;
     iStartTimerAlarm(trigalarm);
     // Disable the 2s alarm
     iStopTimerAlarm(&alarm);

@@ -39,8 +39,7 @@ extern unsigned int size_tlbsrc;
 void *GetEntryAddress(int syscall);
 void setup(int syscall, void *function);
 
-__attribute__((weak))
-void InitTLBFunctions(void)
+__attribute__((weak)) void InitTLBFunctions(void)
 {
     int i;
 
@@ -57,8 +56,7 @@ void InitTLBFunctions(void)
     _kExecArg = GetEntryAddress(3);
 }
 
-__attribute__((weak))
-void InitTLB(void)
+__attribute__((weak)) void InitTLB(void)
 {
     if (GetMemorySize() == 0x2000000) {
         InitTLB32MB();

@@ -16,46 +16,46 @@
 #ifndef __AUDSRV_H__
 #define __AUDSRV_H__
 
-#define	AUDSRV_IRX              0x870884e
+#define AUDSRV_IRX 0x870884e
 
 /** minmum volume */
-#define MIN_VOLUME                 0
+#define MIN_VOLUME 0
 
 /** maximum volume */
-#define MAX_VOLUME                 100
+#define MAX_VOLUME 100
 
 /** error codes */
-#define AUDSRV_ERR_NOERROR                 0x0000
-#define AUDSRV_ERR_NOT_INITIALIZED         0x0001
-#define AUDSRV_ERR_RPC_FAILED              0x0002
-#define AUDSRV_ERR_FORMAT_NOT_SUPPORTED    0x0003
-#define AUDSRV_ERR_OUT_OF_MEMORY           0x0004
-#define AUDSRV_ERR_ARGS                    0x0005
-#define AUDSRV_ERR_NO_DISC                 0x0006
-#define AUDSRV_ERR_NO_MORE_CHANNELS        0x0007
+#define AUDSRV_ERR_NOERROR              0x0000
+#define AUDSRV_ERR_NOT_INITIALIZED      0x0001
+#define AUDSRV_ERR_RPC_FAILED           0x0002
+#define AUDSRV_ERR_FORMAT_NOT_SUPPORTED 0x0003
+#define AUDSRV_ERR_OUT_OF_MEMORY        0x0004
+#define AUDSRV_ERR_ARGS                 0x0005
+#define AUDSRV_ERR_NO_DISC              0x0006
+#define AUDSRV_ERR_NO_MORE_CHANNELS     0x0007
 
-#define AUDSRV_ERR_FAILED_TO_LOAD_ADPCM    0x0010
-#define AUDSRV_ERR_FAILED_TO_CREATE_SEMA    0x0011
+#define AUDSRV_ERR_FAILED_TO_LOAD_ADPCM  0x0010
+#define AUDSRV_ERR_FAILED_TO_CREATE_SEMA 0x0011
 
 /** structure used to set new format */
 typedef struct audsrv_fmt_t
 {
     /** output frequency in hz */
-	int freq;
+    int freq;
     /** bits per sample (8, 16) */
-	int bits;
+    int bits;
     /** output channels (1, 2) */
-	int channels;
+    int channels;
 } audsrv_fmt_t;
 
 /** adpcm sample definition */
 typedef struct audsrv_adpcm_t
 {
-	int pitch;
-	int loop;
-	int channels;
-	void *buffer;
-	int size;
+    int pitch;
+    int loop;
+    int channels;
+    void *buffer;
+    int size;
 } audsrv_adpcm_t;
 
 #ifdef __cplusplus
@@ -225,7 +225,7 @@ int audsrv_adpcm_init();
  * @returns 0 on success, negative otherwise
  */
 int audsrv_adpcm_set_volume_and_pan(int ch, int vol, int pan);
-#define audsrv_adpcm_set_volume(ch, vol) audsrv_adpcm_set_volume_and_pan(ch, vol, 0) //For backward-compatibility
+#define audsrv_adpcm_set_volume(ch, vol) audsrv_adpcm_set_volume_and_pan(ch, vol, 0) // For backward-compatibility
 
 /** Uploads a sample to SPU2 memory
  * @param adpcm    adpcm descriptor structure
@@ -246,7 +246,7 @@ int audsrv_load_adpcm(audsrv_adpcm_t *adpcm, void *buffer, int size);
  * Trying to play a sample which is unavailable will result in -AUDSRV_ERR_ARGS
  */
 int audsrv_ch_play_adpcm(int ch, audsrv_adpcm_t *adpcm);
-#define audsrv_play_adpcm(adpcm) audsrv_ch_play_adpcm(-1, adpcm) //For backward-compatibility
+#define audsrv_play_adpcm(adpcm) audsrv_ch_play_adpcm(-1, adpcm) // For backward-compatibility
 
 /** Check if a sample is currently playing on the given channel
  * @returns 1 if playing, 0 if not

@@ -13,53 +13,56 @@
 #define SINGLE_BYTE 0
 #define DOUBLE_BYTE 1
 
-typedef struct {
-	/** Name of font */
-	char name[9];
-	/** Enable/Disable bold effect */
-	char bold;
-	/** Margin width between characters */
-	char w_margin;
-	/** Margin height between lines */
-	char h_margin;
-	/** Size in byte of each row */
-	int rowsize;
-	/** Size in bytes of each character */
-	int charsize;
-	/** Offset from beginning of font to character */
-	int offset;
-	/** The font data */
-	char *font;
+typedef struct
+{
+    /** Name of font */
+    char name[9];
+    /** Enable/Disable bold effect */
+    char bold;
+    /** Margin width between characters */
+    char w_margin;
+    /** Margin height between lines */
+    char h_margin;
+    /** Size in byte of each row */
+    int rowsize;
+    /** Size in bytes of each character */
+    int charsize;
+    /** Offset from beginning of font to character */
+    int offset;
+    /** The font data */
+    char *font;
 } fontx_t;
 
 /** FontStudio type fonts */
-typedef struct {
-	char A;
-	char B;
-	char C;
-	char ox;
-	char oy;
-	char width;
-	char height;
-	unsigned short u1;
-	unsigned short v1;
-	unsigned short u2;
-	unsigned short v2;
+typedef struct
+{
+    char A;
+    char B;
+    char C;
+    char ox;
+    char oy;
+    char width;
+    char height;
+    unsigned short u1;
+    unsigned short v1;
+    unsigned short u2;
+    unsigned short v2;
 } inidata_t;
 
-typedef struct {
-	float scale;
-	char height;
-	unsigned short *charmap;
-	int totalchars;
-	int spacewidth;
-	inidata_t *chardata;
+typedef struct
+{
+    float scale;
+    char height;
+    unsigned short *charmap;
+    int totalchars;
+    int spacewidth;
+    inidata_t *chardata;
 } fsfont_t;
 
 /** Alignments */
-#define LEFT_ALIGN 0
+#define LEFT_ALIGN   0
 #define CENTER_ALIGN 1
-#define RIGHT_ALIGN 2
+#define RIGHT_ALIGN  2
 
 #ifdef __cplusplus
 extern "C" {
@@ -74,7 +77,7 @@ extern "C" {
 /** Loads a FontX2 type font with set characteristics
  * Use "rom0:KROM" as the path to load the PS2's internal FontX2 font
  */
-int fontx_load(const char *path, fontx_t* fontx, int type, int wmargin, int hmargin, int bold);
+int fontx_load(const char *path, fontx_t *fontx, int type, int wmargin, int hmargin, int bold);
 
 /** Frees memory if a font is loaded */
 void fontx_unload(fontx_t *fontx);

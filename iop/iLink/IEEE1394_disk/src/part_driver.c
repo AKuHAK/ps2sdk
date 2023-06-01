@@ -17,9 +17,9 @@
 
 typedef struct _part_record
 {
-    unsigned char sid; // system id - 4=16bit FAT (16bit sector numbers)
-                       //             5=extended partition
-                       //             6=16bit FAT (32bit sector numbers)
+    unsigned char sid;  // system id - 4=16bit FAT (16bit sector numbers)
+                        //             5=extended partition
+                        //             6=16bit FAT (32bit sector numbers)
     unsigned int start; // start sector of the partition
     unsigned int count; // length of the partititon (total number of sectors)
 } part_record;

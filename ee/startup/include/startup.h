@@ -27,14 +27,16 @@ extern "C" {
 #define MAX_ARGLEN 256
 
 // System provided arguments when loaded normally
-struct sargs {
+struct sargs
+{
     int32_t argc;
-    char* argv[MAX_ARGS];
+    char *argv[MAX_ARGS];
     char payload[MAX_ARGLEN];
 };
 
 // Sent arguments through __start (by ps2link for instance)
-struct sargs_start {
+struct sargs_start
+{
     int32_t pid;
     struct sargs args;
 };

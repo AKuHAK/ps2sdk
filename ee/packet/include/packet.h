@@ -20,11 +20,12 @@
  * The dma channel QWC register uses it as the total number of qwords that
  * are being sent at a time.
  */
-typedef struct {
-	u32 qwords;
-	u16 qwc;
-	u16 type;
-	qword_t *data __attribute__((aligned(64)));
+typedef struct
+{
+    u32 qwords;
+    u16 qwc;
+    u16 type;
+    qword_t *data __attribute__((aligned(64)));
 } packet_t;
 
 #ifdef __cplusplus
@@ -46,7 +47,7 @@ qword_t *packet_increment_qwc(packet_t *packet, int num);
 /** For those that like getters and setters */
 static inline qword_t *packet_get_qword(packet_t *packet)
 {
-	return packet->data;
+    return packet->data;
 }
 
 #ifdef __cplusplus

@@ -12,8 +12,8 @@
 #ifndef _FREEMTAP_H_
 #define _FREEMTAP_H_
 
-#define MODNAME "freemtap"
-#define M_PRINTF(format, args...)	printf(MODNAME ": " format, ## args)
+#define MODNAME                   "freemtap"
+#define M_PRINTF(format, args...) printf(MODNAME ": " format, ##args)
 
 // rpcservers.c
 s32 InitRpcServers();
@@ -26,5 +26,3 @@ s32 mtapGetSlotNumber(u32 port);
 s32 mtapChangeSlot(u32 port, u32 slot);
 
 #endif
-
-

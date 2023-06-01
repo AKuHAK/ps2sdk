@@ -11,10 +11,12 @@
 
 int faces_count = 36;
 
-/** 
+/**
  * Array of vertex indexes.
- * 3 faces = 1 triangle 
+ * 3 faces = 1 triangle
  */
+
+// clang-format off
 int faces[36] = {
     0, 1, 2,
     1, 2, 3,
@@ -27,7 +29,9 @@ int faces[36] = {
     16, 17, 18,
     17, 18, 19,
     20, 21, 22,
-    21, 22, 23};
+    21, 22, 23,
+};
+// clang-format on
 
 int vertex_count = 24;
 

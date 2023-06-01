@@ -104,17 +104,17 @@ apa_cache_t *apaFillHeader(s32 device, const apa_params_t *params, u32 start, u3
     if (!(clink = apaCacheGetHeader(device, start, APA_IO_MODE_WRITE, err)))
         return NULL;
     memset(clink->header, 0, sizeof(apa_header_t));
-    clink->header->magic = APA_MAGIC;
-    clink->header->start = start;
-    clink->header->next = next;
-    clink->header->prev = prev;
+    clink->header->magic  = APA_MAGIC;
+    clink->header->start  = start;
+    clink->header->next   = next;
+    clink->header->prev   = prev;
     clink->header->length = length;
-    clink->header->type = params->type;
-    clink->header->flags = params->flags;
+    clink->header->type   = params->type;
+    clink->header->flags  = params->flags;
     clink->header->modver = APA_MODVER;
     memcpy(clink->header->id, params->id, APA_IDMAX);
     if (params->flags & APA_FLAG_SUB) {
-        clink->header->main = params->main;
+        clink->header->main   = params->main;
         clink->header->number = params->number;
     } else {
         if (strncmp(clink->header->id, "_tmp", APA_IDMAX) != 0) {
@@ -143,8 +143,8 @@ apa_cache_t *apaInsertPartition(s32 device, const apa_params_t *params, u32 sect
             return 0;
         }
         clink_this->header->length >>= 1;
-        clink_empty = apaRemovePartition(device, (clink_this->header->start + clink_this->header->length),
-                                         clink_this->header->next, clink_this->header->start, clink_this->header->length);
+        clink_empty              = apaRemovePartition(device, (clink_this->header->start + clink_this->header->length),
+                                                      clink_this->header->next, clink_this->header->start, clink_this->header->length);
         clink_this->header->next = clink_empty->header->start;
         clink_this->flags |= APA_CACHE_FLAG_DIRTY;
         clink_next->header->prev = clink_empty->header->start;
@@ -213,10 +213,10 @@ apa_cache_t *apaRemovePartition(s32 device, u32 start, u32 next, u32 prev,
     if ((clink = apaCacheGetHeader(device, start, APA_IO_MODE_WRITE, &err)) == NULL)
         return NULL;
     memset(clink->header, 0, sizeof(apa_header_t));
-    clink->header->magic = APA_MAGIC;
-    clink->header->start = start;
-    clink->header->next = next;
-    clink->header->prev = prev;
+    clink->header->magic  = APA_MAGIC;
+    clink->header->start  = start;
+    clink->header->next   = next;
+    clink->header->prev   = prev;
     clink->header->length = length;
     strcpy(clink->header->id, "__empty");
     apaGetTime(&clink->header->created);
@@ -231,15 +231,15 @@ void apaMakeEmpty(apa_cache_t *clink)
     u32 saved_prev;
     u32 saved_length;
 
-    saved_start = clink->header->start;
-    saved_next = clink->header->next;
-    saved_prev = clink->header->prev;
+    saved_start  = clink->header->start;
+    saved_next   = clink->header->next;
+    saved_prev   = clink->header->prev;
     saved_length = clink->header->length;
     memset(clink->header, 0, sizeof(apa_header_t));
-    clink->header->magic = APA_MAGIC;
-    clink->header->start = saved_start;
-    clink->header->next = saved_next;
-    clink->header->prev = saved_prev;
+    clink->header->magic  = APA_MAGIC;
+    clink->header->start  = saved_start;
+    clink->header->next   = saved_next;
+    clink->header->prev   = saved_prev;
     clink->header->length = saved_length;
     apaGetTime(&clink->header->created);
     strcpy(clink->header->id, "__empty");
@@ -248,12 +248,12 @@ void apaMakeEmpty(apa_cache_t *clink)
 
 apa_cache_t *apaDeleteFixPrev(apa_cache_t *clink, int *err)
 {
-    apa_cache_t *clink2 = clink;
+    apa_cache_t *clink2  = clink;
     apa_header_t *header = clink2->header;
-    u32 device = clink->device;
-    u32 length = clink->header->length;
-    u32 saved_next = clink->header->next;
-    u32 saved_length = clink->header->length;
+    u32 device           = clink->device;
+    u32 length           = clink->header->length;
+    u32 saved_next       = clink->header->next;
+    u32 saved_length     = clink->header->length;
     u32 tmp;
 
     while (header->start) {
@@ -262,7 +262,7 @@ apa_cache_t *apaDeleteFixPrev(apa_cache_t *clink, int *err)
             return NULL;
         }
         header = clink2->header;
-        tmp = header->length + length;
+        tmp    = header->length + length;
         if (header->type != 0) {
             apaCacheFree(clink2);
             break;
@@ -281,8 +281,8 @@ apa_cache_t *apaDeleteFixPrev(apa_cache_t *clink, int *err)
             return NULL;
         }
         clink->header->length = length;
-        clink->header->next = clink->header->start + length;
-        clink2->header->prev = clink->header->start;
+        clink->header->next   = clink->header->start + length;
+        clink2->header->prev  = clink->header->start;
         clink2->flags |= APA_CACHE_FLAG_DIRTY;
         clink->flags |= APA_CACHE_FLAG_DIRTY;
         apaCacheFlushAllDirty(device);
@@ -295,10 +295,10 @@ apa_cache_t *apaDeleteFixPrev(apa_cache_t *clink, int *err)
 apa_cache_t *apaDeleteFixNext(apa_cache_t *clink, int *err)
 {
     apa_header_t *header = clink->header;
-    u32 length = header->length;
-    u32 saved_length = header->length;
-    u32 lnext = header->next;
-    u32 device = clink->device;
+    u32 length           = header->length;
+    u32 saved_length     = header->length;
+    u32 lnext            = header->next;
+    u32 device           = clink->device;
     u32 tmp;
 
     while (lnext != 0) {
@@ -309,7 +309,7 @@ apa_cache_t *apaDeleteFixNext(apa_cache_t *clink, int *err)
             return 0;
         }
         header = clink1->header;
-        tmp = header->length + length;
+        tmp    = header->length + length;
         if (header->type != 0) {
             apaCacheFree(clink1);
             break;
@@ -330,7 +330,7 @@ apa_cache_t *apaDeleteFixNext(apa_cache_t *clink, int *err)
             return NULL;
         }
         clink->header->length = length;
-        clink->header->next = lnext;
+        clink->header->next   = lnext;
         apaMakeEmpty(clink);
         clink2->header->prev = clink->header->start;
         clink2->flags |= APA_CACHE_FLAG_DIRTY;
@@ -343,9 +343,9 @@ apa_cache_t *apaDeleteFixNext(apa_cache_t *clink, int *err)
 
 int apaDelete(apa_cache_t *clink)
 {
-    int rv = 0;
+    int rv     = 0;
     u32 device = clink->device;
-    u32 start = clink->header->start;
+    u32 start  = clink->header->start;
 
     if (!start) {
         apaCacheFree(clink);
@@ -444,7 +444,7 @@ int apaGetFormat(s32 device, int *format)
     int rv = 0;
     u32 i;
 
-    clink = apaCacheAlloc();
+    clink   = apaCacheAlloc();
     *format = 0;
     if ((rv = apaReadHeader(device, clink->header, 0)) == 0) {
         *format = clink->header->mbr.version;

@@ -15,12 +15,12 @@
 #ifndef __CDROM_C_H__
 #define __CDROM_C_H__
 
-#define SECTOR_SIZE                2352
+#define SECTOR_SIZE 2352
 
 typedef struct cdda_toc
 {
-	int num_tracks;
-	sceCdlLOCCD tracks[100];
+    int num_tracks;
+    sceCdlLOCCD tracks[100];
 } cdda_toc;
 
 #endif

@@ -44,7 +44,7 @@
 #include "timer_alarm.h"
 
 
-extern void * _end;
+extern void *_end;
 
 #ifdef F___direct_pwd
 /* the present working directory variable. */
@@ -55,19 +55,20 @@ extern char __direct_pwd[256];
 
 #ifdef F___dummy_passwd
 /* the present working directory variable. */
-struct passwd __dummy_passwd = { "ps2_user", "xxx", 1000, 1000, "", "", "/", "" };
+struct passwd __dummy_passwd = {"ps2_user", "xxx", 1000, 1000, "", "", "/", ""};
 #else
 extern struct passwd __dummy_passwd;
 #endif
 
 #ifdef F___transform_errno
-int __transform_errno(int res) {
-	/* On error, -1 is returned and errno is set to indicate the error. */
-	if (res < 0) {
-		errno = -res;
-		return -1;
-	}
-	return res;
+int __transform_errno(int res)
+{
+    /* On error, -1 is returned and errno is set to indicate the error. */
+    if (res < 0) {
+        errno = -res;
+        return -1;
+    }
+    return res;
 }
 #else
 int __transform_errno(int errorCode);
@@ -76,343 +77,370 @@ int __transform_errno(int errorCode);
 #ifdef F___fill_stat
 static time_t io_to_posix_time(const unsigned char *ps2time)
 {
-        struct tm tim;
-        tim.tm_sec  = ps2time[1];
-        tim.tm_min  = ps2time[2];
-        tim.tm_hour = ps2time[3];
-        tim.tm_mday = ps2time[4];
-        tim.tm_mon  = ps2time[5] - 1;
-        tim.tm_year = ((u16)ps2time[6] | ((u16)ps2time[7] << 8)) - 1900;
-        return mktime(&tim);
+    struct tm tim;
+    tim.tm_sec  = ps2time[1];
+    tim.tm_min  = ps2time[2];
+    tim.tm_hour = ps2time[3];
+    tim.tm_mday = ps2time[4];
+    tim.tm_mon  = ps2time[5] - 1;
+    tim.tm_year = ((u16)ps2time[6] | ((u16)ps2time[7] << 8)) - 1900;
+    return mktime(&tim);
 }
 
 static mode_t io_to_posix_mode(unsigned int ps2mode)
 {
-        mode_t posixmode = 0;
-        if (ps2mode & FIO_SO_IFREG) posixmode |= S_IFREG;
-        if (ps2mode & FIO_SO_IFDIR) posixmode |= S_IFDIR;
-        if (ps2mode & FIO_SO_IROTH) posixmode |= S_IRUSR|S_IRGRP|S_IROTH;
-        if (ps2mode & FIO_SO_IWOTH) posixmode |= S_IWUSR|S_IWGRP|S_IWOTH;
-        if (ps2mode & FIO_SO_IXOTH) posixmode |= S_IXUSR|S_IXGRP|S_IXOTH;
-        return posixmode;
+    mode_t posixmode = 0;
+    if (ps2mode & FIO_SO_IFREG)
+        posixmode |= S_IFREG;
+    if (ps2mode & FIO_SO_IFDIR)
+        posixmode |= S_IFDIR;
+    if (ps2mode & FIO_SO_IROTH)
+        posixmode |= S_IRUSR | S_IRGRP | S_IROTH;
+    if (ps2mode & FIO_SO_IWOTH)
+        posixmode |= S_IWUSR | S_IWGRP | S_IWOTH;
+    if (ps2mode & FIO_SO_IXOTH)
+        posixmode |= S_IXUSR | S_IXGRP | S_IXOTH;
+    return posixmode;
 }
 
 void __fill_stat(struct stat *stat, const io_stat_t *fiostat)
 {
-        stat->st_dev = 0;
-        stat->st_ino = 0;
-        stat->st_mode = io_to_posix_mode(fiostat->mode);
-        stat->st_nlink = 0;
-        stat->st_uid = 0;
-        stat->st_gid = 0;
-        stat->st_rdev = 0;
-        stat->st_size = ((off_t)fiostat->hisize << 32) | (off_t)fiostat->size;
-        stat->st_atime = io_to_posix_time(fiostat->atime);
-        stat->st_mtime = io_to_posix_time(fiostat->mtime);
-        stat->st_ctime = io_to_posix_time(fiostat->ctime);
-        stat->st_blksize = 16*1024;
-        stat->st_blocks = stat->st_size / 512;
+    stat->st_dev     = 0;
+    stat->st_ino     = 0;
+    stat->st_mode    = io_to_posix_mode(fiostat->mode);
+    stat->st_nlink   = 0;
+    stat->st_uid     = 0;
+    stat->st_gid     = 0;
+    stat->st_rdev    = 0;
+    stat->st_size    = ((off_t)fiostat->hisize << 32) | (off_t)fiostat->size;
+    stat->st_atime   = io_to_posix_time(fiostat->atime);
+    stat->st_mtime   = io_to_posix_time(fiostat->mtime);
+    stat->st_ctime   = io_to_posix_time(fiostat->ctime);
+    stat->st_blksize = 16 * 1024;
+    stat->st_blocks  = stat->st_size / 512;
 }
 #else
 void __fill_stat(struct stat *stat, const io_stat_t *fiostat);
 #endif
 
 #ifdef F__ps2sdk_ioctl
-int (*_ps2sdk_ioctl)(int, int, void*) = fioIoctl;
+int (*_ps2sdk_ioctl)(int, int, void *) = fioIoctl;
 #endif
 
-#define IOP_O_RDONLY       0x0001
-#define IOP_O_WRONLY       0x0002
-#define IOP_O_RDWR         0x0003
-#define IOP_O_DIROPEN      0x0008  // Internal use for dopen
-#define IOP_O_NBLOCK       0x0010
-#define IOP_O_APPEND       0x0100
-#define IOP_O_CREAT        0x0200
-#define IOP_O_TRUNC        0x0400
-#define IOP_O_EXCL         0x0800
-#define IOP_O_NOWAIT       0x8000
+#define IOP_O_RDONLY  0x0001
+#define IOP_O_WRONLY  0x0002
+#define IOP_O_RDWR    0x0003
+#define IOP_O_DIROPEN 0x0008 // Internal use for dopen
+#define IOP_O_NBLOCK  0x0010
+#define IOP_O_APPEND  0x0100
+#define IOP_O_CREAT   0x0200
+#define IOP_O_TRUNC   0x0400
+#define IOP_O_EXCL    0x0800
+#define IOP_O_NOWAIT  0x8000
 
 #if INT_MAX != 0x7fffffffL
-	#error "INT_MAX != 0x7fffffffL"
+#error "INT_MAX != 0x7fffffffL"
 #endif
 #ifndef LONG_MAX
-	#error "LONG_MAX not defined"
+#error "LONG_MAX not defined"
 #endif
 #if LONG_MAX != 0x7fffffffL
-	#error "LONG_MAX != 0x7fffffffL"
+#error "LONG_MAX != 0x7fffffffL"
 #endif
 
-#define ct_assert(e) {enum { ct_assert_value = 1/(!!(e)) };}
+#define ct_assert(e)                            \
+    {                                           \
+        enum { ct_assert_value = 1 / (!!(e)) }; \
+    }
 #ifdef F_compile_time_check
-void compile_time_check() {
-	// Compiler (ABI n32)
-	ct_assert(sizeof(unsigned char)==1);
-	ct_assert(sizeof(unsigned short)==2);
-	ct_assert(sizeof(unsigned int)==4);
-	ct_assert(sizeof(unsigned long)==4);
-	ct_assert(sizeof(unsigned long long)==8);
-	ct_assert(sizeof(unsigned int __attribute__(( mode(TI) )))==16);
-	ct_assert(sizeof(void *)==4);
+void compile_time_check()
+{
+    // Compiler (ABI n32)
+    ct_assert(sizeof(unsigned char) == 1);
+    ct_assert(sizeof(unsigned short) == 2);
+    ct_assert(sizeof(unsigned int) == 4);
+    ct_assert(sizeof(unsigned long) == 4);
+    ct_assert(sizeof(unsigned long long) == 8);
+    ct_assert(sizeof(unsigned int __attribute__((mode(TI)))) == 16);
+    ct_assert(sizeof(void *) == 4);
 
-	// Defined in tamtypes.h (ps2sdk)
-	ct_assert(sizeof(u8)==1);
-	ct_assert(sizeof(u16)==2);
-	ct_assert(sizeof(u32)==4);
-	ct_assert(sizeof(u64)==8);
-	ct_assert(sizeof(u128)==16);
+    // Defined in tamtypes.h (ps2sdk)
+    ct_assert(sizeof(u8) == 1);
+    ct_assert(sizeof(u16) == 2);
+    ct_assert(sizeof(u32) == 4);
+    ct_assert(sizeof(u64) == 8);
+    ct_assert(sizeof(u128) == 16);
 
-	// Defined in inttypes.h/stdint.h (newlib)
-	ct_assert(sizeof(uint8_t)==1);
-	ct_assert(sizeof(uint16_t)==2);
-	ct_assert(sizeof(uint32_t)==4);
-	ct_assert(sizeof(uint64_t)==8);
+    // Defined in inttypes.h/stdint.h (newlib)
+    ct_assert(sizeof(uint8_t) == 1);
+    ct_assert(sizeof(uint16_t) == 2);
+    ct_assert(sizeof(uint32_t) == 4);
+    ct_assert(sizeof(uint64_t) == 8);
 }
 #endif
 
 #ifdef F__open
 /* Normalize a pathname by removing . and .. components, duplicated /, etc. */
-static char* normalize_path(const char *path_name)
+static char *normalize_path(const char *path_name)
 {
-	int i, j;
-	int first, next;
-	static char out[255];
+    int i, j;
+    int first, next;
+    static char out[255];
 
-	/* First copy the path into our temp buffer */
-	strcpy(out, path_name);
-	/* Then append "/" to make the rest easier */
-	strcat(out,"/");
+    /* First copy the path into our temp buffer */
+    strcpy(out, path_name);
+    /* Then append "/" to make the rest easier */
+    strcat(out, "/");
 
-	/* Convert "//" to "/" */
-	for(i=0; out[i+1]; i++) {
-		if(out[i]=='/' && out[i+1]=='/') {
-			for(j=i+1; out[j]; j++)
-					out[j] = out[j+1];
-			i--;
-		;}
-	}
+    /* Convert "//" to "/" */
+    for (i = 0; out[i + 1]; i++) {
+        if (out[i] == '/' && out[i + 1] == '/') {
+            for (j = i + 1; out[j]; j++)
+                out[j] = out[j + 1];
+            i--;
+            ;
+        }
+    }
 
-	/* Convert "/./" to "/" */
-	for(i=0; out[i] && out[i+1] && out[i+2]; i++) {
-		if(out[i]=='/' && out[i+1]=='.' && out[i+2]=='/') {
-			for(j=i+1; out[j]; j++)
-					out[j] = out[j+2];
-			i--;
-		}
-	}
+    /* Convert "/./" to "/" */
+    for (i = 0; out[i] && out[i + 1] && out[i + 2]; i++) {
+        if (out[i] == '/' && out[i + 1] == '.' && out[i + 2] == '/') {
+            for (j = i + 1; out[j]; j++)
+                out[j] = out[j + 2];
+            i--;
+        }
+    }
 
-	/* Convert "/path/../" to "/" until we can't anymore.  Also convert leading
-	 * "/../" to "/" */
-	first = next = 0;
-	while(1) {
-		/* If a "../" follows, remove it and the parent */
-		if(out[next+1] && out[next+1]=='.' &&
-			out[next+2] && out[next+2]=='.' &&
-			out[next+3] && out[next+3]=='/') {
-			for(j=0; out[first+j+1]; j++)
-				out[first+j+1] = out[next+j+4];
-			first = next = 0;
-			continue;
-		}
+    /* Convert "/path/../" to "/" until we can't anymore.  Also convert leading
+     * "/../" to "/" */
+    first = next = 0;
+    while (1) {
+        /* If a "../" follows, remove it and the parent */
+        if (out[next + 1] && out[next + 1] == '.' &&
+            out[next + 2] && out[next + 2] == '.' &&
+            out[next + 3] && out[next + 3] == '/') {
+            for (j = 0; out[first + j + 1]; j++)
+                out[first + j + 1] = out[next + j + 4];
+            first = next = 0;
+            continue;
+        }
 
-		/* Find next slash */
-		first = next;
-		for(next=first+1; out[next] && out[next] != '/'; next++)
-			continue;
-		if(!out[next]) break;
-	}
+        /* Find next slash */
+        first = next;
+        for (next = first + 1; out[next] && out[next] != '/'; next++)
+            continue;
+        if (!out[next])
+            break;
+    }
 
-	/* Remove trailing "/" */
-	for(i=1; out[i]; i++)
-		continue;
-	if(i >= 1 && out[i-1] == '/')
-		out[i-1] = 0;
+    /* Remove trailing "/" */
+    for (i = 1; out[i]; i++)
+        continue;
+    if (i >= 1 && out[i - 1] == '/')
+        out[i - 1] = 0;
 
-	return (char*)out;
+    return (char *)out;
 }
 
 static int isCdromPath(const char *path)
 {
-	return !strncmp(path, "cdrom0:", 7) || !strncmp(path, "cdrom:", 6);
+    return !strncmp(path, "cdrom0:", 7) || !strncmp(path, "cdrom:", 6);
 }
 
-int (*_ps2sdk_open)(const char*, int, ...) = (void *)fioOpen;
+int (*_ps2sdk_open)(const char *, int, ...) = (void *)fioOpen;
 
-int _open(const char *buf, int flags, ...) {
-	int iop_flags = 0;
+int _open(const char *buf, int flags, ...)
+{
+    int iop_flags = 0;
 
-	// newlib frags differ from iop flags
-	if ((flags & 3) == O_RDONLY) iop_flags |= IOP_O_RDONLY;
-	if ((flags & 3) == O_WRONLY) iop_flags |= IOP_O_WRONLY;
-	if ((flags & 3) == O_RDWR  ) iop_flags |= IOP_O_RDWR;
-	if (flags & O_NONBLOCK)      iop_flags |= IOP_O_NBLOCK;
-	if (flags & O_APPEND)        iop_flags |= IOP_O_APPEND;
-	if (flags & O_CREAT)         iop_flags |= IOP_O_CREAT;
-	if (flags & O_TRUNC)         iop_flags |= IOP_O_TRUNC;
-	if (flags & O_EXCL)          iop_flags |= IOP_O_EXCL;
-	//if (flags & O_???)           iop_flags |= IOP_O_NOWAIT;
+    // newlib frags differ from iop flags
+    if ((flags & 3) == O_RDONLY)
+        iop_flags |= IOP_O_RDONLY;
+    if ((flags & 3) == O_WRONLY)
+        iop_flags |= IOP_O_WRONLY;
+    if ((flags & 3) == O_RDWR)
+        iop_flags |= IOP_O_RDWR;
+    if (flags & O_NONBLOCK)
+        iop_flags |= IOP_O_NBLOCK;
+    if (flags & O_APPEND)
+        iop_flags |= IOP_O_APPEND;
+    if (flags & O_CREAT)
+        iop_flags |= IOP_O_CREAT;
+    if (flags & O_TRUNC)
+        iop_flags |= IOP_O_TRUNC;
+    if (flags & O_EXCL)
+        iop_flags |= IOP_O_EXCL;
+    // if (flags & O_???)           iop_flags |= IOP_O_NOWAIT;
 
-	char *t_fname = normalize_path(buf);
-	char b_fname[FILENAME_MAX];
+    char *t_fname = normalize_path(buf);
+    char b_fname[FILENAME_MAX];
 
-	if (!strchr(buf, ':')) { // filename doesn't contain device
-		t_fname = b_fname;
-		if (buf[0] == '/' || buf[0] == '\\') {   // does it contain root ?
-			char *device_end = strchr(__direct_pwd, ':');
-			if (device_end) {      // yes, let's strip pwd a bit to keep device only
-				strncpy(b_fname, __direct_pwd, device_end - __direct_pwd);
-				strcpy(b_fname + (device_end - __direct_pwd), buf);
-			} else {               // but pwd doesn't contain any device, let's default to host
-				strcpy(b_fname, "host:");
-				strcpy(b_fname + 5, buf);
-			}
-		} else {                 // otherwise, it's relative directory, let's copy pwd straight
-			int b_fname_len = strlen(__direct_pwd);
-			if (!strchr(__direct_pwd, ':')) { // check if pwd contains device name
-				strcpy(b_fname, "host:");
-				strcpy(b_fname + 5, __direct_pwd);
-				if (!(__direct_pwd[b_fname_len - 1] == '/' || __direct_pwd[b_fname_len - 1] == '\\')) { // does it has trailing slash ?
-					if(isCdromPath(b_fname)) {
-						b_fname[b_fname_len + 5] = '\\';
-						b_fname_len++;
-					} else {
-						b_fname[b_fname_len + 5] = '/';
-						b_fname_len++;
-					}
-				}
-				b_fname_len += 5;
-				strcpy(b_fname + b_fname_len, buf);
-			} else {                          // device name is here
-				if (b_fname_len) {
-				strcpy(b_fname, __direct_pwd);
-				if (!(b_fname[b_fname_len - 1] == '/' || b_fname[b_fname_len - 1] == '\\')) {
-					if(isCdromPath(b_fname)) {
-						b_fname[b_fname_len] = '\\';
-						b_fname_len++;
-					} else {
-						b_fname[b_fname_len] = '/';
-						b_fname_len++;
-					}
-				}
-				strcpy(b_fname + b_fname_len, buf);
-				}
-			}
-		}
-	}
+    if (!strchr(buf, ':')) { // filename doesn't contain device
+        t_fname = b_fname;
+        if (buf[0] == '/' || buf[0] == '\\') { // does it contain root ?
+            char *device_end = strchr(__direct_pwd, ':');
+            if (device_end) { // yes, let's strip pwd a bit to keep device only
+                strncpy(b_fname, __direct_pwd, device_end - __direct_pwd);
+                strcpy(b_fname + (device_end - __direct_pwd), buf);
+            } else { // but pwd doesn't contain any device, let's default to host
+                strcpy(b_fname, "host:");
+                strcpy(b_fname + 5, buf);
+            }
+        } else { // otherwise, it's relative directory, let's copy pwd straight
+            int b_fname_len = strlen(__direct_pwd);
+            if (!strchr(__direct_pwd, ':')) { // check if pwd contains device name
+                strcpy(b_fname, "host:");
+                strcpy(b_fname + 5, __direct_pwd);
+                if (!(__direct_pwd[b_fname_len - 1] == '/' || __direct_pwd[b_fname_len - 1] == '\\')) { // does it has trailing slash ?
+                    if (isCdromPath(b_fname)) {
+                        b_fname[b_fname_len + 5] = '\\';
+                        b_fname_len++;
+                    } else {
+                        b_fname[b_fname_len + 5] = '/';
+                        b_fname_len++;
+                    }
+                }
+                b_fname_len += 5;
+                strcpy(b_fname + b_fname_len, buf);
+            } else { // device name is here
+                if (b_fname_len) {
+                    strcpy(b_fname, __direct_pwd);
+                    if (!(b_fname[b_fname_len - 1] == '/' || b_fname[b_fname_len - 1] == '\\')) {
+                        if (isCdromPath(b_fname)) {
+                            b_fname[b_fname_len] = '\\';
+                            b_fname_len++;
+                        } else {
+                            b_fname[b_fname_len] = '/';
+                            b_fname_len++;
+                        }
+                    }
+                    strcpy(b_fname + b_fname_len, buf);
+                }
+            }
+        }
+    }
 
-	return __transform_errno(_ps2sdk_open(t_fname, iop_flags));
+    return __transform_errno(_ps2sdk_open(t_fname, iop_flags));
 }
 #endif
 
 #ifdef F__close
 int (*_ps2sdk_close)(int) = fioClose;
 
-int _close(int fd) {
-	return __transform_errno(_ps2sdk_close(fd));
+int _close(int fd)
+{
+    return __transform_errno(_ps2sdk_close(fd));
 }
 #endif
 
 #ifdef F__read
-int (*_ps2sdk_read)(int, void*, int) = fioRead;
+int (*_ps2sdk_read)(int, void *, int) = fioRead;
 
-int _read(int fd, void *buf, size_t nbytes) {
-	return __transform_errno(_ps2sdk_read(fd, buf, nbytes));
+int _read(int fd, void *buf, size_t nbytes)
+{
+    return __transform_errno(_ps2sdk_read(fd, buf, nbytes));
 }
 #endif
 
 #ifdef F__write
-int (*_ps2sdk_write)(int, const void*, int) = fioWrite;
+int (*_ps2sdk_write)(int, const void *, int) = fioWrite;
 
-int _write(int fd, const void *buf, size_t nbytes) {
-	// HACK: stdout and strerr to serial
-	//if ((fd==1) || (fd==2))
-	//	return sio_write((void *)buf, nbytes);
+int _write(int fd, const void *buf, size_t nbytes)
+{
+    // HACK: stdout and strerr to serial
+    // if ((fd == 1) || (fd == 2))
+    //     return sio_write((void *)buf, nbytes);
 
-	return __transform_errno(_ps2sdk_write(fd, buf, nbytes));
+    return __transform_errno(_ps2sdk_write(fd, buf, nbytes));
 }
 #endif
 
 #ifdef F__fstat
-int _fstat(int fd, struct stat *buf) {
-	if (fd >=0 && fd <= 1) {
-		// Character device
-		buf->st_mode = S_IFCHR;
-		buf->st_blksize = 0;
-	}
-	else {
-		// Block device
-		buf->st_mode = S_IFBLK;
-		buf->st_blksize = 16*1024;
-	}
+int _fstat(int fd, struct stat *buf)
+{
+    if (fd >= 0 && fd <= 1) {
+        // Character device
+        buf->st_mode    = S_IFCHR;
+        buf->st_blksize = 0;
+    } else {
+        // Block device
+        buf->st_mode    = S_IFBLK;
+        buf->st_blksize = 16 * 1024;
+    }
 
-	return 0;
+    return 0;
 }
 #else
 int _fstat(int fd, struct stat *buf);
 #endif
 
 #ifdef F__stat
-static int fioGetstatHelper(const char *path, struct stat *buf) {
-        io_stat_t fiostat;
+static int fioGetstatHelper(const char *path, struct stat *buf)
+{
+    io_stat_t fiostat;
 
-        if (fioGetstat(path, &fiostat) < 0) {
-			errno = ENOENT;
-			return -1;
-        }
+    if (fioGetstat(path, &fiostat) < 0) {
+        errno = ENOENT;
+        return -1;
+    }
 
-        __fill_stat(buf, &fiostat);
+    __fill_stat(buf, &fiostat);
 
-        return 0;
+    return 0;
 }
 
 int (*_ps2sdk_stat)(const char *path, struct stat *buf) = fioGetstatHelper;
 
-int _stat(const char *path, struct stat *buf) {
+int _stat(const char *path, struct stat *buf)
+{
     return __transform_errno(_ps2sdk_stat(path, buf));
 }
 #endif
 
 #ifdef F_lstat
-int lstat(const char *path, struct stat *buf) {
+int lstat(const char *path, struct stat *buf)
+{
     return __transform_errno(stat(path, buf));
 }
 #endif
 
 #ifdef F_access
-int access(const char *fn, int flags) {
-	struct stat s;
-	if (stat(fn, &s))
-		return -1;
-	if (s.st_mode & S_IFDIR)
-		return 0;
-	if (flags & W_OK) {
-		if (s.st_mode & S_IWRITE)
-			return 0;
-		return -1;
-	}
-	return 0;
+int access(const char *fn, int flags)
+{
+    struct stat s;
+    if (stat(fn, &s))
+        return -1;
+    if (s.st_mode & S_IFDIR)
+        return 0;
+    if (flags & W_OK) {
+        if (s.st_mode & S_IWRITE)
+            return 0;
+        return -1;
+    }
+    return 0;
 }
 #endif
 
 #ifdef F_opendir
 static DIR *fioOpendirHelper(const char *path)
 {
-	int dd;
-	DIR *dir;
+    int dd;
+    DIR *dir;
 
-	dd = fioDopen(path);
-	if (dd < 0) {
-		errno = ENOENT;
-		return NULL;
-	}
+    dd = fioDopen(path);
+    if (dd < 0) {
+        errno = ENOENT;
+        return NULL;
+    }
 
-	dir = malloc(sizeof(DIR));
-	dir->dd_fd = dd;
-	dir->dd_buf = malloc(sizeof(struct dirent));
+    dir         = malloc(sizeof(DIR));
+    dir->dd_fd  = dd;
+    dir->dd_buf = malloc(sizeof(struct dirent));
 
-	return dir;
+    return dir;
 }
 
-DIR * (*_ps2sdk_opendir)(const char *path) = fioOpendirHelper;
+DIR *(*_ps2sdk_opendir)(const char *path) = fioOpendirHelper;
 
 DIR *opendir(const char *path)
 {
@@ -423,30 +451,30 @@ DIR *opendir(const char *path)
 #ifdef F_readdir
 static struct dirent *fioReaddirHelper(DIR *dir)
 {
-	int rv;
-	struct dirent *de;
-	io_dirent_t fiode;
+    int rv;
+    struct dirent *de;
+    io_dirent_t fiode;
 
-	if(dir == NULL) {
-		errno = EBADF;
-		return NULL;
-	}
+    if (dir == NULL) {
+        errno = EBADF;
+        return NULL;
+    }
 
-	de = (struct dirent *)dir->dd_buf;
-	rv = fioDread(dir->dd_fd, &fiode);
-	if (rv <= 0) {
-		errno = -rv;
-		return NULL;
-	}
+    de = (struct dirent *)dir->dd_buf;
+    rv = fioDread(dir->dd_fd, &fiode);
+    if (rv <= 0) {
+        errno = -rv;
+        return NULL;
+    }
 
-	__fill_stat(&de->d_stat, &fiode.stat);
-	strncpy(de->d_name, fiode.name, 255);
-	de->d_name[255] = 0;
+    __fill_stat(&de->d_stat, &fiode.stat);
+    strncpy(de->d_name, fiode.name, 255);
+    de->d_name[255] = 0;
 
-	return de;
+    return de;
 }
 
-struct dirent * (*_ps2sdk_readdir)(DIR *dir) = fioReaddirHelper;
+struct dirent *(*_ps2sdk_readdir)(DIR *dir) = fioReaddirHelper;
 
 struct dirent *readdir(DIR *dir)
 {
@@ -457,9 +485,9 @@ struct dirent *readdir(DIR *dir)
 #ifdef F_rewinddir
 static void fioRewinddirHelper(DIR *dir)
 {
-	(void)dir;
-	errno = ENOSYS;
-	printf("rewinddir not implemented\n");
+    (void)dir;
+    errno = ENOSYS;
+    printf("rewinddir not implemented\n");
 }
 
 void (*_ps2sdk_rewinddir)(DIR *dir) = fioRewinddirHelper;
@@ -473,17 +501,17 @@ void rewinddir(DIR *dir)
 #ifdef F_closedir
 static int fioClosedirHelper(DIR *dir)
 {
-	int res;
+    int res;
 
-	if(dir == NULL) {
-		return -EBADF;
-	}
+    if (dir == NULL) {
+        return -EBADF;
+    }
 
-	res = fioDclose(dir->dd_fd);
-	free(dir->dd_buf);
-	free(dir);
+    res = fioDclose(dir->dd_fd);
+    free(dir->dd_buf);
+    free(dir);
 
-	return res;
+    return res;
 }
 
 int (*_ps2sdk_closedir)(DIR *dir) = fioClosedirHelper;
@@ -499,7 +527,7 @@ int (*_ps2sdk_lseek)(int, int, int) = fioLseek;
 
 off_t _lseek(int fd, off_t offset, int whence)
 {
-	return __transform_errno(_ps2sdk_lseek(fd, offset, whence));
+    return __transform_errno(_ps2sdk_lseek(fd, offset, whence));
 }
 #endif
 
@@ -516,401 +544,420 @@ off64_t lseek64(int fd, off64_t offset, int whence)
 #endif
 
 #ifdef F_chdir
-int chdir(const char *path) {
+int chdir(const char *path)
+{
     strcpy(__direct_pwd, path);
     return 0;
 }
 #endif
 
 #ifdef F_mkdir
-int fioMkdirHelper(const char *path, int mode) {
-  // Old fio mkdir has no mode argument
-	(void)mode;
+int fioMkdirHelper(const char *path, int mode)
+{
+    // Old fio mkdir has no mode argument
+    (void)mode;
 
-  return fioMkdir(path);
+    return fioMkdir(path);
 }
 
-int (*_ps2sdk_mkdir)(const char*, int) = fioMkdirHelper;
+int (*_ps2sdk_mkdir)(const char *, int) = fioMkdirHelper;
 
-int mkdir(const char *path, mode_t mode) {
+int mkdir(const char *path, mode_t mode)
+{
     return __transform_errno(_ps2sdk_mkdir(path, mode));
 }
 #endif
 
 #ifdef F_rmdir
-int (*_ps2sdk_rmdir)(const char*) = fioRmdir;
+int (*_ps2sdk_rmdir)(const char *) = fioRmdir;
 
-int rmdir(const char *path) {
+int rmdir(const char *path)
+{
     return __transform_errno(_ps2sdk_rmdir(path));
 }
 #endif
 
 #ifdef F__link
-int fioRename(const char *old, const char *new) {
-	(void)old;
-	(void)new;
+int fioRename(const char *old, const char *new)
+{
+    (void)old;
+    (void)new;
 
-  return -ENOSYS;
+    return -ENOSYS;
 }
 
-int (*_ps2sdk_rename)(const char*, const char*) = fioRename;
+int (*_ps2sdk_rename)(const char *, const char *) = fioRename;
 
-int _link(const char *old, const char *new) {
+int _link(const char *old, const char *new)
+{
     return __transform_errno(_ps2sdk_rename(old, new));
 }
 #endif
 
 #ifdef F__unlink
-int (*_ps2sdk_remove)(const char*) = fioRemove;
+int (*_ps2sdk_remove)(const char *) = fioRemove;
 
-int _unlink(const char *path) {
+int _unlink(const char *path)
+{
     return __transform_errno(_ps2sdk_remove(path));
 }
 #endif
 
 #ifdef F_getcwd
-char *getcwd(char *buf, size_t len) {
-	strncpy(buf, __direct_pwd, len);
-	return buf;
+char *getcwd(char *buf, size_t len)
+{
+    strncpy(buf, __direct_pwd, len);
+    return buf;
 }
 #endif
 
 #ifdef F__getpid
-int _getpid(void) {
-	return GetThreadId();
+int _getpid(void)
+{
+    return GetThreadId();
 }
 #endif
 
 #ifdef F__kill
-int _kill(int pid, int sig) {
+int _kill(int pid, int sig)
+{
 #if 0 // needs to be tested first
-	// null signal: do error checking on pid only
-	if (sig == 0)
-		return pid == getpid() ? 0 : -1;
+    // null signal: do error checking on pid only
+    if (sig == 0)
+        return pid == getpid() ? 0 : -1;
 
-	if (pid == getpid()) {
-		ExitDeleteThread();
-		// NOTE: ExitDeleteThread does not return
-		return 0;
-	}
+    if (pid == getpid()) {
+        ExitDeleteThread();
+        // NOTE: ExitDeleteThread does not return
+        return 0;
+    }
 #endif
-	(void)pid;
-	(void)sig;
-	errno = ENOSYS;
-	return 1; /* not supported */
+    (void)pid;
+    (void)sig;
+    errno = ENOSYS;
+    return 1; /* not supported */
 }
 #endif
 
 #ifdef F__fork
-pid_t _fork(void) {
-	errno = ENOSYS;
-	return (pid_t) -1; /* not supported */
+pid_t _fork(void)
+{
+    errno = ENOSYS;
+    return (pid_t)-1; /* not supported */
 }
 #endif
 
 #ifdef F__wait
-pid_t _wait(int *unused) {
-	errno = ENOSYS;
-	return (pid_t) -1; /* not supported */
+pid_t _wait(int *unused)
+{
+    errno = ENOSYS;
+    return (pid_t)-1; /* not supported */
 }
 #endif
 
 #ifdef F__sbrk
-void * _sbrk(size_t incr) {
-	static void * _heap_ptr = &_end;
-	void *mp, *ret = (void *)-1;
+void *_sbrk(size_t incr)
+{
+    static void *_heap_ptr = &_end;
+    void *mp, *ret = (void *)-1;
 
-	if (incr == 0)
-		return _heap_ptr;
+    if (incr == 0)
+        return _heap_ptr;
 
-	/* If the area we want to allocated is past the end of our heap, we have a problem. */
-	mp = _heap_ptr + incr;
-	if (mp <= EndOfHeap()) {
-		ret = _heap_ptr;
-		_heap_ptr = mp;
-	}
+    /* If the area we want to allocated is past the end of our heap, we have a problem. */
+    mp = _heap_ptr + incr;
+    if (mp <= EndOfHeap()) {
+        ret       = _heap_ptr;
+        _heap_ptr = mp;
+    }
 
-	return ret;
+    return ret;
 }
 #endif
 
 #ifdef F__gettimeofday
 int _gettimeofday(struct timeval *tv, struct timezone *tz)
 {
-	if (tv == NULL)
-	{
-		errno = EFAULT;
-		return -1;
-	}
+    if (tv == NULL) {
+        errno = EFAULT;
+        return -1;
+    }
 
-	{
-		u32 busclock_sec;
-		u32 busclock_usec;
+    {
+        u32 busclock_sec;
+        u32 busclock_usec;
 
-		TimerBusClock2USec(GetTimerSystemTime(), &busclock_sec, &busclock_usec);
-		tv->tv_sec = (time_t)(_ps2sdk_rtc_offset_from_busclk + ((s64)busclock_sec));
-		tv->tv_usec = busclock_usec;
-	}
+        TimerBusClock2USec(GetTimerSystemTime(), &busclock_sec, &busclock_usec);
+        tv->tv_sec  = (time_t)(_ps2sdk_rtc_offset_from_busclk + ((s64)busclock_sec));
+        tv->tv_usec = busclock_usec;
+    }
 
-	if (tz != NULL)
-	{
-		tz->tz_minuteswest = _timezone / 60;
-		tz->tz_dsttime = 0;
-	}
+    if (tz != NULL) {
+        tz->tz_minuteswest = _timezone / 60;
+        tz->tz_dsttime     = 0;
+    }
 
-	return 0;
+    return 0;
 }
 #endif
 
 #ifdef F__times
-clock_t _times(struct tms *buffer) {
-	clock_t clk = GetTimerSystemTime() / (kBUSCLK / CLOCKS_PER_SEC);
+clock_t _times(struct tms *buffer)
+{
+    clock_t clk = GetTimerSystemTime() / (kBUSCLK / CLOCKS_PER_SEC);
 
-	if (buffer != NULL) {
-		buffer->tms_utime  = clk;
-		buffer->tms_stime  = 0;
-		buffer->tms_cutime = 0;
-		buffer->tms_cstime = 0;
-	}
+    if (buffer != NULL) {
+        buffer->tms_utime  = clk;
+        buffer->tms_stime  = 0;
+        buffer->tms_cutime = 0;
+        buffer->tms_cstime = 0;
+    }
 
-	return clk;
+    return clk;
 }
 #endif
 
 #ifdef F_ftime
-int ftime(struct timeb *tb) {
-	struct timeval tv;
-	struct timezone tz;
+int ftime(struct timeb *tb)
+{
+    struct timeval tv;
+    struct timezone tz;
 
-	gettimeofday(&tv, &tz);
+    gettimeofday(&tv, &tz);
 
-	tb->time = tv.tv_sec;
-	tb->millitm = tv.tv_usec / 1000;
-	tb->timezone = tz.tz_minuteswest;
-	tb->dstflag = tz.tz_dsttime;
+    tb->time     = tv.tv_sec;
+    tb->millitm  = tv.tv_usec / 1000;
+    tb->timezone = tz.tz_minuteswest;
+    tb->dstflag  = tz.tz_dsttime;
 
-	return 0;
+    return 0;
 }
 #endif
 
 #ifdef F_clock_getres
-int clock_getres(clockid_t clk_id, struct timespec *res) {
-	struct timeval tv;
-	int ret;
+int clock_getres(clockid_t clk_id, struct timespec *res)
+{
+    struct timeval tv;
+    int ret;
 
-	ret = gettimeofday(&tv, NULL);
+    ret = gettimeofday(&tv, NULL);
 
-	/* Return the actual time since epoch */
-	res->tv_sec = tv.tv_sec;
-	res->tv_nsec = tv.tv_usec * 1000;
+    /* Return the actual time since epoch */
+    res->tv_sec  = tv.tv_sec;
+    res->tv_nsec = tv.tv_usec * 1000;
 
-	return ret;
+    return ret;
 }
 #endif
 
 #ifdef F_clock_gettime
-int clock_gettime(clockid_t clk_id, struct timespec *tp) {
-	struct timeval tv;
-	int res;
+int clock_gettime(clockid_t clk_id, struct timespec *tp)
+{
+    struct timeval tv;
+    int res;
 
-	res = gettimeofday(&tv, NULL);
+    res = gettimeofday(&tv, NULL);
 
-	/* Return the actual time since epoch */
-	tp->tv_sec = tv.tv_sec;
-	tp->tv_nsec = tv.tv_usec * 1000;
+    /* Return the actual time since epoch */
+    tp->tv_sec  = tv.tv_sec;
+    tp->tv_nsec = tv.tv_usec * 1000;
 
-	return res;
+    return res;
 }
 #endif
 
 #ifdef F_clock_settime
-int clock_settime(clockid_t clk_id, const struct timespec *tp) {
-	// TODO: implement using sceCdWriteClock
-	errno = EPERM;
-	return -1;
+int clock_settime(clockid_t clk_id, const struct timespec *tp)
+{
+    // TODO: implement using sceCdWriteClock
+    errno = EPERM;
+    return -1;
 }
 #endif
 
 #ifdef F_truncate
 int truncate(const char *path, off_t length)
 {
-	ssize_t bytes_read;
+    ssize_t bytes_read;
     int fd, res;
     char buff[length];
 
-	fd = open(path, O_RDONLY);
-	if (fd < 0) {
-		errno = ENOENT;
-		return -1;
-	}
+    fd = open(path, O_RDONLY);
+    if (fd < 0) {
+        errno = ENOENT;
+        return -1;
+    }
 
-	bytes_read = read(fd, &buff, length);
-	close(fd);
-	if (bytes_read < length) {
-		errno = EFBIG;
-		return -1;
-	}
+    bytes_read = read(fd, &buff, length);
+    close(fd);
+    if (bytes_read < length) {
+        errno = EFBIG;
+        return -1;
+    }
 
-	fd = open (path, O_TRUNC|O_WRONLY);
-	if (fd < 0) {
-		errno = ENOENT;
-		return -1;
-	}
+    fd = open(path, O_TRUNC | O_WRONLY);
+    if (fd < 0) {
+        errno = ENOENT;
+        return -1;
+    }
 
-	res = write(fd, &buff, length);
-	close(fd);
-	return res;
+    res = write(fd, &buff, length);
+    close(fd);
+    return res;
 }
 #endif
 
 #ifdef F_symlink
 static int _default_symlink(const char *target, const char *linkpath)
 {
-	return link(target, linkpath);
+    return link(target, linkpath);
 }
 
 int (*_ps2sdk_symlink)(const char *target, const char *linkpath) = _default_symlink;
 
 int symlink(const char *target, const char *linkpath)
 {
-  return __transform_errno(_ps2sdk_symlink(target, linkpath));
+    return __transform_errno(_ps2sdk_symlink(target, linkpath));
 }
 #endif
 
 #ifdef F_readlink
 static ssize_t _default_readlink(const char *path, char *buf, size_t bufsiz)
 {
-	errno = ENOSYS;
-	return -1; /* not supported */
+    errno = ENOSYS;
+    return -1; /* not supported */
 }
 
 int (*_ps2sdk_readlink)(const char *path, char *buf, size_t bufsiz) = _default_readlink;
 
 ssize_t readlink(const char *path, char *buf, size_t bufsiz)
 {
-	return 	_ps2sdk_readlink(path, buf, bufsiz);
+    return _ps2sdk_readlink(path, buf, bufsiz);
 }
 #endif
 
 #ifdef F_utime
 int utime(const char *pathname, const struct utimbuf *times)
 {
-	// TODO: implement in terms of chstat
-	errno = ENOSYS;
-	return -1; /* not supported */
+    // TODO: implement in terms of chstat
+    errno = ENOSYS;
+    return -1; /* not supported */
 }
 #endif
 
 #ifdef F_fchown
 int fchown(int fd, uid_t owner, gid_t group)
 {
-	errno = ENOSYS;
-	return -1; /* not supported */
+    errno = ENOSYS;
+    return -1; /* not supported */
 }
 #endif
 
 #ifdef F_getrandom
 ssize_t getrandom(void *buf, size_t buflen, unsigned int flags)
 {
-	(void)flags;
+    (void)flags;
 
-	arc4random_buf(buf, buflen);
-	return buflen;
+    arc4random_buf(buf, buflen);
+    return buflen;
 }
 #endif
 
 #ifdef F_getentropy
 int getentropy(void *buf, size_t buflen)
 {
-	u8 *buf_cur = buf;
-	int i;
-	// Restrict buffer size as documented in the man page
-	if (buflen > 256)
-	{
-		errno = EIO;
-		return -1;
-	}
-	// TODO: get proper entropy from e.g.
-	// * RTC
-	// * uninitialized memory
-	// * Mechacon temperature
-	for (i = 0; i < buflen; i += 1)
-	{
-		// Performance counter low buts should be changed for each call to cpu_ticks
-		buf_cur[i] = (u8)(cpu_ticks() & 0xff);
-	}
-	return 0;
+    u8 *buf_cur = buf;
+    int i;
+    // Restrict buffer size as documented in the man page
+    if (buflen > 256) {
+        errno = EIO;
+        return -1;
+    }
+    // TODO: get proper entropy from e.g.
+    // * RTC
+    // * uninitialized memory
+    // * Mechacon temperature
+    for (i = 0; i < buflen; i += 1) {
+        // Performance counter low buts should be changed for each call to cpu_ticks
+        buf_cur[i] = (u8)(cpu_ticks() & 0xff);
+    }
+    return 0;
 }
 #endif
 
 #ifdef F__isatty
 int _isatty(int fd)
 {
-	errno = ENOSYS;
-	return -1; /* not supported */
+    errno = ENOSYS;
+    return -1; /* not supported */
 }
 #endif
 
 #ifdef F_chmod
 int chmod(const char *pathname, mode_t mode)
 {
-	errno = ENOSYS;
-	return -1; /* not supported */
+    errno = ENOSYS;
+    return -1; /* not supported */
 }
 #endif
 
 #ifdef F_fchmod
 int fchmod(int fd, mode_t mode)
 {
-	errno = ENOSYS;
-	return -1; /* not supported */
+    errno = ENOSYS;
+    return -1; /* not supported */
 }
 #endif
 
 #ifdef F_fchmodat
 int fchmodat(int fd, const char *path, mode_t mode, int flag)
 {
-	return chmod(path, mode);
+    return chmod(path, mode);
 }
 #endif
 
 #ifdef F_pathconf
 long int pathconf(const char *path, int name)
 {
-	errno = ENOSYS;
-	return -1; /* not supported */
+    errno = ENOSYS;
+    return -1; /* not supported */
 }
 #endif
 
 #ifdef F_fsync
-int fsync(int fd) {
-	// TODO: implement in terms of sync
-	return 0;
+int fsync(int fd)
+{
+    // TODO: implement in terms of sync
+    return 0;
 }
 #endif
 
 #ifdef F_getuid
-uid_t getuid(void) {
-	return __dummy_passwd.pw_uid;
+uid_t getuid(void)
+{
+    return __dummy_passwd.pw_uid;
 }
 #endif
 
 #ifdef F_geteuid
-uid_t geteuid(void) {
-	return __dummy_passwd.pw_uid;
+uid_t geteuid(void)
+{
+    return __dummy_passwd.pw_uid;
 }
 #endif
 
 #ifdef F_getpwuid
-struct passwd *getpwuid(uid_t uid) {
-	/* There's no support for users */
-	return &__dummy_passwd;
+struct passwd *getpwuid(uid_t uid)
+{
+    /* There's no support for users */
+    return &__dummy_passwd;
 }
 #endif
 
 #ifdef F_getpwnam
-struct passwd *getpwnam(const char *name) {
-	/* There's no support for users */
-	return &__dummy_passwd;
+struct passwd *getpwnam(const char *name)
+{
+    /* There's no support for users */
+    return &__dummy_passwd;
 }
 #endif

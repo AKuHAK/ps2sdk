@@ -10,7 +10,7 @@
 
 #include "module_debug.h"
 
-#define U64_2XU32(val)  ((u32*)val)[1], ((u32*)val)[0]
+#define U64_2XU32(val) ((u32 *)val)[1], ((u32 *)val)[0]
 
 struct partition g_part[MAX_PARTITIONS];
 struct block_device g_part_bd[MAX_PARTITIONS];
@@ -21,8 +21,7 @@ static struct file_system g_gpt_fs;
 int GetNextFreePartitionIndex()
 {
     // Loop and find the next free partition index.
-    for (int i = 0; i < MAX_PARTITIONS; i++)
-    {
+    for (int i = 0; i < MAX_PARTITIONS; i++) {
         if (g_part[i].bd == NULL)
             return i;
     }

@@ -12,8 +12,9 @@
 
 #include <erl.h>
 
-char * erl_id = "libvux";
-char * erl_dependancies[] = {
+char *erl_id = "libvux";
 
-    0
+char *erl_dependancies[] = {
+
+    0,
 };

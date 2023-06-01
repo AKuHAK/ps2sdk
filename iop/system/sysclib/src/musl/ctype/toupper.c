@@ -4,6 +4,7 @@
 // Using char is nonstandard
 char _toupper(char c)
 {
-	if (islower(c)) return c & 0x5f;
-	return c;
+    if (islower(c))
+        return c & 0x5f;
+    return c;
 }

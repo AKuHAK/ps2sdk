@@ -18,7 +18,7 @@ IRX_ID(MODNAME, 1, 1);
 int CpuExecuteKmode(void *function, ...); // Exactly the same function as INTRMAN's export 14.
 #endif
 
-//#define DEBUG 1 //Comment out to disable debug messages.
+// #define DEBUG 1 //Comment out to disable debug messages.
 #ifdef DEBUG
 #define DEBUG_PRINTF(args...) printf(args)
 #else
@@ -155,15 +155,15 @@ static void *GetIOPRPStat(const void *start, const void *end, struct RomImgData 
     const unsigned int *ptr, *ptr2;
     unsigned int offset;
 
-    ptr = start;
+    ptr    = start;
     offset = 0;
     while ((unsigned int)ptr < (unsigned int)end) {
         ptr2 = &ptr[7];
         // Scan for RESET\0\0\0\0\0. The record should have a filesize of equal to its offset from the start of the image.
         if (ptr[0] == 0x45534552 && ptr2[-6] == 0x54 && (*(unsigned short int *)&ptr2[-5] == 0) && (((ptr2[-4] + 0xF) & 0xFFFFFFF0) == offset)) {
-            ImageStat->ImageStart = start;
+            ImageStat->ImageStart  = start;
             ImageStat->RomdirStart = ptr;
-            ImageStat->RomdirEnd = (void *)((unsigned int)ptr + *ptr2);
+            ImageStat->RomdirEnd   = (void *)((unsigned int)ptr + *ptr2);
             return ImageStat;
         }
 
@@ -193,8 +193,8 @@ static struct RomdirFileStat *GetFileStatFromImage(const struct RomImgData *Imag
     struct RomdirFileStat *result;
 #endif
 
-    offset = 0;
-    ExtInfoOffset = 0;
+    offset                             = 0;
+    ExtInfoOffset                      = 0;
     ((unsigned int *)filename_temp)[0] = 0;
     ((unsigned int *)filename_temp)[1] = 0;
     ((unsigned int *)filename_temp)[2] = 0;
@@ -210,8 +210,8 @@ static struct RomdirFileStat *GetFileStatFromImage(const struct RomImgData *Imag
             if (((unsigned int *)filename_temp)[0] == ((unsigned int *)RomdirEntry->name)[0] && ((unsigned int *)filename_temp)[1] == ((unsigned int *)RomdirEntry->name)[1] && (*(unsigned short int *)&((unsigned int *)filename_temp)[2] == *(unsigned short int *)&((unsigned int *)RomdirEntry->name)[2])) {
 
                 stat->romdirent = RomdirEntry;
-                stat->data = (void *)((u8 *)(ImageStat->ImageStart) + offset);
-                stat->extinfo = NULL;
+                stat->data      = (void *)((u8 *)(ImageStat->ImageStart) + offset);
+                stat->extinfo   = NULL;
 
                 if (RomdirEntry->ExtInfoEntrySize > 0) {
                     stat->extinfo = (void *)((unsigned int)ImageStat->RomdirEnd + ExtInfoOffset);
@@ -266,7 +266,7 @@ static void ScanImagesForFile(const struct ImageData *ImageDataBuffer, unsigned 
             ImageDataBuffer+(NumFiles<<1+NumFiles)<<3
         */
 
-        i = NumFiles - 1;
+        i         = NumFiles - 1;
         ImageData = &ImageDataBuffer[i];
 
         do {
@@ -441,19 +441,19 @@ static int InitModuleInfo(const void *module, struct ModuleInfo *ModuleInfo)
 
     memcpy(&Ident_10, &((struct coff_filehdr *)module)->f_opthdr, 4);
     COFF_AoutHdr = (AOUTHDR *)((unsigned int)module + sizeof(struct coff_filehdr));
-    COFF_ScnHdr = (struct scnhdr *)((unsigned int)module + sizeof(struct coff_filehdr) + sizeof(AOUTHDR));
+    COFF_ScnHdr  = (struct scnhdr *)((unsigned int)module + sizeof(struct coff_filehdr) + sizeof(AOUTHDR));
     if (((struct coff_filehdr *)module)->f_magic == MIPSELMAGIC && COFF_AoutHdr->magic == OMAGIC && ((struct coff_filehdr *)module)->f_nscns < 0x20 && ((Ident_10 & 0x0002FFFF) == 0x20038) && COFF_ScnHdr->s_paddr == COFF_AoutHdr->text_start) {
         if (COFF_AoutHdr->vstamp != 0x7001) {
             /* 0x00000bf8    - COFF */
             ModuleInfo->ModuleType = IOP_MOD_TYPE_COFF;
             ModuleInfo->EntryPoint = (void *)COFF_AoutHdr->entry;
-            ModuleInfo->gp = (void *)COFF_AoutHdr->gp_value;
+            ModuleInfo->gp         = (void *)COFF_AoutHdr->gp_value;
             ModuleInfo->text_start = (void *)COFF_AoutHdr->text_start;
-            ModuleInfo->text_size = COFF_AoutHdr->tsize;
-            ModuleInfo->data_size = COFF_AoutHdr->dsize;
-            ModuleInfo->bss_size = COFF_AoutHdr->bsize;
-            ModuleInfo->MemSize = COFF_AoutHdr->bss_start + COFF_AoutHdr->bsize - COFF_AoutHdr->text_start;
-            ModuleInfo->mod_id = COFF_AoutHdr->mod_id;
+            ModuleInfo->text_size  = COFF_AoutHdr->tsize;
+            ModuleInfo->data_size  = COFF_AoutHdr->dsize;
+            ModuleInfo->bss_size   = COFF_AoutHdr->bsize;
+            ModuleInfo->MemSize    = COFF_AoutHdr->bss_start + COFF_AoutHdr->bsize - COFF_AoutHdr->text_start;
+            ModuleInfo->mod_id     = COFF_AoutHdr->mod_id;
 
             return ModuleInfo->ModuleType;
         } else {
@@ -461,22 +461,22 @@ static int InitModuleInfo(const void *module, struct ModuleInfo *ModuleInfo)
         }
     } else {
         /* 0x00000C68    - ELF */
-        ELF_Hdr = module;
+        ELF_Hdr  = module;
         ELF_phdr = (elf_pheader_t *)((unsigned int)module + ELF_Hdr->phoff);
 
         if (((unsigned short int *)ELF_Hdr->ident)[2] == 0x101 && ELF_Hdr->machine == 8 && ELF_Hdr->phentsize == sizeof(elf_pheader_t) && ELF_Hdr->phnum == 2 && (ELF_phdr->type == (SHT_LOPROC | SHT_LOPROC_IOPMOD)) && (ELF_Hdr->type == ELF_TYPE_SCE_IRX || ELF_Hdr->type == 2)) {
             ModuleInfo->ModuleType = ELF_Hdr->type == 0xFF80 ? IOP_MOD_TYPE_IRX : IOP_MOD_TYPE_ELF;
 
             /* 0x00000ce8 */
-            iopmod = (struct iopmod *)((unsigned int)module + ELF_phdr->offset);
+            iopmod                 = (struct iopmod *)((unsigned int)module + ELF_phdr->offset);
             ModuleInfo->EntryPoint = (void *)iopmod->EntryPoint;
-            ModuleInfo->gp = (void *)iopmod->gp;
+            ModuleInfo->gp         = (void *)iopmod->gp;
             ModuleInfo->text_start = (void *)ELF_phdr[1].vaddr;
-            ModuleInfo->text_size = iopmod->text_size;
-            ModuleInfo->data_size = iopmod->data_size;
-            ModuleInfo->bss_size = iopmod->bss_size;
-            ModuleInfo->MemSize = ELF_phdr[1].memsz;
-            ModuleInfo->mod_id = iopmod->mod_id;
+            ModuleInfo->text_size  = iopmod->text_size;
+            ModuleInfo->data_size  = iopmod->data_size;
+            ModuleInfo->bss_size   = iopmod->bss_size;
+            ModuleInfo->MemSize    = ELF_phdr[1].memsz;
+            ModuleInfo->mod_id     = iopmod->mod_id;
 
             return ModuleInfo->ModuleType;
         } else {
@@ -492,8 +492,8 @@ static void CopySection(const void *module, void *buffer, unsigned int FileSize)
     const unsigned int *src;
     const void *src_end;
 
-    dst = buffer;
-    src = module;
+    dst     = buffer;
+    src     = module;
     src_end = (const void *)((unsigned int)module + (FileSize >> 2 << 2));
     while ((unsigned int)src < (unsigned int)src_end) {
         *dst = *src;
@@ -518,7 +518,7 @@ static void LoadELFModule(const void *module)
     const elf_header_t *ELF_Hdr;
     const elf_pheader_t *ELF_phdr;
 
-    ELF_Hdr = module;
+    ELF_Hdr  = module;
     ELF_phdr = (elf_pheader_t *)((unsigned int)module + ELF_Hdr->phoff);
 
     CopySection((void *)((unsigned int)module + ELF_phdr[1].offset), (void *)ELF_phdr[1].vaddr, ELF_phdr[1].filesz);
@@ -541,7 +541,7 @@ static void LoadCOFFModule(const void *module)
      */
 
     COFF_AoutHdr = (AOUTHDR *)((unsigned int)module + sizeof(struct coff_filehdr));
-    ScnHdr = (struct scnhdr *)((unsigned int)module + sizeof(struct coff_filehdr) + sizeof(AOUTHDR));
+    ScnHdr       = (struct scnhdr *)((unsigned int)module + sizeof(struct coff_filehdr) + sizeof(AOUTHDR));
 
     CopySection((void *)((unsigned int)module + ScnHdr[0].s_size), (void *)COFF_AoutHdr->text_start, COFF_AoutHdr->tsize);
     CopySection((void *)((unsigned int)module + COFF_AoutHdr->tsize), (void *)COFF_AoutHdr->data_start, COFF_AoutHdr->dsize);
@@ -561,10 +561,10 @@ static void LoadIRXModule(const void *module, struct ModuleInfo *ModuleInfo)
     const elf_rel *ELF_relocation;
     unsigned int temp, *WordPatchLocation;
 
-    ELF_hdr = (elf_header_t *)module;
+    ELF_hdr  = (elf_header_t *)module;
     ELF_phdr = (elf_pheader_t *)((unsigned int)module + ELF_hdr->phoff);
 
-    ModuleInfo->gp = (void *)((u8 *)ModuleInfo->gp + (unsigned int)ModuleInfo->text_start);
+    ModuleInfo->gp         = (void *)((u8 *)ModuleInfo->gp + (unsigned int)ModuleInfo->text_start);
     ModuleInfo->EntryPoint = (void *)((u8 *)ModuleInfo->EntryPoint + (unsigned int)ModuleInfo->text_start);
 
     if (ModuleInfo->mod_id != (void *)0xFFFFFFFF) {
@@ -593,7 +593,7 @@ static void LoadIRXModule(const void *module, struct ModuleInfo *ModuleInfo)
                     case R_MIPS_NONE:
                         break;
                     case R_MIPS_16:
-                        WordPatchLocation = (unsigned int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation->offset);
+                        WordPatchLocation  = (unsigned int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation->offset);
                         *WordPatchLocation = (*WordPatchLocation & 0xFFFF0000) | (((unsigned int)ModuleInfo->text_start + *(short int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation->offset)) & 0xFFFF);
                         break;
                     case R_MIPS_32:
@@ -603,15 +603,15 @@ static void LoadIRXModule(const void *module, struct ModuleInfo *ModuleInfo)
                     case R_MIPS_REL32:
                         break;
                     case R_MIPS_26:
-                        WordPatchLocation = (unsigned int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation->offset);
+                        WordPatchLocation  = (unsigned int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation->offset);
                         *WordPatchLocation = (((unsigned int)ModuleInfo->text_start + ((*WordPatchLocation & 0x03FFFFFF) << 2 | ((unsigned int)WordPatchLocation & 0xF0000000))) << 4 >> 6) | (*WordPatchLocation & 0xFC000000);
                         break;
                     case R_MIPS_HI16: // 0x00001120    - Ouch. D:
                         temp = (((unsigned int)*(unsigned short int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation->offset)) << 16) + *(short int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation[1].offset);
                         temp += (unsigned int)ModuleInfo->text_start;
-                        WordPatchLocation = (unsigned int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation->offset);
+                        WordPatchLocation  = (unsigned int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation->offset);
                         *WordPatchLocation = (((temp >> 15) + 1) >> 1 & 0xFFFF) | (*WordPatchLocation & 0xFFFF0000);
-                        WordPatchLocation = (unsigned int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation[1].offset);
+                        WordPatchLocation  = (unsigned int *)((u8 *)(ModuleInfo->text_start) + ELF_relocation[1].offset);
                         *WordPatchLocation = (*WordPatchLocation & 0xFFFF0000) | (temp & 0xFFFF);
                         ELF_relocation++;
                         i++;
@@ -645,23 +645,23 @@ struct ModInfo
 /* 0x00000df8 - Initializes the module information structure, which exists 0x30 bytes before the module itself. */
 static void InitLoadedModInfo(struct ModuleInfo *ModuleInfo, struct ModInfo *ModInfo)
 {
-    ModInfo->next = NULL;
-    ModInfo->name = NULL;
-    ModInfo->version = 0;
+    ModInfo->next     = NULL;
+    ModInfo->name     = NULL;
+    ModInfo->version  = 0;
     ModInfo->newflags = 0;
-    ModInfo->id = 0;
+    ModInfo->id       = 0;
 
     if (ModuleInfo->mod_id != (void *)0xFFFFFFFF) {
-        ModInfo->name = ModuleInfo->mod_id->name;
+        ModInfo->name    = ModuleInfo->mod_id->name;
         ModInfo->version = ModuleInfo->mod_id->version;
     }
 
     ModInfo->EntryPoint = ModuleInfo->EntryPoint;
-    ModInfo->gp = ModuleInfo->gp;
+    ModInfo->gp         = ModuleInfo->gp;
     ModInfo->text_start = ModuleInfo->text_start;
-    ModInfo->text_size = ModuleInfo->text_size;
-    ModInfo->data_size = ModuleInfo->data_size;
-    ModInfo->bss_size = ModuleInfo->bss_size;
+    ModInfo->text_size  = ModuleInfo->text_size;
+    ModInfo->data_size  = ModuleInfo->data_size;
+    ModInfo->bss_size   = ModuleInfo->bss_size;
 }
 
 /* 0x00000d60 */
@@ -721,7 +721,7 @@ static void BeginBootupSequence(struct ResetData *ResetData)
             break;
     }
 
-    /* 0x00000a58 */
+        /* 0x00000a58 */
 #ifdef UDNL_T300
     func_00001930();
 #else
@@ -729,7 +729,7 @@ static void BeginBootupSequence(struct ResetData *ResetData)
 #endif
 
     ModuleEntryPoint = LoadedModules[0].EntryPoint;
-    FreeMemStart = (void *)ModuleEntryPoint(MemSizeInBytes);
+    FreeMemStart     = (void *)ModuleEntryPoint(MemSizeInBytes);
 
     // Load LOADCORE
     switch (InitModuleInfo(ResetData->ModData[1], &LoadedModules[1])) {
@@ -743,7 +743,7 @@ static void BeginBootupSequence(struct ResetData *ResetData)
             break;
     }
 
-    /* 0x00000ad0 */
+        /* 0x00000ad0 */
 #ifdef UDNL_T300
     func_00001930();
 #else
@@ -766,7 +766,7 @@ static void *ParseStartAddress(const char **line)
     const char *ptr;
     void *address;
 
-    ptr = *line;
+    ptr     = *line;
     address = 0;
     while (*ptr >= 0x30) {
         unsigned char character;
@@ -802,8 +802,8 @@ static const struct ExtInfoField *GetFileInfo(const struct RomdirFileStat *stat,
     const void *extinfo_end;
     const struct ExtInfoField *ExtInfoField;
 
-    RomDirEnt = stat->romdirent;
-    extinfo_end = (unsigned char *)stat->extinfo + (RomDirEnt->ExtInfoEntrySize >> 2 << 2);
+    RomDirEnt    = stat->romdirent;
+    extinfo_end  = (unsigned char *)stat->extinfo + (RomDirEnt->ExtInfoEntrySize >> 2 << 2);
     ExtInfoField = stat->extinfo;
 
     while ((unsigned int)ExtInfoField < (unsigned int)extinfo_end) {
@@ -843,9 +843,9 @@ static struct RomdirFileStat *SelectModuleFromImages(const struct ImageData *Ima
     filename[count] = '\0';
 
     /* 0x000008e0 */
-    ImageFileIndexNumber = -1;
+    ImageFileIndexNumber  = -1;
     HighestFileVersionNum = 0;
-    NumFilesRemaining = NumFiles - 1;
+    NumFilesRemaining     = NumFiles - 1;
     {
         ImageDataPtr = &ImageDataBuffer[NumFilesRemaining];
 
@@ -854,7 +854,7 @@ static struct RomdirFileStat *SelectModuleFromImages(const struct ImageData *Ima
                 if (GetFileStatFromImage(&ImageDataPtr->stat, filename, &stat) != NULL) {
                     unsigned short int FileVersionNum;
 
-                    ExtInfofield = GetFileInfo(&stat, 2);
+                    ExtInfofield   = GetFileInfo(&stat, 2);
                     FileVersionNum = 0;
                     GetFileInfo(&stat, 3);
 
@@ -864,7 +864,7 @@ static struct RomdirFileStat *SelectModuleFromImages(const struct ImageData *Ima
                     }
 
                     if (ImageFileIndexNumber < 0 || HighestFileVersionNum < FileVersionNum) {
-                        ImageFileIndexNumber = NumFilesRemaining;
+                        ImageFileIndexNumber  = NumFilesRemaining;
                         HighestFileVersionNum = FileVersionNum;
 
                         DEBUG_PRINTF("SelectModule: %s, %s, 0x%x\n", filename, ImageDataPtr->filename, FileVersionNum);
@@ -911,8 +911,8 @@ static void ParseIOPBTCONF(const struct ImageData *ImageDataBuffer, unsigned int
 
     if ((unsigned int)stat->data < (unsigned int)stat->data + stat->romdirent->size) {
         FilesRemaining = NumFiles - 1;
-        ModList = &ResetData->ModData[ResetData->NumModules];
-        NumModules = 0;
+        ModList        = &ResetData->ModData[ResetData->NumModules];
+        NumModules     = 0;
 
         ptr = stat->data;
         do {
@@ -1063,7 +1063,7 @@ int _start(int argc, char *argv[])
         $s4=$sp+0x40    <- Points to the image entries within the image list buffer.
      */
     ImageDataTotalSize = (argc + 2) * sizeof(struct ImageData);
-    ImageDataBuffer = alloca(ImageDataTotalSize);
+    ImageDataBuffer    = alloca(ImageDataTotalSize);
     memset(ImageDataBuffer, 0, ImageDataTotalSize);
 
     TotalSize = MAX_MODULES * sizeof(void *) + sizeof(struct ResetData);
@@ -1072,8 +1072,8 @@ int _start(int argc, char *argv[])
 #endif
 
 #ifdef FULL_UDNL
-    i = 1;
-    NumFiles = 2;
+    i         = 1;
+    NumFiles  = 2;
     ImageData = &ImageDataBuffer[2];
 #ifdef UDNL_T300
     options = 0;
@@ -1129,15 +1129,16 @@ int _start(int argc, char *argv[])
                 break;
             } else {
                 TotalSize += (file_sz + 0xF) & ~0xF;
-                ImageData->fd = fd;
-                ImageData->size = file_sz;
+                ImageData->fd       = fd;
+                ImageData->size     = file_sz;
                 ImageData->filename = argv[i];
                 NumFiles++;
                 ImageData++;
             }
         }
 #ifndef UDNL_T300
-        else {
+        else
+        {
             var_00001850++;
         }
 #endif
@@ -1164,10 +1165,10 @@ int _start(int argc, char *argv[])
 
     ResetData = buffer;
     memset(ResetData, 0, sizeof(struct ResetData));
-    ResetData->ModData = (void *)((u8 *)buffer + sizeof(struct ResetData));
-    IoprpBuffer = (void *)((unsigned int)buffer + MAX_MODULES * sizeof(void *) + sizeof(struct ResetData));
+    ResetData->ModData     = (void *)((u8 *)buffer + sizeof(struct ResetData));
+    IoprpBuffer            = (void *)((unsigned int)buffer + MAX_MODULES * sizeof(void *) + sizeof(struct ResetData));
     ResetData->IOPRPBuffer = (void *)((unsigned int)IoprpBuffer & 0x1FFFFF00);
-    ResetData->MemSize = QueryMemSize() >> 20;
+    ResetData->MemSize     = QueryMemSize() >> 20;
 #ifdef UDNL_T300
     if (ResetData->MemSize == 8) {
         if (BootMode3 & 0x00000080) {
@@ -1177,7 +1178,7 @@ int _start(int argc, char *argv[])
     }
 #endif
     ResetData->BootMode = 3;
-    ResetData->command = NULL;
+    ResetData->command  = NULL;
     if (GetIOPRPStat((void *)0xbfc00000, (void *)0xbfc10000, &ImageDataBuffer[0].stat) != NULL) {
         ImageDataBuffer[0].filename = "ROM";
     }
@@ -1202,7 +1203,7 @@ int _start(int argc, char *argv[])
         memcpy(IoprpBuffer, IOPRP_img, size_IOPRP_img);
         if (GetIOPRPStat(IoprpBuffer, (void *)((unsigned int)IoprpBuffer + size_IOPRP_img), &ImageDataBuffer[1].stat) != NULL) {
             ImageDataBuffer[1].filename = "DATA";
-            IoprpBuffer = (void *)((u8 *)IoprpBuffer + ((size_IOPRP_img + 0xF) & ~0xF));
+            IoprpBuffer                 = (void *)((u8 *)IoprpBuffer + ((size_IOPRP_img + 0xF) & ~0xF));
         }
     }
 #endif

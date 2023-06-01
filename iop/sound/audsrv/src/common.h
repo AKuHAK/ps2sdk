@@ -23,7 +23,7 @@
  *
  * Creates a thread based on the given parameter. Upon completion,
  * thread is started.
-*/
+ */
 int create_thread(void *func, int priority, void *param);
 
 /** Helper to print buffer in hex. Useful for debugging.

@@ -32,8 +32,8 @@
  *
  * For the PlayStation 3, this window does not seem to be correctly emulated.
  * Although its EE kernel appears to still uses it, homebrew software cannot seem to use this window properly.
-*/
-#define SUB_VIRT_MEM	0xbc000000
+ */
+#define SUB_VIRT_MEM 0xbc000000
 
 #ifdef __cplusplus
 extern "C" {

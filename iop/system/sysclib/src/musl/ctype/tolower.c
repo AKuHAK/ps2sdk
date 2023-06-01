@@ -4,6 +4,7 @@
 // Using char is nonstandard
 char _tolower(char c)
 {
-	if (isupper(c)) return c | 32;
-	return c;
+    if (isupper(c))
+        return c | 32;
+    return c;
 }

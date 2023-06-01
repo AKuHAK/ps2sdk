@@ -13,6 +13,8 @@
 #include <erl.h>
 
 char *erl_id = "libpacket2";
+
 char *erl_dependancies[] = {
     "libc",
-    0};
+    0,
+};

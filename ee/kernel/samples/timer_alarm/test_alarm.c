@@ -17,8 +17,9 @@
 
 int flag = 0, flag2 = 0;
 
-void usercb(struct timer_alarm_t *alarm, void *arg) {
-    *(int*)arg = 1;
+void usercb(struct timer_alarm_t *alarm, void *arg)
+{
+    *(int *)arg = 1;
     // The alarm does not trigger again unless we re-enable it manually
     iStartTimerAlarm(alarm);
 }

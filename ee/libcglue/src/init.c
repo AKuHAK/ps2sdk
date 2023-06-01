@@ -22,10 +22,9 @@ int chdir(const char *path);
 
 #ifdef F___libpthreadglue_init
 /* Note: This function is being called from __libcglue_init.
-* It is a weak function because can be override by user program
-*/
-__attribute__((weak))
-void __libpthreadglue_init()
+ * It is a weak function because can be override by user program
+ */
+__attribute__((weak)) void __libpthreadglue_init()
 {
     pthread_init();
 }
@@ -35,23 +34,21 @@ void __libpthreadglue_init();
 
 #ifdef F___libpthreadglue_deinit
 /* Note: This function is being called from __libcglue_deinit.
-* It is a weak function because can be override by user program
-*/
-__attribute__((weak))
-void __libpthreadglue_deinit()
+ * It is a weak function because can be override by user program
+ */
+__attribute__((weak)) void __libpthreadglue_deinit()
 {
-	pthread_terminate();
+    pthread_terminate();
 }
 #else
 void __libpthreadglue_deinit();
 #endif
 
 #ifdef F__libcglue_init
-__attribute__((weak))
-void _libcglue_init()
+__attribute__((weak)) void _libcglue_init()
 {
-	/* Initialize pthread library */
-	__libpthreadglue_init();
+    /* Initialize pthread library */
+    __libpthreadglue_init();
 
     _libcglue_timezone_update();
     _libcglue_rtc_update();
@@ -59,38 +56,35 @@ void _libcglue_init()
 #endif
 
 #ifdef F__libcglue_deinit
-__attribute__((weak))
-void _libcglue_deinit()
+__attribute__((weak)) void _libcglue_deinit()
 {
-	__libpthreadglue_deinit();
+    __libpthreadglue_deinit();
 }
 #endif
 
 #ifdef F__libcglue_args_parse
-__attribute__((weak))
-void _libcglue_args_parse(int argc, char ** argv)
+__attribute__((weak)) void _libcglue_args_parse(int argc, char **argv)
 {
     if (argc == 0) // naplink!
     {
-	chdir("host:");
+        chdir("host:");
     } else {
-	char * p, * s = 0;
-	// let's find the last slash, or at worst, the :
-	for (p = argv[0]; *p; p++) {
-	    if ((*p == '/') || (*p == '\\') || (*p == ':')) {
-		s = p;
-	    }
-	}
-	// Nothing?! strange, let's use host.
-	if (!s) {
-	    chdir("host:");
-	} else {
-	    char backup = *(++s);
-	    *s = 0;
-	    chdir(argv[0]);
-	    *s = backup;
-	}
+        char *p, *s = 0;
+        // let's find the last slash, or at worst, the :
+        for (p = argv[0]; *p; p++) {
+            if ((*p == '/') || (*p == '\\') || (*p == ':')) {
+                s = p;
+            }
+        }
+        // Nothing?! strange, let's use host.
+        if (!s) {
+            chdir("host:");
+        } else {
+            char backup = *(++s);
+            *s          = 0;
+            chdir(argv[0]);
+            *s = backup;
+        }
     }
 }
 #endif
-

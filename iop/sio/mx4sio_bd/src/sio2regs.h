@@ -43,15 +43,15 @@
 
 #define PCTRL1_ACK_TIMEOUT_PER(x)  ((((u32)(x)) << 0) & 0xFFFF)
 #define PCTRL1_INTER_BYTE_PER(x)   ((((u32)(x)) << 16) & 0xFF0000)
-#define PCTRL1_UNK24(x)            ((((u32)(x))&1) << 24)
-#define PCTRL1_IF_MODE_SPI_DIFF(x) ((((u32)(x))&1) << 25)
+#define PCTRL1_UNK24(x)            ((((u32)(x)) & 1) << 24)
+#define PCTRL1_IF_MODE_SPI_DIFF(x) ((((u32)(x)) & 1) << 25)
 
-#define TR_CTRL_PORT_NR(x)          ((((u32)(x))&0x3) << 0)
-#define TR_CTRL_PAUSE(x)            ((((u32)(x))&1) << 2)
-#define TR_CTRL_UNK03(x)            ((((u32)(x))&1) << 3)
+#define TR_CTRL_PORT_NR(x)          ((((u32)(x)) & 0x3) << 0)
+#define TR_CTRL_PAUSE(x)            ((((u32)(x)) & 1) << 2)
+#define TR_CTRL_UNK03(x)            ((((u32)(x)) & 1) << 3)
 // Each of the folowing is 0 for PIO transfer in the given direction. to select DMA, set to 1.
-#define TR_CTRL_TX_MODE_PIO_DMA(x)  ((((u32)(x))&1) << 4)
-#define TR_CTRL_RX_MODE_PIO_DMA(x)  ((((u32)(x))&1) << 5)
+#define TR_CTRL_TX_MODE_PIO_DMA(x)  ((((u32)(x)) & 1) << 4)
+#define TR_CTRL_RX_MODE_PIO_DMA(x)  ((((u32)(x)) & 1) << 5)
 /*
 normal    special
 0            0                no transfer done(???)
@@ -59,40 +59,40 @@ normal    special
 0            1                "special" transfer (not known to have been ever used by anything, no known difference from normal).
 1            1                no transfer takes place
 */
-#define TR_CTRL_NORMAL_TR(x)        (((u32)((x))&1) << 6)
-#define TR_CTRL_SPECIAL_TR(x)       (((u32)((x))&1) << 7)
+#define TR_CTRL_NORMAL_TR(x)        (((u32)((x)) & 1) << 6)
+#define TR_CTRL_SPECIAL_TR(x)       (((u32)((x)) & 1) << 7)
 // In bytes 0 - 0x100:
-#define TR_CTRL_TX_DATA_SZ(x)       ((((u32)(x))&0x1FF) << 8)
-#define TR_CTRL_UNK17(x)            ((((u32)(x))&1) << 17)
-#define TR_CTRL_RX_DATA_SZ(x)       ((((u32)(x))&0x1FF) << 18)
-#define TR_CTRL_UNK27(x)            ((((u32)(x))&1) << 27)
+#define TR_CTRL_TX_DATA_SZ(x)       ((((u32)(x)) & 0x1FF) << 8)
+#define TR_CTRL_UNK17(x)            ((((u32)(x)) & 1) << 17)
+#define TR_CTRL_RX_DATA_SZ(x)       ((((u32)(x)) & 0x1FF) << 18)
+#define TR_CTRL_UNK27(x)            ((((u32)(x)) & 1) << 27)
 // 28 and 29 can't be set
-#define TR_CTRL_UNK28(x)            ((((u32)(x))&1) << 28)
-#define TR_CTRL_UNK29(x)            ((((u32)(x))&1) << 29)
+#define TR_CTRL_UNK28(x)            ((((u32)(x)) & 1) << 28)
+#define TR_CTRL_UNK29(x)            ((((u32)(x)) & 1) << 29)
 // selects between baud rate divisors 0 and 1
-#define TR_CTRL_BAUD_DIV(x)         ((((u32)(x))&1) << 30)
-#define TR_CTRL_WAIT_ACK_FOREVER(x) ((((u32)(x))&1) << 31)
+#define TR_CTRL_BAUD_DIV(x)         ((((u32)(x)) & 1) << 30)
+#define TR_CTRL_WAIT_ACK_FOREVER(x) ((((u32)(x)) & 1) << 31)
 
 // 8268 SIO2 (main) CTRL register.
-#define CTRL_TR_START(x)             ((((u32)(x))&1) << 0)
-#define CTRL_TR_RESUME_PAUSED(x)     ((((u32)(x))&1) << 1)
-#define CTRL_RESET_STATE(x)          ((((u32)(x))&1) << 2)
-#define CTRL_RESET_FIFOS(x)          ((((u32)(x))&1) << 3)
-#define CTRL_USE_ACK_WAIT_TIMEOUT(x) ((((u32)(x))&1) << 4)
-#define CTRL_NO_MISSING_ACK_ERR(x)   ((((u32)(x))&1) << 5)
+#define CTRL_TR_START(x)             ((((u32)(x)) & 1) << 0)
+#define CTRL_TR_RESUME_PAUSED(x)     ((((u32)(x)) & 1) << 1)
+#define CTRL_RESET_STATE(x)          ((((u32)(x)) & 1) << 2)
+#define CTRL_RESET_FIFOS(x)          ((((u32)(x)) & 1) << 3)
+#define CTRL_USE_ACK_WAIT_TIMEOUT(x) ((((u32)(x)) & 1) << 4)
+#define CTRL_NO_MISSING_ACK_ERR(x)   ((((u32)(x)) & 1) << 5)
 // bit6 unknonw r/o, 0
-#define CTRL_UNK06(x)                ((((u32)(x))&1) << 6)
+#define CTRL_UNK06(x)                ((((u32)(x)) & 1) << 6)
 // bit7 unknonw r/w, usually set to 1 by software
-#define CTRL_UNK07(x)                ((((u32)(x))&1) << 7)
-#define CTRL_ERROR_INTR_EN(x)        ((((u32)(x))&1) << 8)
-#define CTRL_TR_COMP_INTR_EN(x)      ((((u32)(x))&1) << 9)
+#define CTRL_UNK07(x)                ((((u32)(x)) & 1) << 7)
+#define CTRL_ERROR_INTR_EN(x)        ((((u32)(x)) & 1) << 8)
+#define CTRL_TR_COMP_INTR_EN(x)      ((((u32)(x)) & 1) << 9)
 // bits 10, 11 unknonw r/w, usually set to 0 by software
-#define CTRL_UNK10(x)                ((((u32)(x))&1) << 10)
-#define CTRL_UNK11(x)                ((((u32)(x))&1) << 11)
+#define CTRL_UNK10(x)                ((((u32)(x)) & 1) << 10)
+#define CTRL_UNK11(x)                ((((u32)(x)) & 1) << 11)
 // Unknown r/o, 0:
-#define CTRL_UNK2912(x)              ((((u32)(x))&0x3FFFF) << 12)
-#define CTRL_PS1_MODE_EN(x)          ((((u32)(x))&1) << 30)
-#define CTRL_SLAVE_MODE_EN(x)        ((((u32)(x))&1) << 31)
+#define CTRL_UNK2912(x)              ((((u32)(x)) & 0x3FFFF) << 12)
+#define CTRL_PS1_MODE_EN(x)          ((((u32)(x)) & 1) << 30)
+#define CTRL_SLAVE_MODE_EN(x)        ((((u32)(x)) & 1) << 31)
 
 // 826C SIO2 (main) STAT register. (read-only)
 #define STAT_UNK0300(x)              ((((u32)(x)) >> 0) & 0xF)

@@ -46,7 +46,9 @@ void _libcglue_init() {}
 void _libcglue_deinit() {}
 #endif
 
-void _libcglue_timezone_update() {}
+void _libcglue_timezone_update()
+{
+}
 void _libcglue_rtc_update() {}
 
 // "weak" function called by crt0.o
@@ -119,9 +121,9 @@ int main(int argc, char *argv[])
     char *p_block;
 
     failures = 0;
-    size_mb = 0;
-    size_kb = 0;
-    size_b = 0;
+    size_mb  = 0;
+    size_kb  = 0;
+    size_b   = 0;
 
 #if defined(SCREEN_DEBUG)
     init_scr();

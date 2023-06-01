@@ -11,24 +11,24 @@
 #include <kernel.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <stdnoreturn.h>  // noreturn
+#include <stdnoreturn.h> // noreturn
 #include <string.h>
 #include <startup.h>
 
-extern char* _end;
-extern char* _heap_size;
-extern char* _fbss;
-extern char* _stack;
-extern char* _stack_size;
+extern char *_end;
+extern char *_heap_size;
+extern char *_fbss;
+extern char *_stack;
+extern char *_stack_size;
 
 __attribute__((weak)) void _ps2sdk_memory_init();
 __attribute__((weak)) void _init();
 __attribute__((weak)) void _fini();
 
-void _libcglue_args_parse(int argc, char** argv);
+void _libcglue_args_parse(int argc, char **argv);
 void _libcglue_init();
 void _libcglue_deinit();
-int main(int argc, char** argv);
+int main(int argc, char **argv);
 
 static void _main();
 
@@ -43,19 +43,19 @@ static struct sargs_start *args_start;
 void __start(struct sargs_start *pargs)
 {
     asm volatile(
-   		"# Clear bss area"
-   		"la   $2, _fbss"
-   		"la   $3, _end"
-		"1:"
-   		"sltu   $1, $2, $3"
-   		"beq   $1, $0, 2f"
-   		"nop"
-   		"sq   $0, ($2)"
-   		"addiu   $2, $2, 16"
-   		"j   1b"
-   		"nop"
-		"2:"
-		"                       \n"
+        "# Clear bss area"
+        "la   $2, _fbss"
+        "la   $3, _end"
+        "1:"
+        "sltu   $1, $2, $3"
+        "beq   $1, $0, 2f"
+        "nop"
+        "sq   $0, ($2)"
+        "addiu   $2, $2, 16"
+        "j   1b"
+        "nop"
+        "2:"
+        "                       \n"
         "# Save first argument  \n"
         "la     $2, %0 \n"
         "sw     $4, ($2)        \n"
@@ -73,8 +73,8 @@ void __start(struct sargs_start *pargs)
         "                       \n"
         "# Jump to _main      	\n"
         "j      %2           \n"
-		: /* No outputs. */
-		: "R"(args_start), "R"(args), "Csy"(_main));
+        : /* No outputs. */
+        : "R"(args_start), "R"(args), "Csy"(_main));
 }
 
 /*
@@ -95,14 +95,14 @@ static void _main()
     // NOTE: this call can restart the application
     if (_ps2sdk_memory_init)
         _ps2sdk_memory_init();
-    
+
     // Use arguments sent through start if sent (by ps2link for instance)
     pa = &args;
     if (args.argc == 0 && args_start != NULL && args_start->args.argc != 0)
         pa = &args_start->args;
 
     // call libcglue argument parsing
-	_libcglue_args_parse(pa->argc, pa->argv);
+    _libcglue_args_parse(pa->argc, pa->argv);
 
     // initialize libcglue
     _libcglue_init();
@@ -133,7 +133,7 @@ static void _main()
 
 noreturn void _exit(int status)
 {
-	// call global destructors (weak)
+    // call global destructors (weak)
     if (_fini)
         _fini();
 

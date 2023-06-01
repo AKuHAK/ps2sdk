@@ -267,16 +267,16 @@ int initCallbackThread(void)
     event.attr = event.option = event.bits = 0;
     callbackEvent                          = CreateEventFlag(&event);
 
-    thread.attr      = TH_C;
-    thread.option    = 0;
-    thread.thread    = callbackThreadFunc;
+    thread.attr   = TH_C;
+    thread.option = 0;
+    thread.thread = callbackThreadFunc;
 #ifndef MINI_DRIVER
     thread.stacksize = 0x4000; // 16KiB
 #else
     thread.stacksize = 0x0800; //  2KiB
 #endif
-    thread.priority  = usbConfig.cbThreadPrio;
-    callbackTid      = CreateThread(&thread);
+    thread.priority = usbConfig.cbThreadPrio;
+    callbackTid     = CreateThread(&thread);
     StartThread(callbackTid, NULL);
 
     return 0;

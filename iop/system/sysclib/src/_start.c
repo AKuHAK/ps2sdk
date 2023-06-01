@@ -16,9 +16,10 @@ IRX_ID(MODNAME, 1, 1);
 extern struct irx_export_table _exp_sysclib;
 extern struct irx_export_table _exp_stdio;
 
-int _start(int argc, char *argv[]) {
-	(void)argc;
-	(void)argv;
+int _start(int argc, char *argv[])
+{
+    (void)argc;
+    (void)argv;
 
     if (RegisterLibraryEntries(&_exp_sysclib) != 0)
         return MODULE_NO_RESIDENT_END;

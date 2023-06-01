@@ -79,8 +79,8 @@
                                     ; float : S, T
                                     ; any32 : Q = 1     ; 1, because we will mul this by 1/vert[w] and this
                                                         ; will be our q for texture perspective correction
-                                    ; any32 : _ = 0                       
-        ;////////////////////////////////////////////    
+                                    ; any32 : _ = 0
+        ;////////////////////////////////////////////
 
 
         ;////////////// --- Vertex --- //////////////
@@ -88,7 +88,7 @@
         madd        acc,    matrixRow1, vertex[y]
         madd        acc,    matrixRow2, vertex[z]
         madd        vertex, matrixRow3, vertex[w]
-       
+
         clipw.xyz	vertex, vertex			; Dr. Fortuna: This instruction checks if the vertex is outside
 							; the viewing frustum. If it is, then the appropriate
 							; clipping flags are set
@@ -102,7 +102,7 @@
 							; triangle.
 
         isw.w		iADC,   2(destAddress)
-        
+
         div         q,      vf00[w],    vertex[w]   ; perspective divide (1/vert[w]):
         mul.xyz     vertex, vertex,     q
         mula.xyz    acc,    scale,      vf00[w]     ; scale to GS screen space
@@ -122,14 +122,14 @@
         sq.xyz vertex,  2(destAddress)      ; XYZ2
         ;////////////////////////////////////////////
 
-        iaddiu          vertexData,     vertexData,     1                         
-        iaddiu          stqData,        stqData,        1  
+        iaddiu          vertexData,     vertexData,     1
+        iaddiu          stqData,        stqData,        1
         iaddiu          destAddress,    destAddress,    3
 
-        iaddi   vertexCounter,  vertexCounter,  -1	; decrement the loop counter 
+        iaddi   vertexCounter,  vertexCounter,  -1	; decrement the loop counter
         ibne    vertexCounter,  iBase,   vertexLoop	; and repeat if needed
 
-    ;//////////////////////////////////////////// 
+    ;////////////////////////////////////////////
 
     --barrier
 

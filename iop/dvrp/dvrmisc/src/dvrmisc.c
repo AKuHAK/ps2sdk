@@ -115,12 +115,12 @@ static iomanX_iop_device_ops_t DvrFuncTbl =
         &dvrmisc_df_null,
         &dvrmisc_df_null,
         &dvrmisc_df_ioctl2,
-    };
+};
 static iomanX_iop_device_t DVRMISC = {
     .name = "dvr_misc",
     .desc = "Digital Video Recorder MISC task",
     .type = (IOP_DT_FS | IOP_DT_FSEXT),
-    .ops = &DvrFuncTbl,
+    .ops  = &DvrFuncTbl,
 };
 s32 sema_id;
 char SBUF[16384];
@@ -177,11 +177,11 @@ int dvrmisc_df_init(iomanX_iop_device_t *dev)
 
     (void)dev;
 
-    v3.attr = 0;
+    v3.attr    = 0;
     v3.initial = 1;
-    v3.max = 1;
-    v3.option = 0;
-    v1 = CreateSema(&v3);
+    v3.max     = 1;
+    v3.option  = 0;
+    v1         = CreateSema(&v3);
     if (v1 < 0)
         return -1;
     sema_id = v1;
@@ -282,7 +282,7 @@ int dvrioctl2_nop(iomanX_iop_file_t *a1, int cmd, void *arg, unsigned int arglen
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x5101;
+    cmdack.command          = 0x5101;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_nop -> Handshake error!\n");
@@ -312,7 +312,7 @@ int dvrioctl2_version(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x5102;
+    cmdack.command          = 0x5102;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_version -> Handshake error!\n");
@@ -321,7 +321,7 @@ int dvrioctl2_version(
         printf("dvrioctl2_version -> Status error!\n");
         return -68;
     } else {
-        *(u16 *)buf = cmdack.output_word[0];
+        *(u16 *)buf       = cmdack.output_word[0];
         *((u16 *)buf + 1) = cmdack.output_word[1];
     }
     return 0;
@@ -343,9 +343,9 @@ int dvrioctl2_led_hdd_rec(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x5104;
+    cmdack.command          = 0x5104;
     cmdack.input_word_count = 1;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.input_word[0]    = *(u16 *)arg;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_led_hdd_rec -> Handshake error!\n");
         return -5;
@@ -374,9 +374,9 @@ int dvrioctl2_led_dvd_rec(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x5106;
+    cmdack.command          = 0x5106;
     cmdack.input_word_count = 1;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.input_word[0]    = *(u16 *)arg;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_led_dvd_rec -> Handshake error!\n");
         return -5;
@@ -405,7 +405,7 @@ int dvrioctl2_get_sircs(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x5107;
+    cmdack.command          = 0x5107;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_get_sircs -> Handshake error!\n");
@@ -414,7 +414,7 @@ int dvrioctl2_get_sircs(
         printf("dvrioctl2_get_sircs -> Status error!\n");
         return -68;
     } else {
-        *(u16 *)buf = cmdack.output_word[0];
+        *(u16 *)buf       = cmdack.output_word[0];
         *((u16 *)buf + 1) = cmdack.output_word[1];
         *((u16 *)buf + 2) = cmdack.output_word[2];
         *((u16 *)buf + 3) = cmdack.output_word[3];
@@ -439,7 +439,7 @@ int dvrioctl2_get_time(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x5108;
+    cmdack.command          = 0x5108;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_get_time -> Handshake error!\n");
@@ -448,7 +448,7 @@ int dvrioctl2_get_time(
         printf("dvrioctl2_get_time -> Status error!\n");
         return -68;
     } else {
-        *(u8 *)buf = cmdack.output_word[0];
+        *(u8 *)buf       = cmdack.output_word[0];
         *((u8 *)buf + 1) = cmdack.output_word[1];
         *((u8 *)buf + 2) = cmdack.output_word[2];
         *((u8 *)buf + 3) = cmdack.output_word[3];
@@ -475,10 +475,10 @@ int dvrioctl2_set_timezone(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x5109;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.command          = 0x5109;
+    cmdack.input_word[0]    = *(u16 *)arg;
     cmdack.input_word_count = 2;
-    cmdack.input_word[1] = *((u16 *)arg + 1);
+    cmdack.input_word[1]    = *((u16 *)arg + 1);
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_set_timezone -> Handshake error!\n");
         return -5;
@@ -508,9 +508,9 @@ int dvrioctl2_save_preset_info(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x510A;
+    cmdack.command          = 0x510A;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 15000000;
+    cmdack.timeout          = 15000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("dvrioctl2_save_preset_info -> Handshake error!\n");
         return -5;
@@ -538,9 +538,9 @@ int dvrioctl2_load_preset_info(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x510B;
+    cmdack.command          = 0x510B;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 15000000;
+    cmdack.timeout          = 15000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("dvrioctl2_load_preset_info -> Handshake error!\n");
         return -5;
@@ -568,9 +568,9 @@ int dvrioctl2_test_dev_rst(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x510C;
+    cmdack.command          = 0x510C;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 15000000;
+    cmdack.timeout          = 15000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("dvrioctl2_test_dev_rst -> Handshake error!\n");
         return -5;
@@ -597,9 +597,9 @@ int dvrioctl2_test_sdram_chk(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x510D;
+    cmdack.command          = 0x510D;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 20000000;
+    cmdack.timeout          = 20000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("dvrioctl2_test_sdram_chk -> Handshake error!\n");
         return -5;
@@ -607,7 +607,7 @@ int dvrioctl2_test_sdram_chk(
         printf("dvrioctl2_test_sdram_chk -> Status error!\n");
         return -68;
     } else {
-        *(u32 *)buf = (cmdack.return_result_word[0] << 16) + cmdack.return_result_word[1];
+        *(u32 *)buf       = (cmdack.return_result_word[0] << 16) + cmdack.return_result_word[1];
         *((u32 *)buf + 1) = (cmdack.return_result_word[2] << 16) + cmdack.return_result_word[3];
         *((u32 *)buf + 2) = (cmdack.return_result_word[4] << 16) + cmdack.return_result_word[5];
     }
@@ -630,9 +630,9 @@ int dvrioctl2_test_mpe_chk(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x510E;
+    cmdack.command          = 0x510E;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 15000000;
+    cmdack.timeout          = 15000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("dvrioctl2_test_mpe_chk -> Handshake error!\n");
         return -5;
@@ -661,9 +661,9 @@ int dvrioctl2_test_mpd_chk(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x510F;
+    cmdack.command          = 0x510F;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 15000000;
+    cmdack.timeout          = 15000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("dvrioctl2_test_mpd_chk -> Handshake error!\n");
         return -5;
@@ -693,9 +693,9 @@ int dvrioctl2_test_vdec_chk(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x5110;
+    cmdack.command          = 0x5110;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 15000000;
+    cmdack.timeout          = 15000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("dvrioctl2_test_vdec_chk -> Handshake error!\n");
         return -5;
@@ -730,7 +730,7 @@ int dvrioctl2_partition_free(
         printf("dvrioctl2_partition_free : Cannot execute PDIOC_ZONEFREE.,%d\n", v7);
         return -5;
     }
-    v9 = iomanX_devctl((const char *)arg, 0x5001, 0, 0, 0, 0);
+    v9  = iomanX_devctl((const char *)arg, 0x5001, 0, 0, 0, 0);
     v10 = v8 * (s64)v9;
     if (v9 < 0) {
         printf("dvrioctl2_partition_free : Cannot execute PDIOC_ZONESZ.,%d\n", v9);
@@ -738,10 +738,10 @@ int dvrioctl2_partition_free(
     }
     *(u64 *)buf = v10;
     if (*(s64 *)buf <= 0x7FFFFFF) {
-        *(u32 *)buf = 0;
+        *(u32 *)buf       = 0;
         *((u32 *)buf + 1) = 0;
     } else {
-        *(u32 *)buf = v10 - 0x8000000;
+        *(u32 *)buf       = v10 - 0x8000000;
         *((u32 *)buf + 1) = (v10 >> 32) - 1 + ((unsigned int)(v10 - 0x8000000) < 0xF8000000);
     }
     return 0;
@@ -764,7 +764,7 @@ int dvrioctl2_buzzer(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x5111;
+    cmdack.command          = 0x5111;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_buzzer -> Handshake error!\n");
@@ -795,9 +795,9 @@ int dvrioctl2_clr_preset_info(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x5112;
+    cmdack.command          = 0x5112;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 20000000;
+    cmdack.timeout          = 20000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("dvrioctl2_clr_preset_info -> Handshake error!\n");
         return -5;
@@ -826,7 +826,7 @@ int dvrioctl2_get_vbi_err_rate(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x5113;
+    cmdack.command          = 0x5113;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_get_vbi_err_rate -> Handshake error!\n");
@@ -836,7 +836,7 @@ int dvrioctl2_get_vbi_err_rate(
             printf("dvrioctl2_get_vbi_err_rate -> Status error!\n");
             return -68;
         } else {
-            *(u32 *)buf = (cmdack.output_word[0] << 16) + cmdack.output_word[1];
+            *(u32 *)buf       = (cmdack.output_word[0] << 16) + cmdack.output_word[1];
             *((u32 *)buf + 1) = (cmdack.output_word[2] << 16) + cmdack.output_word[3];
         }
     }
@@ -865,9 +865,9 @@ int dvrioctl2_update_dvrp_firmware(
     (void)buflen;
 
     read_offset = 0;
-    checksum = 0;
-    retval = -1;
-    update_fd = iomanX_open((const char *)arg, 1, 0x49, arglen);
+    checksum    = 0;
+    retval      = -1;
+    update_fd   = iomanX_open((const char *)arg, 1, 0x49, arglen);
     if (update_fd < 0) {
         retval = -2;
         goto LABEL_38;
@@ -875,11 +875,11 @@ int dvrioctl2_update_dvrp_firmware(
     update_size = iomanX_lseek(update_fd, 0, 2);
     if (iomanX_lseek(update_fd, 0, 0) < 0)
         goto LABEL_38;
-    cmdack.command = 0x5114;
-    cmdack.input_word[0] = update_size >> 16;
-    cmdack.input_word[1] = update_size;
+    cmdack.command          = 0x5114;
+    cmdack.input_word[0]    = update_size >> 16;
+    cmdack.input_word[1]    = update_size;
     cmdack.input_word_count = 2;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("FLASH_DATA_TOTALSIZE -> Handshake error!\n");
     LABEL_37:
@@ -909,13 +909,13 @@ int dvrioctl2_update_dvrp_firmware(
         read_size = iomanX_read(update_fd, SBUF, 0x4000);
         if (read_size <= 0)
             break;
-        cmdack.command = 0x5115;
-        cmdack.input_word[0] = read_offset >> 16;
-        cmdack.input_word[1] = read_offset;
-        cmdack.input_word_count = 2;
-        cmdack.input_buffer = SBUF;
+        cmdack.command             = 0x5115;
+        cmdack.input_word[0]       = read_offset >> 16;
+        cmdack.input_word[1]       = read_offset;
+        cmdack.input_word_count    = 2;
+        cmdack.input_buffer        = SBUF;
         cmdack.input_buffer_length = read_size;
-        cmdack.timeout = 10000000;
+        cmdack.timeout             = 10000000;
         if (DvrdrvExecCmdAckDmaSendComp(&cmdack)) {
             printf("MISCCMD_FLASH_DATA_DOWNLOAD -> Handshake error!\n");
             goto LABEL_37;
@@ -928,15 +928,15 @@ int dvrioctl2_update_dvrp_firmware(
             checksum += (u8)SBUF[j];
         }
     }
-    cmdack.command = 0x5116;
-    cmdack.input_word[0] = update_size >> 16;
-    cmdack.input_word[2] = checksum >> 16;
-    cmdack.input_word[1] = update_size;
-    cmdack.input_word[3] = checksum;
-    cmdack.input_word[4] = 0;
-    cmdack.input_word[5] = 0;
+    cmdack.command          = 0x5116;
+    cmdack.input_word[0]    = update_size >> 16;
+    cmdack.input_word[2]    = checksum >> 16;
+    cmdack.input_word[1]    = update_size;
+    cmdack.input_word[3]    = checksum;
+    cmdack.input_word[4]    = 0;
+    cmdack.input_word[5]    = 0;
     cmdack.input_word_count = 6;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("MISCCMD_FLASH_DATA_CHECKSUM -> Handshake error!\n");
         goto LABEL_37;
@@ -953,9 +953,9 @@ int dvrioctl2_update_dvrp_firmware(
                 (cmdack.return_result_word[0] << 16) | cmdack.return_result_word[1]);
             goto LABEL_38;
         }
-        cmdack.command = 0x5117;
+        cmdack.command          = 0x5117;
         cmdack.input_word_count = 0;
-        cmdack.timeout = 10000000;
+        cmdack.timeout          = 10000000;
         if (DvrdrvExecCmdAckComp(&cmdack)) {
             printf("MISCCMD_FLASH_DATA_WRITE -> Handshake error!\n");
             goto LABEL_37;
@@ -991,7 +991,7 @@ int dvrioctl2_flash_write_status(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x5118;
+    cmdack.command          = 0x5118;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("dvrioctl2_flash_write_status -> Handshake error!\n");
@@ -1000,7 +1000,7 @@ int dvrioctl2_flash_write_status(
         printf("dvrioctl2_flash_write_status -> Status error!\n");
         return -68;
     } else {
-        *(u16 *)buf = cmdack.output_word[0];
+        *(u16 *)buf       = cmdack.output_word[0];
         *((u16 *)buf + 1) = cmdack.output_word[1];
     }
     return 0;
@@ -1031,11 +1031,11 @@ int dvrioctl2_set_device_key(
         arglen,
         buf,
         buflen);
-    cmdack.command = 0x511B;
-    cmdack.input_word[0] = 0;
-    cmdack.input_word[1] = 456;
+    cmdack.command          = 0x511B;
+    cmdack.input_word[0]    = 0;
+    cmdack.input_word[1]    = 456;
     cmdack.input_word_count = 2;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     printf("dvrcmd.cmd_p[0]:%x\n", 0);
     printf("dvrcmd.cmd_p[1]:%x\n", 456);
     cmdack_err = DvrdrvExecCmdAckComp(&cmdack);
@@ -1053,10 +1053,10 @@ int dvrioctl2_set_device_key(
         printf("Size of firmware is not equal to Size of buffer on DVRP memory.\n");
     printf("FSIZE:%08X\n", 456);
     printf("BSIZE:%08X\n", bsize);
-    cmdack.command = 0x511C;
+    cmdack.command   = 0x511C;
     ((u32 *)SBUF)[0] = *(u32 *)"XESD";
-    byteswap_tmp2 = (int *)&SBUF[4];
-    byteswap_tmp = (int *)arg;
+    byteswap_tmp2    = (int *)&SBUF[4];
+    byteswap_tmp     = (int *)arg;
     byteswap_tmp_end = (int *)((char *)arg + 448);
     do {
         byteswap_tmp2[0] = byteswap_tmp[0];
@@ -1066,14 +1066,14 @@ int dvrioctl2_set_device_key(
         byteswap_tmp += 4;
         byteswap_tmp2 += 4;
     } while (byteswap_tmp != byteswap_tmp_end);
-    *byteswap_tmp2 = *byteswap_tmp;
-    cmdack.input_word_count = 2;
-    cmdack.input_word[0] = 0;
-    cmdack.input_word[1] = 0;
-    cmdack.input_buffer = &SBUF;
+    *byteswap_tmp2             = *byteswap_tmp;
+    cmdack.input_word_count    = 2;
+    cmdack.input_word[0]       = 0;
+    cmdack.input_word[1]       = 0;
+    cmdack.input_buffer        = &SBUF;
     cmdack.input_buffer_length = 456;
-    cmdack.timeout = 10000000;
-    cmdack_err3 = DvrdrvExecCmdAckDmaSendComp(&cmdack);
+    cmdack.timeout             = 10000000;
+    cmdack_err3                = DvrdrvExecCmdAckDmaSendComp(&cmdack);
     printf("dvrcmd.ack_p[0]:%x\n", cmdack.ack_status_ack);
     if (cmdack_err3) {
         printf("MISCCMD_DEVKEY_DOWNLOAD -> Handshake error!\n");
@@ -1087,10 +1087,10 @@ int dvrioctl2_set_device_key(
         printf("MISCCMD_DEVKEY_DOWNLOAD -> Status error!\n");
         return -5;
     }
-    cmdack.command = 0x5119;
+    cmdack.command          = 0x5119;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 10000000;
-    cmdack_err2 = DvrdrvExecCmdAckComp(&cmdack);
+    cmdack.timeout          = 10000000;
+    cmdack_err2             = DvrdrvExecCmdAckComp(&cmdack);
     printf("dvrcmd.ack_p[0]:%x\n", cmdack.ack_status_ack);
     if (cmdack_err2) {
         printf("MISCCMD_SAVE_DEVKEY_INFO -> Handshake error!\n");
@@ -1127,11 +1127,11 @@ int dvrioctl2_get_device_key(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x511A;
-    cmdack.input_word[0] = 0;
-    cmdack.input_word[1] = 4;
+    cmdack.command          = 0x511A;
+    cmdack.input_word[0]    = 0;
+    cmdack.input_word[1]    = 4;
     cmdack.input_word_count = 2;
-    cmdack.timeout = 15000000;
+    cmdack.timeout          = 15000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("MISCCMD_GET_DEVKEY_INFO -> Handshake error!\n");
         return -5;
@@ -1144,7 +1144,7 @@ int dvrioctl2_get_device_key(
         printf("MISCCMD_GET_DEVKEY_INFO -> Status error!\n");
         return -5;
     }
-    v6 = 0;
+    v6                 = 0;
     return_result_word = cmdack.return_result_word;
     do {
         u8 *v8;
@@ -1164,7 +1164,7 @@ int dvrioctl2_get_device_key(
         int v18;
         int v19;
         unsigned int v20;
-        v13 = 0;
+        v13         = 0;
         in_word_tmp = &cmdack.return_result_word[2];
         do {
             u8 *v15;
@@ -1184,11 +1184,11 @@ int dvrioctl2_get_device_key(
             v21 = v18;
             if (v20 >= 0x11)
                 v21 = 16;
-            cmdack.command = 0x511A;
-            cmdack.input_word[0] = v17;
-            cmdack.input_word[1] = v21;
+            cmdack.command          = 0x511A;
+            cmdack.input_word[0]    = v17;
+            cmdack.input_word[1]    = v21;
             cmdack.input_word_count = 2;
-            cmdack.timeout = 30000000;
+            cmdack.timeout          = 30000000;
             if (DvrdrvExecCmdAckComp(&cmdack)) {
                 printf("MISCCMD_GET_DEVKEY_INFO -> Handshake error!\n");
                 return -5;
@@ -1241,14 +1241,14 @@ int dvrioctl2_set_dv_nodeid(
     (void)buf;
     (void)buflen;
 
-    argwalked = 0;
+    argwalked      = 0;
     cmdack.command = 0x511D;
     if (arglen) {
         u8 *inword_tmp;
         inword_tmp = ((u8 *)&cmdack.input_word[0]);
         do {
             u8 *inword_tmp2;
-            inword_tmp2 = ((u8 *)arg + argwalked);
+            inword_tmp2   = ((u8 *)arg + argwalked);
             inword_tmp[0] = inword_tmp2[1];
             inword_tmp[1] = inword_tmp2[0];
             inword_tmp += 2;
@@ -1256,7 +1256,7 @@ int dvrioctl2_set_dv_nodeid(
         } while (argwalked < arglen);
     }
     cmdack.input_word_count = 4;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("MISCCMD_SAVE_DV_NODEID -> Handshake error!\n");
         return -5;
@@ -1288,9 +1288,9 @@ int dvrioctl2_get_dv_nodeid(
     (void)arg;
     (void)arglen;
 
-    cmdack.command = 0x511E;
+    cmdack.command          = 0x511E;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 15000000;
+    cmdack.timeout          = 15000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("MISCCMD_GET_DV_NODEID -> Handshake error!\n");
         return -5;
@@ -1346,14 +1346,14 @@ int dvrioctl2_diag_test(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x511F;
-    cmdack.input_word[0] = *(u16 *)arg;
-    cmdack.input_word[1] = *((u16 *)arg + 1);
-    cmdack.input_word[2] = *((u16 *)arg + 2);
-    cmdack.input_word[3] = *((u16 *)arg + 3);
-    cmdack.input_word[4] = *((u16 *)arg + 4);
+    cmdack.command          = 0x511F;
+    cmdack.input_word[0]    = *(u16 *)arg;
+    cmdack.input_word[1]    = *((u16 *)arg + 1);
+    cmdack.input_word[2]    = *((u16 *)arg + 2);
+    cmdack.input_word[3]    = *((u16 *)arg + 3);
+    cmdack.input_word[4]    = *((u16 *)arg + 4);
     cmdack.input_word_count = 5;
-    cmdack.timeout = 120000000;
+    cmdack.timeout          = 120000000;
     if (cmdack.input_word[2]) {
         printf("------------------- > SetTO:%d msec\n", 120000);
         cmdack.timeout = 10000000 * cmdack.input_word[2];
@@ -1362,7 +1362,7 @@ int dvrioctl2_diag_test(
     printf(" %4x", cmdack.input_word[1]);
     printf(" %4x ", cmdack.input_word[2]);
     printf(" SetTimeOutTo : %d usec\n", cmdack.timeout);
-    cmdack_err = DvrdrvExecCmdAckComp(&cmdack);
+    cmdack_err  = DvrdrvExecCmdAckComp(&cmdack);
     testcnt_tmp = test_count++;
     printf(
         "cmd ID : %d -------------------- TEST VERSION - diag test -------------------- r %d -- c %d\n",

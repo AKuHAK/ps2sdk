@@ -59,95 +59,94 @@ __fenv_static inline int
 feclearexcept(int excepts)
 {
 
-	__softfloat_float_exception_flags &= ~excepts;
-	return (0);
+    __softfloat_float_exception_flags &= ~excepts;
+    return (0);
 }
 
 __fenv_static inline int
 fegetexceptflag(fexcept_t *flagp, int excepts)
 {
 
-	*flagp = __softfloat_float_exception_flags & excepts;
-	return (0);
+    *flagp = __softfloat_float_exception_flags & excepts;
+    return (0);
 }
 
 __fenv_static inline int
 fesetexceptflag(const fexcept_t *flagp, int excepts)
 {
 
-	__softfloat_float_exception_flags &= ~excepts;
-	__softfloat_float_exception_flags |= *flagp & excepts;
-	return (0);
+    __softfloat_float_exception_flags &= ~excepts;
+    __softfloat_float_exception_flags |= *flagp & excepts;
+    return (0);
 }
 
 __fenv_static inline int
 feraiseexcept(int excepts)
 {
 
-return(excepts  ?  -ENOTSUP : 0 );
-
+    return (excepts ? -ENOTSUP : 0);
 }
 
 __fenv_static inline int
 fetestexcept(int excepts)
 {
 
-	return (__softfloat_float_exception_flags & excepts);
+    return (__softfloat_float_exception_flags & excepts);
 }
 
 __fenv_static inline int
 fegetround(void)
 {
 
-	return (__softfloat_float_rounding_mode);
+    return (__softfloat_float_rounding_mode);
 }
 
 __fenv_static inline int
 fesetround(int rounding_mode)
 {
 
-	__softfloat_float_rounding_mode = rounding_mode;
-	return (0);
+    __softfloat_float_rounding_mode = rounding_mode;
+    return (0);
 }
 
 __fenv_static inline int
 fegetenv(fenv_t *envp)
 {
 
-	__set_env(*envp, __softfloat_float_exception_flags,
-	    __softfloat_float_exception_mask, __softfloat_float_rounding_mode);
-	return (0);
+    __set_env(*envp, __softfloat_float_exception_flags,
+              __softfloat_float_exception_mask, __softfloat_float_rounding_mode);
+    return (0);
 }
 
 __fenv_static inline int
 feholdexcept(fenv_t *envp)
 {
-	fenv_t __env;
+    fenv_t __env;
 
-	fegetenv(envp);
-	__softfloat_float_exception_flags = 0;
-	__softfloat_float_exception_mask = 0;
-	return (0);
+    fegetenv(envp);
+    __softfloat_float_exception_flags = 0;
+    __softfloat_float_exception_mask  = 0;
+    return (0);
 }
 
 __fenv_static inline int
 fesetenv(const fenv_t *envp)
 {
 
-	__softfloat_float_exception_flags = __env_flags(*envp);
-	__softfloat_float_exception_mask = __env_mask(*envp);
-	__softfloat_float_rounding_mode = __env_round(*envp);
-	return (0);
+    __softfloat_float_exception_flags = __env_flags(*envp);
+    __softfloat_float_exception_mask  = __env_mask(*envp);
+    __softfloat_float_rounding_mode   = __env_round(*envp);
+    return (0);
 }
 
 __fenv_static inline int
 feupdateenv(const fenv_t *envp)
 {
-	int __oflags = __softfloat_float_exception_flags;
+    int __oflags = __softfloat_float_exception_flags;
 
-	fesetenv(envp);
-	feraiseexcept(__oflags);
-	return (0);
+    fesetenv(envp);
+    feraiseexcept(__oflags);
+    return (0);
 }
 
 #if __BSD_VISIBLE
@@ -157,26 +156,26 @@ feupdateenv(const fenv_t *envp)
 __fenv_static inline int
 feenableexcept(int __mask)
 {
-	int __omask = __softfloat_float_exception_mask;
+    int __omask = __softfloat_float_exception_mask;
 
-	__softfloat_float_exception_mask |= __mask;
-	return (__omask);
+    __softfloat_float_exception_mask |= __mask;
+    return (__omask);
 }
 
 __fenv_static inline int
 fedisableexcept(int __mask)
 {
-	int __omask = __softfloat_float_exception_mask;
+    int __omask = __softfloat_float_exception_mask;
 
-	__softfloat_float_exception_mask &= ~__mask;
-	return (__omask);
+    __softfloat_float_exception_mask &= ~__mask;
+    return (__omask);
 }
 
 __fenv_static inline int
 fegetexcept(void)
 {
 
-	return (__softfloat_float_exception_mask);
+    return (__softfloat_float_exception_mask);
 }
 
 #endif /* __BSD_VISIBLE */

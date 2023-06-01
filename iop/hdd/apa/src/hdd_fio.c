@@ -101,7 +101,7 @@ struct apaFsType
 static int fioGetInput(const char *arg, apa_params_t *params)
 {
     char argBuf[32];
-    int rv = 0;
+    int rv                                  = 0;
     static const struct apaFsType fsTypes[] = {
 #ifdef APA_SUPPORT_MBR
         {"MBR", APA_TYPE_MBR},
@@ -164,14 +164,14 @@ static int fioGetInput(const char *arg, apa_params_t *params)
     {
         int i;
 
-        for (i = 0; (unsigned int)i < (sizeof(fsTypes))/(sizeof(fsTypes[0])); i++) {
+        for (i = 0; (unsigned int)i < (sizeof(fsTypes)) / (sizeof(fsTypes[0])); i++) {
             if (!strcmp(argBuf, fsTypes[i].desc)) {
                 params->type = fsTypes[i].type;
                 break;
             }
         }
 
-        if ((unsigned int)i == (sizeof(fsTypes))/(sizeof(fsTypes[0]))) {
+        if ((unsigned int)i == (sizeof(fsTypes)) / (sizeof(fsTypes[0]))) {
             APA_PRINTF(APA_DRV_NAME ": error: Invalid fstype, %s.\n", argBuf);
             return -EINVAL;
         }
@@ -253,11 +253,11 @@ int hddInit(iomanX_iop_device_t *f)
     iop_sema_t sema;
     (void)f;
 
-    sema.attr = 1;
+    sema.attr    = 1;
     sema.initial = 1;
-    sema.max = 1;
-    sema.option = 0;
-    fioSema = CreateSema(&sema);
+    sema.max     = 1;
+    sema.option  = 0;
+    fioSema      = CreateSema(&sema);
 
     return 0;
 }
@@ -280,10 +280,10 @@ int hddFormat(iomanX_iop_file_t *f, const char *dev, const char *blockdev, void 
     u32 emptyBlocks[32];
 #endif
 
-	(void)dev;
-	(void)blockdev;
-	(void)arg;
-	(void)arglen;
+    (void)dev;
+    (void)blockdev;
+    (void)arg;
+    (void)arglen;
 
 #ifdef APA_SUPPORT_BHDD
     if (strcmp(f->device->name, "bhdd") == 0)
@@ -322,7 +322,7 @@ int hddFormat(iomanX_iop_file_t *f, const char *dev, const char *blockdev, void 
         header->magic = APA_MAGIC;
         // TODO: DVRP firmware sets this to 0x400 bytes
         header->length = (1024 * 256); // 128MB
-        header->type = APA_TYPE_MBR;
+        header->type   = APA_TYPE_MBR;
         // TODO: DVRP firmware 48-bit sets this to __extend
         strcpy(header->id, "__mbr");
 #ifdef APA_FORMAT_LOCK_MBR
@@ -337,19 +337,19 @@ int hddFormat(iomanX_iop_file_t *f, const char *dev, const char *blockdev, void 
         apaGetTime(&header->mbr.created);
 
 #ifdef APA_SUPPORT_GPT
-        header->mbr.protective_mbr.UniqueMbrSignature = 0;
-        header->mbr.protective_mbr.Unknown = 0;
+        header->mbr.protective_mbr.UniqueMbrSignature              = 0;
+        header->mbr.protective_mbr.Unknown                         = 0;
         header->mbr.protective_mbr.partition_record1.BootIndicator = 0;
-        header->mbr.protective_mbr.partition_record1.StartHead = 0;
-        header->mbr.protective_mbr.partition_record1.StartSector = 2;
-        header->mbr.protective_mbr.partition_record1.StartTrack = 0;
-        header->mbr.protective_mbr.partition_record1.OSIndicator = 0xEE;
-        header->mbr.protective_mbr.partition_record1.EndHead = 0xFF;
-        header->mbr.protective_mbr.partition_record1.EndSector = 0xFF;
-        header->mbr.protective_mbr.partition_record1.EndTrack = 0xFF;
-        header->mbr.protective_mbr.partition_record1.StartingLBA = 1;
-        header->mbr.protective_mbr.partition_record1.SizeInLBA = hddDevices[f->unit].totalLBA - header->mbr.protective_mbr.partition_record1.StartingLBA;
-        header->mbr.protective_mbr.Signature = 0xAA55;
+        header->mbr.protective_mbr.partition_record1.StartHead     = 0;
+        header->mbr.protective_mbr.partition_record1.StartSector   = 2;
+        header->mbr.protective_mbr.partition_record1.StartTrack    = 0;
+        header->mbr.protective_mbr.partition_record1.OSIndicator   = 0xEE;
+        header->mbr.protective_mbr.partition_record1.EndHead       = 0xFF;
+        header->mbr.protective_mbr.partition_record1.EndSector     = 0xFF;
+        header->mbr.protective_mbr.partition_record1.EndTrack      = 0xFF;
+        header->mbr.protective_mbr.partition_record1.StartingLBA   = 1;
+        header->mbr.protective_mbr.partition_record1.SizeInLBA     = hddDevices[f->unit].totalLBA - header->mbr.protective_mbr.partition_record1.StartingLBA;
+        header->mbr.protective_mbr.Signature                       = 0xAA55;
 #endif
 
         header->checksum = apaCheckSum(header, 1);
@@ -430,7 +430,7 @@ static int apaOpen(s32 device, hdd_file_slot_t *fileSlot, apa_params_t *params, 
     }
     if (clink == NULL)
         return rv;
-    fileSlot->parts[0].start = clink->header->start;
+    fileSlot->parts[0].start  = clink->header->start;
     fileSlot->parts[0].length = clink->header->length;
     memcpy(&fileSlot->parts[1], &clink->header->subs, APA_MAXSUB * sizeof(apa_sub_t));
     fileSlot->type = clink->header->type;
@@ -469,7 +469,7 @@ static int apaRemove(s32 device, const char *id, const char *fpwd)
         return -EACCES;
     }
     // remove all subs first...
-    nsub = clink->header->nsub;
+    nsub                = clink->header->nsub;
     clink->header->nsub = 0;
     clink->flags |= APA_CACHE_FLAG_DIRTY;
     apaCacheFlushAllDirty(device);
@@ -657,7 +657,7 @@ int hddLseek(iomanX_iop_file_t *f, int post, int whence)
             rv = -EINVAL;
         else {
             fileSlot->post = post;
-            rv = fileSlot->post << 9;
+            rv             = fileSlot->post << 9;
         }
     }
     SignalSema(fioSema);
@@ -666,10 +666,10 @@ int hddLseek(iomanX_iop_file_t *f, int post, int whence)
 
 static void fioGetStatFiller(apa_cache_t *clink, iox_stat_t *stat)
 {
-    stat->mode = clink->header->type;
-    stat->attr = clink->header->flags;
+    stat->mode   = clink->header->type;
+    stat->attr   = clink->header->flags;
     stat->hisize = 0;
-    stat->size = clink->header->length;
+    stat->size   = clink->header->length;
     memcpy(&stat->ctime, &clink->header->created, sizeof(apa_ps2time_t));
     memcpy(&stat->atime, &clink->header->created, sizeof(apa_ps2time_t));
     memcpy(&stat->mtime, &clink->header->created, sizeof(apa_ps2time_t));
@@ -736,7 +736,7 @@ int hddDread(iomanX_iop_file_t *f, iox_dirent_t *dirent)
                     strcpy(dirent->name, cmain->header->id); */
                 strncpy(dirent->name, cmain->header->id, APA_IDMAX);
                 dirent->name[APA_IDMAX] = '\0';
-                rv = strlen(dirent->name);
+                rv                      = strlen(dirent->name);
 
                 apaCacheFree(cmain);
             }
@@ -746,7 +746,7 @@ int hddDread(iomanX_iop_file_t *f, iox_dirent_t *dirent)
                 strcpy(dirent->name, clink->header->id); */
             strncpy(dirent->name, clink->header->id, APA_IDMAX);
             dirent->name[APA_IDMAX] = '\0';
-            rv = strlen(dirent->name);
+            rv                      = strlen(dirent->name);
         }
         fioGetStatFiller(clink, &dirent->stat);
         if (clink->header->next == 0)
@@ -803,10 +803,10 @@ static int ioctl2AddSub(hdd_file_slot_t *fileSlot, char *argp)
     if ((rv = fioPartitionSizeLookUp(argp)) < 0)
         return rv;
 
-    params.size = rv;
-    params.flags = APA_FLAG_SUB;
-    params.type = fileSlot->type;
-    params.main = fileSlot->parts[0].start;
+    params.size   = rv;
+    params.flags  = APA_FLAG_SUB;
+    params.type   = fileSlot->type;
+    params.main   = fileSlot->parts[0].start;
     params.number = fileSlot->nsub + 1;
     if ((rv = hddCheckPartitionMax(device, params.size)) < 0)
         return rv;
@@ -831,11 +831,11 @@ static int ioctl2AddSub(hdd_file_slot_t *fileSlot, char *argp)
     if (!(clink = apaCacheGetHeader(device, fileSlot->parts[0].start, APA_IO_MODE_READ, &rv)))
         return rv;
 
-    clink->header->subs[clink->header->nsub].start = sector;
+    clink->header->subs[clink->header->nsub].start  = sector;
     clink->header->subs[clink->header->nsub].length = length;
     clink->header->nsub++;
     fileSlot->nsub++;
-    fileSlot->parts[fileSlot->nsub].start = sector;
+    fileSlot->parts[fileSlot->nsub].start  = sector;
     fileSlot->parts[fileSlot->nsub].length = length;
     clink->flags |= APA_CACHE_FLAG_DIRTY;
     apaCacheFlushAllDirty(device);
@@ -874,12 +874,12 @@ static int ioctl2DeleteLastSub(hdd_file_slot_t *fileSlot)
 int hddIoctl2(iomanX_iop_file_t *f, int req, void *argp, unsigned int arglen,
               void *bufp, unsigned int buflen)
 {
-    u32 rv = 0, err_lba;
+    u32 rv                    = 0, err_lba;
     hdd_file_slot_t *fileSlot = f->privdata;
 
-	(void)arglen;
-	(void)bufp;
-	(void)buflen;
+    (void)arglen;
+    (void)bufp;
+    (void)buflen;
 
 #ifdef APA_SUPPORT_BHDD
     if (strcmp(f->device->name, "bhdd") == 0) {
@@ -1007,7 +1007,7 @@ static int devctlSetOsdMBR(s32 device, hddSetOsdMBR_t *mbrInfo)
         return -EINVAL;
 #endif
     clink->header->mbr.osdStart = mbrInfo->start;
-    clink->header->mbr.osdSize = mbrInfo->size;
+    clink->header->mbr.osdSize  = mbrInfo->size;
     clink->flags |= APA_CACHE_FLAG_DIRTY;
     apaCacheFlushAllDirty(device);
     apaCacheFree(clink);
@@ -1019,9 +1019,9 @@ int hddDevctl(iomanX_iop_file_t *f, const char *devname, int cmd, void *arg,
 {
     int rv = 0;
 
-	(void)devname;
-	(void)arglen;
-	(void)buflen;
+    (void)devname;
+    (void)arglen;
+    (void)buflen;
 
 #ifdef APA_SUPPORT_BHDD
     if (strcmp(f->device->name, "bhdd") == 0)
@@ -1109,14 +1109,14 @@ int hddDevctl(iomanX_iop_file_t *f, const char *devname, int cmd, void *arg,
             rv = ata_device_sce_identify_drive(f->unit, (u16 *)bufp);
             break;
 
-        // HDIOC_INSTSEC is not implemented in DVRP firmware
-        // HDIOC_SETMAXLBA28 is implemented in DVRP firmware
-        // HDIOC_GETMAXLBA48 is implemented in DVRP firmware
-        // HDIOC_ISLBA48 is implemented in DVRP firmware
-        // HDIOC_PRESETMAXLBA28 is not implemented in DVRP firmware
-        // HDIOC_POSTSETMAXLBA28 is not implemented in DVRP firmware
-        // HDIOC_ENABLEWRITECACHE is implemented in DVRP firmware -> ATA 0xEF subcommand 0x02
-        // HDIOC_DISABLEWRITECACHE is implemented in DVRP firmware -> ATA 0xEF subcommand 0x82
+            // HDIOC_INSTSEC is not implemented in DVRP firmware
+            // HDIOC_SETMAXLBA28 is implemented in DVRP firmware
+            // HDIOC_GETMAXLBA48 is implemented in DVRP firmware
+            // HDIOC_ISLBA48 is implemented in DVRP firmware
+            // HDIOC_PRESETMAXLBA28 is not implemented in DVRP firmware
+            // HDIOC_POSTSETMAXLBA28 is not implemented in DVRP firmware
+            // HDIOC_ENABLEWRITECACHE is implemented in DVRP firmware -> ATA 0xEF subcommand 0x02
+            // HDIOC_DISABLEWRITECACHE is implemented in DVRP firmware -> ATA 0xEF subcommand 0x82
 
         default:
             rv = -EINVAL;
@@ -1129,7 +1129,7 @@ int hddDevctl(iomanX_iop_file_t *f, const char *devname, int cmd, void *arg,
 
 int hddUnsupported(iomanX_iop_file_t *f)
 {
-	(void)f;
+    (void)f;
 
-	return -1;
+    return -1;
 }

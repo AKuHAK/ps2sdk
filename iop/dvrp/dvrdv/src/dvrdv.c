@@ -76,12 +76,12 @@ static iomanX_iop_device_ops_t DvrFuncTbl =
         (void *)&dvrdv_df_null,
         (void *)&dvrdv_df_null,
         &dvrdv_df_ioctl2,
-    };
+};
 static iomanX_iop_device_t DVR = {
     .name = "dvr_dv",
     .desc = "Digital Video Recorder DVR task",
     .type = (IOP_DT_FS | IOP_DT_FSEXT),
-    .ops = &DvrFuncTbl,
+    .ops  = &DvrFuncTbl,
 };
 s32 sema_id;
 
@@ -136,11 +136,11 @@ int dvrdv_df_init(iomanX_iop_device_t *dev)
 
     (void)dev;
 
-    v3.attr = 0;
+    v3.attr    = 0;
     v3.initial = 1;
-    v3.max = 1;
-    v3.option = 0;
-    v1 = CreateSema(&v3);
+    v3.max     = 1;
+    v3.option  = 0;
+    v1         = CreateSema(&v3);
     if (v1 < 0)
         return -1;
     sema_id = v1;
@@ -249,9 +249,9 @@ int dvrioctl2_dv_dubb_start(
     (void)buflen;
 
     printf("------------------------------ dv dubb start!!!\n");
-    cmdack.command = 0x4101;
+    cmdack.command          = 0x4101;
     cmdack.input_word_count = 0;
-    cmdack_err = DvrdrvExecCmdAck(&cmdack);
+    cmdack_err              = DvrdrvExecCmdAck(&cmdack);
     if (cmdack_err) {
         printf("dvrioctl2_dv_dubb_start -> Handshake error!,%d\n", cmdack_err);
         return -5;
@@ -285,9 +285,9 @@ int dvrioctl2_dv_dubb_stop(
     (void)buflen;
 
     printf("------------------------------ dv dubb stop!!!\n");
-    cmdack.command = 0x4102;
+    cmdack.command          = 0x4102;
     cmdack.input_word_count = 0;
-    cmdack_err = DvrdrvExecCmdAck(&cmdack);
+    cmdack_err              = DvrdrvExecCmdAck(&cmdack);
     if (cmdack_err) {
         printf("dvrioctl2_dv_dubb_stop -> Handshake error!,%d\n", cmdack_err);
         return -5;
@@ -324,8 +324,8 @@ int dvrioctl2_dv_dubb_rec_start(
 
     cmdack.command = 0x4103;
     printf("------------------------------ dv dubb rec start!!!\n");
-    v8 = 4;
-    v9 = (u16 *)((u8 *)arg + 8);
+    v8  = 4;
+    v9  = (u16 *)((u8 *)arg + 8);
     v10 = &cmdack.input_word[4];
     do {
         *v10 = *v9;
@@ -333,12 +333,12 @@ int dvrioctl2_dv_dubb_rec_start(
         v8 += 1;
         v10 += 1;
     } while (v8 < 7);
-    cmdack.input_word[0] = *((u16 *)arg + 1);
-    cmdack.input_word[1] = *(u16 *)arg;
-    cmdack.input_word[2] = *((u16 *)arg + 3);
-    cmdack.input_word[3] = *((u16 *)arg + 2);
+    cmdack.input_word[0]    = *((u16 *)arg + 1);
+    cmdack.input_word[1]    = *(u16 *)arg;
+    cmdack.input_word[2]    = *((u16 *)arg + 3);
+    cmdack.input_word[3]    = *((u16 *)arg + 2);
     cmdack.input_word_count = 7;
-    cmdack_err = DvrdrvExecCmdAck(&cmdack);
+    cmdack_err              = DvrdrvExecCmdAck(&cmdack);
     if (cmdack_err) {
         printf("dvrioctl2_dv_dubb_rec_start -> Handshake error!,%d\n", cmdack_err);
         return -5;
@@ -372,10 +372,10 @@ int dvrioctl2_dv_dubb_rec_stop(
     (void)buflen;
 
     printf("------------------------------ dv dubb rec stop!!!\n");
-    cmdack.command = 0x4104;
+    cmdack.command          = 0x4104;
     cmdack.input_word_count = 0;
-    cmdack.timeout = 5000000;
-    cmdack_err = DvrdrvExecCmdAckComp(&cmdack);
+    cmdack.timeout          = 5000000;
+    cmdack_err              = DvrdrvExecCmdAckComp(&cmdack);
     if (cmdack_err) {
         printf("phase %d\n", cmdack.phase);
         printf("dvrioctl2_dv_dubb_rec_stop -> Handshake error!,%d\n", cmdack_err);
@@ -409,9 +409,9 @@ int dvrioctl2_get_dvcam_info(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x4107;
+    cmdack.command          = 0x4107;
     cmdack.input_word_count = 0;
-    cmdack_err = DvrdrvExecCmdAck(&cmdack);
+    cmdack_err              = DvrdrvExecCmdAck(&cmdack);
     if (cmdack_err) {
         printf("phase %d\n", cmdack.phase);
         printf("dvrioctl2_get_dvcam_info -> Handshake error!,%d\n", cmdack_err);
@@ -423,12 +423,12 @@ int dvrioctl2_get_dvcam_info(
         } else {
             u16 *v11;
             int cpy_cnt;
-            v11 = &cmdack.output_word[0];
+            v11     = &cmdack.output_word[0];
             cpy_cnt = 0;
             do {
                 cpy_cnt += 1;
                 *(u16 *)buf = *v11;
-                buf = (char *)buf + 2;
+                buf         = (char *)buf + 2;
                 v11 += 1;
             } while (cpy_cnt < 4);
             return 0;
@@ -452,14 +452,14 @@ int dvrioctl2_get_dvcam_name(
     (void)arglen;
 
     printf("dvrioctl2_get_dvcam_name(io=%p, cmd=%d  buf=%p, nbyte=%u)\n", a1, cmd, buf, buflen);
-    cmdack.command = 0x4108;
-    cmdack.input_word[0] = 0;
-    cmdack.input_word[1] = 0;
-    cmdack.input_word[2] = (buflen & 0xFFFF0000) >> 16;
-    cmdack.input_word[3] = buflen;
+    cmdack.command          = 0x4108;
+    cmdack.input_word[0]    = 0;
+    cmdack.input_word[1]    = 0;
+    cmdack.input_word[2]    = (buflen & 0xFFFF0000) >> 16;
+    cmdack.input_word[3]    = buflen;
     cmdack.input_word_count = 4;
-    cmdack.output_buffer = buf;
-    cmdack.timeout = 5000000;
+    cmdack.output_buffer    = buf;
+    cmdack.timeout          = 5000000;
     if (DvrdrvExecCmdAckDmaRecvComp(&cmdack)) {
         printf("dvrioctl2_get_dvcam_name : IO error (phase %d)\n", cmdack.phase);
         return -5;

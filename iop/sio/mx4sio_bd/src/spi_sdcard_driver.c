@@ -57,7 +57,7 @@ static uint8_t _send_command(uint8_t cmd, uint32_t arg)
 
     /* Send 8 CLKs before sending CMD */
     _io->wr_rd_byte(DUMMY_BYTE);
-    
+
     uint8_t packet[]       = {cmd | 0x40, arg >> 24, arg >> 16, arg >> 8, arg, 0};
     packet[CMD_CRC_OFFSET] = CRC7_SHIFT_MASK(crc7(packet, CMD_CRC_OFFSET));
 
@@ -76,24 +76,24 @@ static uint8_t _send_command(uint8_t cmd, uint32_t arg)
             break;
         }
     }
-    
+
     /* When performing block commands, some cards are ready to send the 0xFE token
      * immediately after sending 0x0. By performing a dummy write after recieving 0x0
-     * we risk discarding 0xFE these cards causing the operation to fail completely. 
-    */
+     * we risk discarding 0xFE these cards causing the operation to fail completely.
+     */
 
     /* Sidenote: When in SPI Mode CMD9 and CMD10 function like other block commands */
 
-    switch(cmd){
+    switch (cmd) {
         case CMD9:
         case CMD10:
         case CMD18:
         case CMD24:
         case CMD25:
-        break;
+            break;
 
         default:
-        _io->wr_rd_byte(DUMMY_BYTE);
+            _io->wr_rd_byte(DUMMY_BYTE);
     }
 
     return response;
@@ -105,10 +105,10 @@ static uint8_t _send_command_recv_response(uint8_t cmd, uint32_t arg, uint8_t *d
 
     /* Send 8 CLKs before sending CMD */
     _io->wr_rd_byte(DUMMY_BYTE);
-    
+
     uint8_t packet[]       = {cmd | 0x40, arg >> 24, arg >> 16, arg >> 8, arg, 0};
     packet[CMD_CRC_OFFSET] = CRC7_SHIFT_MASK(crc7(packet, CMD_CRC_OFFSET));
-    
+
     _io->write(packet, sizeof(packet));
 
     uint8_t response = DUMMY_BYTE;
@@ -139,7 +139,7 @@ static uint8_t _send_command_hold(uint8_t cmd, uint32_t arg)
 
     uint8_t packet[]       = {cmd | 0x40, arg >> 24, arg >> 16, arg >> 8, arg, 0};
     packet[CMD_CRC_OFFSET] = CRC7_SHIFT_MASK(crc7(packet, CMD_CRC_OFFSET));
-    
+
     _io->write(packet, sizeof(packet));
 
     /* Wait response, quit till timeout */
@@ -198,7 +198,7 @@ spisd_result_t spisd_init(spisd_interface_t const *const io)
     crc7_generate_table();
 #endif // CRC7_RAM_TABLE == 1
 
-    
+
     _io->set_speed(SPI_SPEED_NO_INIT_HZ);
 
     /* Start send 74 CLKs at least */
@@ -222,8 +222,8 @@ spisd_result_t spisd_init(spisd_interface_t const *const io)
     /* The response to CMD8 is R7, which is 6 bytes if you include the CRC and other bits
      * Not reading all 6 bytes causes issues on some cards, so its best to just read them all.
      *
-     * This buffer is shared with CMD58, fortunately CMD58's response (R3) is also 6 bytes long. 
-    */
+     * This buffer is shared with CMD58, fortunately CMD58's response (R3) is also 6 bytes long.
+     */
 
     uint8_t buff[6];
     response = _send_command_recv_response(CMD8, 0x1AA, buff, sizeof(buff));
@@ -273,7 +273,7 @@ spisd_result_t spisd_init(spisd_interface_t const *const io)
         _card_type = CARD_TYPE_SDV1;
 
         /* End of CMD8, chip disable and dummy byte */
-        
+
         _io->wr_rd_byte(DUMMY_BYTE);
 
         /* SD1.0/MMC start initialize */
@@ -333,7 +333,7 @@ spisd_result_t spisd_init(spisd_interface_t const *const io)
             return SPISD_RESULT_TIMEOUT;
         }
 
-#endif 
+#endif
     } else {
         SPISD_LOG("Send CMD8 should return 0x01, response=0x%02x\r\n", response);
         return SPISD_RESULT_ERROR;
@@ -357,7 +357,7 @@ int spisd_get_card_info(spisd_info_t *cardinfo)
     uint8_t temp[16];
 
     spisd_result_t ret = _read_buffer(cardinfo->csd, sizeof(temp));
-    
+
     /* _read_buffer will only send two dummy bytes for CRC
      * send another 8 clks just to be safe */
     _io->wr_rd_byte(DUMMY_BYTE);
@@ -374,7 +374,7 @@ int spisd_get_card_info(spisd_info_t *cardinfo)
     }
 
     ret = _read_buffer(temp, sizeof(temp));
-    
+
     _io->wr_rd_byte(DUMMY_BYTE);
 
     if (ret != SPISD_RESULT_OK) {
@@ -537,7 +537,7 @@ spisd_result_t spisd_write_multi_block(uint32_t sector, uint8_t const *buffer, u
         _send_command(CMD55, 0);
         _send_command(ACMD23, num_sectors);
     }
-    //M_DEBUG("Multiblock write\n");
+    // M_DEBUG("Multiblock write\n");
     if (_send_command(CMD25, sector) != 0x00) {
         return SPISD_RESULT_ERROR;
     }

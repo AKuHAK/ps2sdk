@@ -10,25 +10,25 @@
 
 // Sets screen mode
 /** Automatic NTSC or PAL mode setting. */
-#define GRAPH_MODE_AUTO         0
+#define GRAPH_MODE_AUTO        0
 /**  256 x  224 to 640 x 448 */
-#define GRAPH_MODE_NTSC         1
+#define GRAPH_MODE_NTSC        1
 /**  256 x  256 to 640 x 512 */
-#define GRAPH_MODE_PAL          2
+#define GRAPH_MODE_PAL         2
 /**  720 x  480 */
-#define GRAPH_MODE_HDTV_480P    3
+#define GRAPH_MODE_HDTV_480P   3
 /**  656 x  576 */
-#define GRAPH_MODE_HDTV_576P    4
+#define GRAPH_MODE_HDTV_576P   4
 /** 1280 x  720 */
-#define GRAPH_MODE_HDTV_720P    5
+#define GRAPH_MODE_HDTV_720P   5
 /** 1920 x 1080 */
-#define GRAPH_MODE_HDTV_1080I   6
+#define GRAPH_MODE_HDTV_1080I  6
 /**  640 x  480 @ 60hz */
-#define GRAPH_MODE_VGA_640_60   7 
+#define GRAPH_MODE_VGA_640_60  7
 /**  640 x  480 @ 72hz */
-#define GRAPH_MODE_VGA_640_72   8
+#define GRAPH_MODE_VGA_640_72  8
 /**  640 x  480 @ 75hz */
-#define GRAPH_MODE_VGA_640_75   9
+#define GRAPH_MODE_VGA_640_75  9
 /**  640 x  480 @ 85hz */
 #define GRAPH_MODE_VGA_640_85  10
 /**  800 x  600 @ 56hz */
@@ -57,39 +57,40 @@
 #define GRAPH_MODE_NONINTERLACED 0
 #define GRAPH_MODE_INTERLACED    1
 
-#define GRAPH_MODE_FIELD         0
-#define GRAPH_MODE_FRAME         1
+#define GRAPH_MODE_FIELD 0
+#define GRAPH_MODE_FRAME 1
 
-#define GRAPH_FIELD_EVEN         0
-#define GRAPH_FIELD_ODD          1
+#define GRAPH_FIELD_EVEN 0
+#define GRAPH_FIELD_ODD  1
 
 /** Generic use */
-#define GRAPH_DISABLE            0
-#define GRAPH_ENABLE             1
+#define GRAPH_DISABLE 0
+#define GRAPH_ENABLE  1
 
 /** Smode1 parameters */
-#define GRAPH_GCONT_RGB          0
-#define GRAPH_GCONT_YCRCB        1
+#define GRAPH_GCONT_RGB   0
+#define GRAPH_GCONT_YCRCB 1
 
-#define GRAPH_CMOD_NTSC          2
-#define GRAPH_CMOD_PAL           3
+#define GRAPH_CMOD_NTSC 2
+#define GRAPH_CMOD_PAL  3
 
 /** Alpha Blending value to use */
-#define GRAPH_VALUE_RC1          0
-#define GRAPH_VALUE_ALPHA        1
+#define GRAPH_VALUE_RC1   0
+#define GRAPH_VALUE_ALPHA 1
 
 /** Alpha output value */
-#define GRAPH_RC1_ALPHA          0
-#define GRAPH_RC2_ALPHA          1
+#define GRAPH_RC1_ALPHA 0
+#define GRAPH_RC2_ALPHA 1
 
 /** Alpha blending method */
-#define GRAPH_BLEND_RC2          0
-#define GRAPH_BLEND_BGCOLOR      1
+#define GRAPH_BLEND_RC2     0
+#define GRAPH_BLEND_BGCOLOR 1
 
-typedef struct {
-	int x,y;
-	int width, height;
-	int mode;
+typedef struct
+{
+    int x, y;
+    int width, height;
+    int mode;
 } GRAPH_MODE;
 
 extern GRAPH_MODE graph_mode[];
@@ -161,7 +162,7 @@ int graph_shutdown(void);
 ///                                               ///
 /// Doesn't work...                               ///
 ///                                               ///
-///void graph_set_smode1(char cmod, char gcont);  ///
+/// void graph_set_smode1(char cmod, char gcont);  ///
 ///****************USE AT OWN RISK****************///
 
 #ifdef __cplusplus

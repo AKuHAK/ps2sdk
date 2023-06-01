@@ -16,16 +16,16 @@
 #ifndef __AHX_H__
 #define __AHX_H__
 
-#define	AHX_IRX		         0xC001D0E
-#define AHX_INIT             0x01
-#define AHX_PLAY             0x02
-#define AHX_PAUSE            0x03
-#define AHX_QUIT             0x04
-#define AHX_LOADSONG         0x05
-#define AHX_SETVOLUME        0x06
-#define AHX_SETBOOST         0x07
-#define AHX_OVERSAMPLING     0x08
-#define AHX_SUBSONG          0x09
+#define AHX_IRX          0xC001D0E
+#define AHX_INIT         0x01
+#define AHX_PLAY         0x02
+#define AHX_PAUSE        0x03
+#define AHX_QUIT         0x04
+#define AHX_LOADSONG     0x05
+#define AHX_SETVOLUME    0x06
+#define AHX_SETBOOST     0x07
+#define AHX_OVERSAMPLING 0x08
+#define AHX_SUBSONG      0x09
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +36,7 @@ extern "C" {
  * Sends a call the the loaded AHX IRX, telling it to set
  * things up ready for loading a song.
  */
-int  AHX_Init();
+int AHX_Init();
 
 /** AHX LongSongBuffer
  *
@@ -46,7 +46,7 @@ int  AHX_Init();
  *
  * @return number of subsongs.
  */
-int  AHX_LoadSongBuffer(char* songdata, int songsize);
+int AHX_LoadSongBuffer(char *songdata, int songsize);
 
 /** AHX LongSongBuffer
  *
@@ -55,7 +55,7 @@ int  AHX_LoadSongBuffer(char* songdata, int songsize);
  *
  * @return number of subsongs.
  */
-int  AHX_LoadSong(char* filename);
+int AHX_LoadSong(char *filename);
 
 /** AHX Play Subsong
  *
@@ -64,7 +64,7 @@ int  AHX_LoadSong(char* filename);
  * by checking the values returned by AHX_LoadSong() and
  * AHX_LoadSongBuffer();
  */
-int  AHX_SubSong(int songNo);
+int AHX_SubSong(int songNo);
 
 /** AHX Set Volume
  *
@@ -72,7 +72,7 @@ int  AHX_SubSong(int songNo);
  * the output volume of the SPU2.  volumePercentage argument
  * can range from 0 (0% silence) to 100 (100% full volume)
  */
-int  AHX_SetVolume(int volumePercentage);
+int AHX_SetVolume(int volumePercentage);
 
 /** AHX Set Boost
  *
@@ -82,7 +82,7 @@ int  AHX_SetVolume(int volumePercentage);
  * twice as load as a boost value of 0. A boost value of 3
  * is twice as load as 2 etc etc (ala DB)
  */
-int  AHX_SetBoost(int boostValue);
+int AHX_SetBoost(int boostValue);
 
 /** AHX Toggle Oversampling
  *
@@ -91,7 +91,7 @@ int  AHX_SetBoost(int boostValue);
  * sounds nasty/slows down for a lot of songs - use with
  * caution (or not at all)
  */
-int  AHX_ToggleOversampling();
+int AHX_ToggleOversampling();
 
 /** AHX Quit
  *
@@ -99,21 +99,21 @@ int  AHX_ToggleOversampling();
  * This frees up IOP mem, quites threads, deletes semaphores
  * and all that jazz....
  */
-int  AHX_Quit();
+int AHX_Quit();
 
 /** AHX Play
  *
  * Sends a call the the loaded AHX IRX, telling it to play
  * the currently loaded song.
  */
-int  AHX_Play();
+int AHX_Play();
 
 /** AHX Pause
  *
  * Sends a call the the loaded AHX IRX, telling it to pause
  * the currently loaded song.
  */
-int  AHX_Pause();
+int AHX_Pause();
 
 #ifdef __cplusplus
 }

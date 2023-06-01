@@ -35,13 +35,11 @@ static void *PowerOff_ee_rpc_handler(int fnum, void *buffer, int len)
 {
     (void)len;
 
-    switch (fnum)
-    {
+    switch (fnum) {
         case POFF_RPC_BUTTON:
             printf("EE: power button pressed\n");
 
-            if (poweroff_cb)
-            {
+            if (poweroff_cb) {
                 poweroff_cb(poweroff_data);
             }
             break;
@@ -75,8 +73,7 @@ int poweroffInit(void)
         nopdelay();
 
     // Terminate and delete any previously created threads
-    if (powerOffThreadId >= 0)
-    {
+    if (powerOffThreadId >= 0) {
         TerminateThread(powerOffThreadId);
         DeleteThread(powerOffThreadId);
         SifRemoveRpc(&cb_srv, &cb_queue);

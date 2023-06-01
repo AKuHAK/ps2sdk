@@ -9,13 +9,13 @@
 #include <tamtypes.h>
 
 /** Scan masking */
-#define SCAN_MASK_NORMAL		0
-#define SCAN_MASK_ODD			2
-#define SCAN_MASK_EVEN			3
+#define SCAN_MASK_NORMAL 0
+#define SCAN_MASK_ODD    2
+#define SCAN_MASK_EVEN   3
 
 /** Color Clamping */
-#define COLOR_CLAMP_MASK		0
-#define COLOR_CLAMP_ENABLE		1
+#define COLOR_CLAMP_MASK   0
+#define COLOR_CLAMP_ENABLE 1
 
 #ifdef __cplusplus
 extern "C" {

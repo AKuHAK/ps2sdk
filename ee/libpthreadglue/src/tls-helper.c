@@ -28,7 +28,7 @@ pte_osMutexHandle __globalTlsLock;
 extern pte_osMutexHandle __globalTlsLock;
 #endif
 
-/* Structure used to emulate TLS on non-POSIX threads.  
+/* Structure used to emulate TLS on non-POSIX threads.
  * This limits us to one non-POSIX thread that can
  * call pthread functions. */
 #ifdef F___globalTls
@@ -52,7 +52,7 @@ pte_osResult pteTlsGlobalInit(int maxEntries)
         }
 
         __maxTlsValues = maxEntries;
-        result = PTE_OS_OK;
+        result         = PTE_OS_OK;
     } else {
         result = PTE_OS_NO_RESOURCES;
     }
@@ -90,7 +90,7 @@ pte_osResult __pteTlsAlloc(unsigned int *pKey)
         if (__keysUsed[i] == 0) {
             __keysUsed[i] = 1;
 
-            *pKey = i + 1;
+            *pKey  = i + 1;
             result = PTE_OS_OK;
             break;
         }
@@ -126,7 +126,7 @@ pte_osResult __pteTlsSetValue(void *pTlsThreadStruct, unsigned int index, void *
 
     if (pTls != NULL) {
         pTls[index - 1] = value;
-        result = PTE_OS_OK;
+        result          = PTE_OS_OK;
     } else {
         result = PTE_OS_INVALID_PARAM;
     }
@@ -144,16 +144,16 @@ void *__getTlsStructFromThread(s32 thid)
     void *pTls;
 
     /* If we were called from a pthread, use the TLS allocated when the thread
-    * was created.  Otherwise, we were called from a non-pthread, so use the
-    * "global".  This is a pretty bad hack, but necessary due to lack of TLS on PS2.
-    */
+     * was created.  Otherwise, we were called from a non-pthread, so use the
+     * "global".  This is a pretty bad hack, but necessary due to lack of TLS on PS2.
+     */
     if (threadInfo->tlsPtr) {
         pTls = threadInfo->tlsPtr;
     } else {
         pTls = __globalTls;
     }
 
-  return pTls;
+    return pTls;
 }
 #else
 void *__getTlsStructFromThread(s32 thid);
@@ -196,41 +196,39 @@ void pteTlsGlobalDestroy(void)
 #endif
 
 #ifdef F_pte_osTlsSetValue
-pte_osResult pte_osTlsSetValue(unsigned int key, void * value)
+pte_osResult pte_osTlsSetValue(unsigned int key, void *value)
 {
-  void *pTls;
+    void *pTls;
 
-  pTls = __getTlsStructFromThread(GetThreadId());
+    pTls = __getTlsStructFromThread(GetThreadId());
 
-  return __pteTlsSetValue(pTls, key, value);
+    return __pteTlsSetValue(pTls, key, value);
 }
 #endif
 
 #ifdef F_pte_osTlsGetValue
-void * pte_osTlsGetValue(unsigned int index)
+void *pte_osTlsGetValue(unsigned int index)
 {
-  void *pTls;
+    void *pTls;
 
-  pTls = __getTlsStructFromThread(GetThreadId());
+    pTls = __getTlsStructFromThread(GetThreadId());
 
-  return (void *) pteTlsGetValue(pTls, index);
-
+    return (void *)pteTlsGetValue(pTls, index);
 }
 #endif
 
 #ifdef F_pte_osTlsAlloc
 pte_osResult pte_osTlsAlloc(unsigned int *pKey)
 {
-  __getTlsStructFromThread(GetThreadId());
+    __getTlsStructFromThread(GetThreadId());
 
-  return __pteTlsAlloc(pKey);
-
+    return __pteTlsAlloc(pKey);
 }
 #endif
 
 #ifdef F_pte_osTlsFree
 pte_osResult pte_osTlsFree(unsigned int index)
 {
-  return pteTlsFree(index);
+    return pteTlsFree(index);
 }
 #endif

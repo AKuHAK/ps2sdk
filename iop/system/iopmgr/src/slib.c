@@ -36,17 +36,16 @@
  */
 iop_library_t *slib_get_lib_by_name(const char *name)
 {
-  iop_library_t *libptr;
-  int len = strlen(name) + 1;
+    iop_library_t *libptr;
+    int len = strlen(name) + 1;
 
-  libptr = GetLoadcoreInternalData()->let_next;
-  while ((libptr != 0))
-  {
-    if (!memcmp(libptr->name, name, len))
-	return libptr;
-    libptr = libptr->prev;
-  }
-  return 0;
+    libptr = GetLoadcoreInternalData()->let_next;
+    while ((libptr != 0)) {
+        if (!memcmp(libptr->name, name, len))
+            return libptr;
+        libptr = libptr->prev;
+    }
+    return 0;
 }
 
 /** Get pointer to export list for named library.
@@ -61,12 +60,12 @@ iop_library_t *slib_get_lib_by_name(const char *name)
  */
 void *slib_get_exportlist_by_name(const char *name)
 {
-  iop_library_t *libptr;
+    iop_library_t *libptr;
 
-  libptr = slib_get_lib_by_name(name);
-  if (libptr != 0)
-    return libptr->exports;
-  return 0;
+    libptr = slib_get_lib_by_name(name);
+    if (libptr != 0)
+        return libptr->exports;
+    return 0;
 }
 
 /** Get version number for named library.
@@ -81,12 +80,12 @@ void *slib_get_exportlist_by_name(const char *name)
  */
 int slib_get_version_by_name(const char *name)
 {
-  iop_library_t *libptr;
+    iop_library_t *libptr;
 
-  libptr = slib_get_lib_by_name(name);
-  if (libptr != 0)
-    return (int)libptr->version;
-  return 0;
+    libptr = slib_get_lib_by_name(name);
+    if (libptr != 0)
+        return (int)libptr->version;
+    return 0;
 }
 
 /** Release (Unregister) a given named registered library.
@@ -102,10 +101,10 @@ int slib_get_version_by_name(const char *name)
  */
 int slib_release_library(const char *name)
 {
-  struct irx_export_table *libptr;
+    struct irx_export_table *libptr;
 
-  libptr = (struct irx_export_table *)slib_get_lib_by_name(name);
-  if (libptr != 0)
-    return ReleaseLibraryEntries(libptr);
-  return -2;
+    libptr = (struct irx_export_table *)slib_get_lib_by_name(name);
+    if (libptr != 0)
+        return ReleaseLibraryEntries(libptr);
+    return -2;
 }

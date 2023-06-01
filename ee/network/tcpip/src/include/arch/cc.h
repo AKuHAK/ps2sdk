@@ -6,7 +6,7 @@
 #include <stddef.h>
 
 #define PACK_STRUCT_FIELD(x) x __attribute((packed))
-#define PACK_STRUCT_STRUCT __attribute((packed))
+#define PACK_STRUCT_STRUCT   __attribute((packed))
 /* Used for struct fields of u8_t,
  * where some compilers warn that packing is not necessary */
 #define PACK_STRUCT_FLD_8(x) x
@@ -18,7 +18,7 @@
 
 #ifdef DEBUG
 #include <stdio.h>
-#define LWIP_PLATFORM_DIAG(args) printf args
+#define LWIP_PLATFORM_DIAG(args)   printf args
 #define LWIP_PLATFORM_ASSERT(args) printf args
 #else
 #define LWIP_PLATFORM_DIAG(args)

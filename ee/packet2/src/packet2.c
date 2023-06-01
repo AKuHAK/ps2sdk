@@ -15,7 +15,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define P2_ALIGNMENT 64
+#define P2_ALIGNMENT            64
 #define P2_MAKE_PTR_NORMAL(PTR) ((u32)(PTR)&0x0FFFFFFF)
 
 // ---
@@ -28,11 +28,11 @@ packet2_t *packet2_create(u16 qwords, enum Packet2Type type, enum Packet2Mode mo
     if (packet2 == NULL)
         return NULL;
 
-    packet2->max_qwords_count = qwords;
-    packet2->type = type;
-    packet2->mode = mode;
-    packet2->tte = tte;
-    packet2->tag_opened_at = NULL;
+    packet2->max_qwords_count   = qwords;
+    packet2->type               = type;
+    packet2->mode               = mode;
+    packet2->tte                = tte;
+    packet2->tag_opened_at      = NULL;
     packet2->vif_code_opened_at = NULL;
 
     // Dma buffer size should be a whole number of cache lines (64 bytes = 4 quads)
@@ -40,8 +40,7 @@ packet2_t *packet2_create(u16 qwords, enum Packet2Type type, enum Packet2Mode mo
 
     u32 byte_size = packet2->max_qwords_count << 4;
 
-    if ((packet2->base = memalign(P2_ALIGNMENT, byte_size)) == NULL)
-    {
+    if ((packet2->base = memalign(P2_ALIGNMENT, byte_size)) == NULL) {
         free(packet2);
         return NULL;
     }
@@ -69,12 +68,12 @@ packet2_t *packet2_create_from(qword_t *base, qword_t *next, u16 qwords, enum Pa
     if (packet2 == NULL)
         return NULL;
 
-    packet2->base = base;
-    packet2->next = next;
+    packet2->base             = base;
+    packet2->next             = next;
     packet2->max_qwords_count = qwords;
-    packet2->type = type;
-    packet2->tte = tte;
-    packet2->mode = mode;
+    packet2->type             = type;
+    packet2->tte              = tte;
+    packet2->mode             = mode;
     return packet2;
 }
 
@@ -87,9 +86,9 @@ void packet2_free(packet2_t *packet2)
 
 void packet2_reset(packet2_t *packet2, u8 clear_mem)
 {
-    packet2->next = packet2->base;
+    packet2->next               = packet2->base;
     packet2->vif_code_opened_at = NULL;
-    packet2->tag_opened_at = NULL;
+    packet2->tag_opened_at      = NULL;
     if (clear_mem)
         memset(packet2->base, 0, packet2->max_qwords_count << 4);
 }
@@ -113,8 +112,7 @@ void packet2_print(packet2_t *packet2, u32 qw_count)
     printf("Packet2: Dumping %d words...\n", ((u32)packet2->next - (u32)packet2->base) >> 2);
     u32 i = 0;
     u32 *nextWord;
-    for (nextWord = (u32 *)packet2->base; nextWord != (u32 *)packet2->next; nextWord++, i++)
-    {
+    for (nextWord = (u32 *)packet2->base; nextWord != (u32 *)packet2->next; nextWord++, i++) {
         if ((i % 4) == 0)
             printf("\n0x%08x:  ", (u32)nextWord);
         printf("0x%08x ", *nextWord);

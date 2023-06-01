@@ -13,10 +13,11 @@
 #include <stdio.h>
 #include <erl.h>
 
-char * erl_id = "hello";
-char * erl_dependancies[] = {
+char *erl_id = "hello";
+
+char *erl_dependancies[] = {
     "libc",
-    0
+    0,
 };
 
 int main()

@@ -131,12 +131,12 @@ static iomanX_iop_device_ops_t DvrFuncTbl =
         (void *)&dvrav_df_null,
         (void *)&dvrav_df_null,
         &dvrav_df_ioctl2,
-    };
+};
 static iomanX_iop_device_t DVRAV = {
     .name = "dvr_av",
     .desc = "Digital Video Recorder AV task",
     .type = (IOP_DT_FS | IOP_DT_FSEXT),
-    .ops = &DvrFuncTbl,
+    .ops  = &DvrFuncTbl,
 };
 s32 sema_id;
 
@@ -192,11 +192,11 @@ int dvrav_df_init(iomanX_iop_device_t *dev)
 
     (void)dev;
 
-    v3.attr = 0;
+    v3.attr    = 0;
     v3.initial = 1;
-    v3.max = 1;
-    v3.option = 0;
-    v1 = CreateSema(&v3);
+    v3.max     = 1;
+    v3.option  = 0;
+    v1         = CreateSema(&v3);
     if (v1 < 0)
         return -1;
     sema_id = v1;
@@ -295,7 +295,7 @@ int avioctl2_get_tun_offset(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3102;
+    cmdack.command          = 0x3102;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_get_tun_offset -> Handshake error!\n");
@@ -304,7 +304,7 @@ int avioctl2_get_tun_offset(
         printf("avioctl2_get_tun_offset -> Status error!\n");
         return -68;
     } else {
-        *(u16 *)buf = cmdack.output_word[0];
+        *(u16 *)buf       = cmdack.output_word[0];
         *((u16 *)buf + 1) = cmdack.output_word[1];
     }
     return 0;
@@ -326,7 +326,7 @@ int avioctl2_tun_offset_up(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3103;
+    cmdack.command          = 0x3103;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_tun_offset_up -> Handshake error!\n");
@@ -335,7 +335,7 @@ int avioctl2_tun_offset_up(
         printf("avioctl2_tun_offset_up -> Status error!\n");
         return -68;
     } else {
-        *(u16 *)buf = cmdack.output_word[0];
+        *(u16 *)buf       = cmdack.output_word[0];
         *((u16 *)buf + 1) = cmdack.output_word[1];
         *((u16 *)buf + 2) = cmdack.output_word[2];
         *((u16 *)buf + 3) = cmdack.output_word[3];
@@ -360,7 +360,7 @@ int avioctl2_tun_offset_down(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3104;
+    cmdack.command          = 0x3104;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_tun_offset_down -> Handshake error!\n");
@@ -369,7 +369,7 @@ int avioctl2_tun_offset_down(
         printf("avioctl2_tun_offset_down -> Status error!\n");
         return -68;
     } else {
-        *(u16 *)buf = cmdack.output_word[0];
+        *(u16 *)buf       = cmdack.output_word[0];
         *((u16 *)buf + 1) = cmdack.output_word[1];
         *((u16 *)buf + 2) = cmdack.output_word[2];
         *((u16 *)buf + 3) = cmdack.output_word[3];
@@ -393,12 +393,12 @@ int avioctl2_tun_scan_ch(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3105;
-    cmdack.input_word[0] = *(u16 *)arg;
-    cmdack.input_word[1] = *((u16 *)arg + 1);
-    cmdack.input_word[2] = *((u16 *)arg + 2);
+    cmdack.command          = 0x3105;
+    cmdack.input_word[0]    = *(u16 *)arg;
+    cmdack.input_word[1]    = *((u16 *)arg + 1);
+    cmdack.input_word[2]    = *((u16 *)arg + 2);
     cmdack.input_word_count = 3;
-    cmdack.timeout = 35000000;
+    cmdack.timeout          = 35000000;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("avioctl2_tun_scan_ch -> Handshake error!\n");
         return -5;
@@ -406,7 +406,7 @@ int avioctl2_tun_scan_ch(
         printf("avioctl2_tun_scan_ch -> Status error!\n");
         return -68;
     } else {
-        *(u16 *)buf = cmdack.return_result_word[0];
+        *(u16 *)buf       = cmdack.return_result_word[0];
         *((u16 *)buf + 1) = cmdack.return_result_word[1];
         *((u16 *)buf + 2) = cmdack.return_result_word[2];
         *((u16 *)buf + 3) = cmdack.return_result_word[3];
@@ -432,7 +432,7 @@ int avioctl2_get_bs_gain(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3106;
+    cmdack.command          = 0x3106;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_get_bs_gain -> Handshake error!\n");
@@ -464,9 +464,9 @@ int avioctl2_set_preset_info(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x3107;
-    cmdack.input_word[0] = *(u16 *)arg;
-    cmdack.input_word[1] = *((u16 *)arg + 1);
+    cmdack.command          = 0x3107;
+    cmdack.input_word[0]    = *(u16 *)arg;
+    cmdack.input_word[1]    = *((u16 *)arg + 1);
     cmdack.input_word_count = 2;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_set_preset_info -> Handshake error!\n");
@@ -496,7 +496,7 @@ int avioctl2_change_sound(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3108;
+    cmdack.command          = 0x3108;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_change_sound -> Handshake error!\n");
@@ -528,11 +528,11 @@ int avioctl2_set_d_audio_sel(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x3109;
-    cmdack.input_word[0] = *(u16 *)arg;
-    cmdack.input_word[1] = *((u16 *)arg + 1);
-    cmdack.input_word[2] = *((u16 *)arg + 2);
-    cmdack.input_word[3] = *((u16 *)arg + 3);
+    cmdack.command          = 0x3109;
+    cmdack.input_word[0]    = *(u16 *)arg;
+    cmdack.input_word[1]    = *((u16 *)arg + 1);
+    cmdack.input_word[2]    = *((u16 *)arg + 2);
+    cmdack.input_word[3]    = *((u16 *)arg + 3);
     cmdack.input_word_count = 4;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_set_d_audio_sel -> Handshake error!\n");
@@ -562,9 +562,9 @@ int avioctl2_set_d_video_sel(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x310A;
+    cmdack.command          = 0x310A;
     cmdack.input_word_count = 1;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.input_word[0]    = *(u16 *)arg;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_set_d_video_sel -> Handshake error!\n");
         return -5;
@@ -593,7 +593,7 @@ int avioctl2_get_av_src(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x310B;
+    cmdack.command          = 0x310B;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_get_av_src -> Handshake error!\n");
@@ -602,7 +602,7 @@ int avioctl2_get_av_src(
         printf("avioctl2_get_av_src -> Status error!\n");
         return -68;
     } else {
-        *(u16 *)buf = cmdack.output_word[0];
+        *(u16 *)buf       = cmdack.output_word[0];
         *((u16 *)buf + 1) = cmdack.output_word[1];
     }
     return 0;
@@ -623,9 +623,9 @@ int avioctl2_get_preset_info(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x310C;
+    cmdack.command          = 0x310C;
     cmdack.input_word_count = 1;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.input_word[0]    = *(u16 *)arg;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_get_preset_info -> Handshake error!\n");
         return -5;
@@ -656,9 +656,9 @@ int avioctl2_select_position(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x310E;
+    cmdack.command          = 0x310E;
     cmdack.input_word_count = 1;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.input_word[0]    = *(u16 *)arg;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_select_position -> Handshake error!\n");
         return -5;
@@ -687,7 +687,7 @@ int avioctl2_position_up(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x310F;
+    cmdack.command          = 0x310F;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_position_up -> Handshake error!\n");
@@ -719,7 +719,7 @@ int avioctl2_position_down(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3110;
+    cmdack.command          = 0x3110;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_position_down -> Handshake error!\n");
@@ -751,7 +751,7 @@ int avioctl2_get_position(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3111;
+    cmdack.command          = 0x3111;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_get_position -> Handshake error!\n");
@@ -782,12 +782,12 @@ int avioctl2_set_position_info(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x3112;
-    cmdack.input_word[0] = *(u16 *)arg;
-    cmdack.input_word[1] = *((u16 *)arg + 1);
-    cmdack.input_word[2] = *((u16 *)arg + 2);
-    cmdack.input_word[3] = *((u16 *)arg + 3);
-    cmdack.input_word[4] = *((u16 *)arg + 4);
+    cmdack.command          = 0x3112;
+    cmdack.input_word[0]    = *(u16 *)arg;
+    cmdack.input_word[1]    = *((u16 *)arg + 1);
+    cmdack.input_word[2]    = *((u16 *)arg + 2);
+    cmdack.input_word[3]    = *((u16 *)arg + 3);
+    cmdack.input_word[4]    = *((u16 *)arg + 4);
     cmdack.input_word_count = 5;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_set_position_info -> Handshake error!\n");
@@ -816,9 +816,9 @@ int avioctl2_get_position_info(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3113;
+    cmdack.command          = 0x3113;
     cmdack.input_word_count = 1;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.input_word[0]    = *(u16 *)arg;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_get_position_info -> Handshake error!\n");
         return -5;
@@ -826,7 +826,7 @@ int avioctl2_get_position_info(
         printf("avioctl2_get_position_info -> Status error!\n");
         return -68;
     } else {
-        *(u16 *)buf = *(u16 *)arg;
+        *(u16 *)buf       = *(u16 *)arg;
         *((u16 *)buf + 1) = cmdack.output_word[0];
         *((u16 *)buf + 2) = cmdack.output_word[1];
         *((u16 *)buf + 3) = cmdack.output_word[2];
@@ -851,9 +851,9 @@ int avioctl2_tun_scan_mode(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x3114;
+    cmdack.command          = 0x3114;
     cmdack.input_word_count = 1;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.input_word[0]    = *(u16 *)arg;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_tun_scan_mode -> Handshake error!\n");
         return -5;
@@ -882,9 +882,9 @@ int avioctl2_f_select_position(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x3115;
+    cmdack.command          = 0x3115;
     cmdack.input_word_count = 1;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.input_word[0]    = *(u16 *)arg;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_f_select_position -> Handshake error!\n");
         return -5;
@@ -913,10 +913,10 @@ int avioctl2_select_rec_src(
     (void)buf;
     (void)buflen;
 
-    cmdack.command = 0x3116;
+    cmdack.command          = 0x3116;
     cmdack.input_word_count = 1;
-    cmdack.timeout = 10000000;
-    cmdack.input_word[0] = *(u16 *)arg;
+    cmdack.timeout          = 10000000;
+    cmdack.input_word[0]    = *(u16 *)arg;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf("avioctl2_select_rec_src -> Handshake error!\n");
         return -5;
@@ -943,7 +943,7 @@ int avioctl2_get_rec_src(
     (void)arglen;
     (void)buflen;
 
-    cmdack.command = 0x3117;
+    cmdack.command          = 0x3117;
     cmdack.input_word_count = 0;
     if (DvrdrvExecCmdAck(&cmdack)) {
         printf("avioctl2_get_rec_src -> Handshake error!\n");
@@ -977,11 +977,11 @@ int avioctl2_cmd_ack(
     if (arglen >> 1) {
         u16 *input_word_tmp;
         unsigned int input_word_copied;
-        input_word_tmp = (u16 *)&cmdack.input_word[0];
+        input_word_tmp    = (u16 *)&cmdack.input_word[0];
         input_word_copied = 0;
         do {
             *input_word_tmp = *(u16 *)arg;
-            arg = (char *)arg + 2;
+            arg             = (char *)arg + 2;
             input_word_copied += 1;
             input_word_tmp += 1;
         } while (input_word_copied < arglen >> 1);
@@ -999,8 +999,8 @@ int avioctl2_cmd_ack(
             char *buf_tmp;
             int out_count;
             input_word = cmdack.output_word;
-            buf_tmp = (char *)buf;
-            out_count = 1;
+            buf_tmp    = (char *)buf;
+            out_count  = 1;
             do {
                 *(u16 *)buf_tmp = *input_word;
                 out_count += 1;
@@ -1031,7 +1031,7 @@ int avioctl2_cmd_ack_comp(
     if (arglen >> 1) {
         u16 *input_word_tmp;
         unsigned int input_word_copied;
-        input_word_tmp = (u16 *)&cmdack.input_word[0];
+        input_word_tmp    = (u16 *)&cmdack.input_word[0];
         input_word_copied = 0;
         do {
             *input_word_tmp = *(u16 *)arg;
@@ -1041,7 +1041,7 @@ int avioctl2_cmd_ack_comp(
         } while (input_word_copied < arglen >> 1);
     }
     cmdack.input_word_count = arglen >> 1;
-    cmdack.timeout = a2;
+    cmdack.timeout          = a2;
     if (DvrdrvExecCmdAckComp(&cmdack)) {
         printf(" %s  -> Handshake error!\n", a1);
         return -5;
@@ -1052,9 +1052,9 @@ int avioctl2_cmd_ack_comp(
         int out_count;
         u16 *input_word;
         u16 *buf_tmp;
-        out_count = 1;
+        out_count  = 1;
         input_word = cmdack.return_result_word;
-        buf_tmp = (u16 *)buf;
+        buf_tmp    = (u16 *)buf;
         do {
             *buf_tmp = *input_word;
             out_count += 1;

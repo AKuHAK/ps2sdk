@@ -61,12 +61,12 @@ static iomanX_iop_device_ops_t DvrFuncTbl =
         &dvripl_df_null,
         &dvripl_df_null,
         &dvripl_df_ioctl2,
-    };
+};
 s32 dvr_ready_flag;
 static iomanX_iop_device_t DVRMAN = {
     .name = "dvr_ipl",
     .desc = "Digital Video Recorder",
-    .ops = &DvrFuncTbl,
+    .ops  = &DvrFuncTbl,
     .type = (IOP_DT_FS | IOP_DT_FSEXT),
 };
 s32 sema_id;
@@ -112,11 +112,11 @@ int dvripl_df_init(iomanX_iop_device_t *dev)
     (void)dev;
 
     printf("dvripl_df_init\n");
-    v3.attr = 0;
+    v3.attr    = 0;
     v3.initial = 1;
-    v3.max = 1;
-    v3.option = 0;
-    v1 = CreateSema(&v3);
+    v3.max     = 1;
+    v3.option  = 0;
+    v1         = CreateSema(&v3);
     if (v1 < 0)
         return -1;
     sema_id = v1;
@@ -215,13 +215,13 @@ int iplioctl2_update(iomanX_iop_file_t *a1, int cmd, void *arg)
     (void)cmd;
 
     total_size = 0;
-    retval = 0;
-    csum = 0;
+    retval     = 0;
+    csum       = 0;
     printf("iplioctl2_update\n");
     printf("NOP\n");
-    cmdack.command = 0x101;
+    cmdack.command          = 0x101;
     cmdack.input_word_count = 0;
-    cmdackerr1 = DvrdrvExecCmdAck(&cmdack);
+    cmdackerr1              = DvrdrvExecCmdAck(&cmdack);
     printf("dvrcmd.ack_p[0]:%x\n", cmdack.ack_status_ack);
     if (cmdackerr1)
         goto LABEL_2;
@@ -230,9 +230,9 @@ int iplioctl2_update(iomanX_iop_file_t *a1, int cmd, void *arg)
         return -5;
     }
     printf("VERSION\n");
-    cmdack.command = 0x102;
+    cmdack.command          = 0x102;
     cmdack.input_word_count = 0;
-    cmdackerr2 = DvrdrvExecCmdAck(&cmdack);
+    cmdackerr2              = DvrdrvExecCmdAck(&cmdack);
     printf("dvrcmd.ack_p[0]:%x\n", cmdack.ack_status_ack);
     if (cmdackerr2) {
     LABEL_2:
@@ -246,17 +246,17 @@ int iplioctl2_update(iomanX_iop_file_t *a1, int cmd, void *arg)
     printf("major : %04x\n", cmdack.output_word[0]);
     printf("minor : %04x\n", cmdack.output_word[1]);
     printf("CONFIG\n");
-    cmdack.command = 0x106;
-    cmdack.input_word[0] = 1;
-    cmdack.input_word[1] = 6;
-    cmdack.input_word[2] = 0x1000;
-    cmdack.input_word[3] = 0x8968;
-    cmdack.input_word[4] = 0x115A;
-    cmdack.input_word[5] = 0x6048;
-    cmdack.input_word[6] = 0xF;
-    cmdack.input_word[7] = 0x5353;
+    cmdack.command          = 0x106;
+    cmdack.input_word[0]    = 1;
+    cmdack.input_word[1]    = 6;
+    cmdack.input_word[2]    = 0x1000;
+    cmdack.input_word[3]    = 0x8968;
+    cmdack.input_word[4]    = 0x115A;
+    cmdack.input_word[5]    = 0x6048;
+    cmdack.input_word[6]    = 0xF;
+    cmdack.input_word[7]    = 0x5353;
     cmdack.input_word_count = 8;
-    cmdackerr3 = DvrdrvExecCmdAck(&cmdack);
+    cmdackerr3              = DvrdrvExecCmdAck(&cmdack);
     printf("dvrcmd.ack_p[0]:%x\n", cmdack.ack_status_ack);
     if (cmdackerr3) {
         printf("CONFIG -> Handshake error!(%d)\n", cmdackerr3);
@@ -283,7 +283,7 @@ int iplioctl2_update(iomanX_iop_file_t *a1, int cmd, void *arg)
             s32 chunk_size;
             int read_size;
             printf("%08X\n", chunk_offset);
-            read_size = iomanX_read(update_fd, SBUF, 0x8000);
+            read_size  = iomanX_read(update_fd, SBUF, 0x8000);
             chunk_size = read_size;
             if (read_size < 0) {
                 retval = -5;
@@ -299,11 +299,11 @@ int iplioctl2_update(iomanX_iop_file_t *a1, int cmd, void *arg)
                 read_buf_tmp = *read_buf++;
                 csum += (read_buf_tmp << 24) + ((read_buf_tmp & 0xFF00) << 8) + ((read_buf_tmp & 0xFF0000) >> 8) + ((read_buf_tmp & 0xff000000) >> 24);
             }
-            cmdack.command = 0x103;
-            cmdack.input_word[0] = chunk_offset >> 16;
-            cmdack.input_word[1] = chunk_offset;
-            cmdack.input_word_count = 2;
-            cmdack.input_buffer = SBUF;
+            cmdack.command             = 0x103;
+            cmdack.input_word[0]       = chunk_offset >> 16;
+            cmdack.input_word[1]       = chunk_offset;
+            cmdack.input_word_count    = 2;
+            cmdack.input_buffer        = SBUF;
             cmdack.input_buffer_length = chunk_size;
             if (DvrdrvExecCmdAckDmaSendComp(&cmdack)) {
                 retval = -5;
@@ -324,15 +324,15 @@ int iplioctl2_update(iomanX_iop_file_t *a1, int cmd, void *arg)
         printf("CHECK SUM\n");
         printf("total_size:%d\n", total_size);
         printf("csum : %x\n", csum);
-        cmdack.command = 0x105;
-        cmdack.input_word[0] = 0x1000;
-        cmdack.input_word[2] = total_size >> 16;
-        cmdack.input_word[4] = csum >> 16;
-        cmdack.input_word[1] = 0;
-        cmdack.input_word[3] = total_size;
-        cmdack.input_word[5] = csum;
+        cmdack.command          = 0x105;
+        cmdack.input_word[0]    = 0x1000;
+        cmdack.input_word[2]    = total_size >> 16;
+        cmdack.input_word[4]    = csum >> 16;
+        cmdack.input_word[1]    = 0;
+        cmdack.input_word[3]    = total_size;
+        cmdack.input_word[5]    = csum;
         cmdack.input_word_count = 6;
-        cmdackerr4 = DvrdrvExecCmdAck(&cmdack);
+        cmdackerr4              = DvrdrvExecCmdAck(&cmdack);
         printf("result: %d\n", cmdackerr4);
         printf("dvrcmd.ack_p[0]:%x\n", cmdack.ack_status_ack);
         printf("dvrcmd.ack_p[1]:%x\n", cmdack.output_word[0]);

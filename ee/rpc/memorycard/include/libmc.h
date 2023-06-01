@@ -14,9 +14,9 @@
  */
 
 /*
-	NOTE: These functions will work with the MCMAN/MCSERV or XMCMAN/XMCSERV
-	modules stored in rom0. To determine which one you are using, send the
-	appropriate arg to the mcInit() function (MC_TYPE_MC or MC_TYPE_XMC)
+    NOTE: These functions will work with the MCMAN/MCSERV or XMCMAN/XMCSERV
+    modules stored in rom0. To determine which one you are using, send the
+    appropriate arg to the mcInit() function (MC_TYPE_MC or MC_TYPE_XMC)
 
         NOTE: These functions seem to work for both psx and ps2 memcards
 
@@ -35,55 +35,55 @@
 
 #include <libmc-common.h>
 
-#define MC_WAIT					0
-#define MC_NOWAIT				1
+#define MC_WAIT   0
+#define MC_NOWAIT 1
 
-#define MC_TYPE_PSX				sceMcTypePS1
-#define MC_TYPE_PS2				sceMcTypePS2
-#define MC_TYPE_POCKET			sceMcTypePDA
-#define MC_TYPE_NONE		sceMcTypeNoCard
+#define MC_TYPE_PSX    sceMcTypePS1
+#define MC_TYPE_PS2    sceMcTypePS2
+#define MC_TYPE_POCKET sceMcTypePDA
+#define MC_TYPE_NONE   sceMcTypeNoCard
 
-#define MC_FORMATTED		1
-#define MC_UNFORMATTED		0
+#define MC_FORMATTED   1
+#define MC_UNFORMATTED 0
 
 // Valid bits in memcard file attributes (mctable.AttrFile)
-#define MC_ATTR_READABLE        sceMcFileAttrReadable
-#define MC_ATTR_WRITEABLE       sceMcFileAttrWriteable
-#define MC_ATTR_EXECUTABLE      sceMcFileAttrExecutable
-#define MC_ATTR_PROTECTED       sceMcFileAttrDupProhibit
-#define MC_ATTR_FILE            sceMcFileAttrFile
-#define MC_ATTR_SUBDIR          sceMcFileAttrSubdir
+#define MC_ATTR_READABLE   sceMcFileAttrReadable
+#define MC_ATTR_WRITEABLE  sceMcFileAttrWriteable
+#define MC_ATTR_EXECUTABLE sceMcFileAttrExecutable
+#define MC_ATTR_PROTECTED  sceMcFileAttrDupProhibit
+#define MC_ATTR_FILE       sceMcFileAttrFile
+#define MC_ATTR_SUBDIR     sceMcFileAttrSubdir
 /** File or directory */
-#define MC_ATTR_OBJECT          (sceMcFileAttrFile|sceMcFileAttrSubdir)
-#define MC_ATTR_CLOSED          sceMcFileAttrClosed
-#define MC_ATTR_PDAEXEC         sceMcFileAttrPDAExec
-#define MC_ATTR_PSX             sceMcFileAttrPS1
+#define MC_ATTR_OBJECT     (sceMcFileAttrFile | sceMcFileAttrSubdir)
+#define MC_ATTR_CLOSED     sceMcFileAttrClosed
+#define MC_ATTR_PDAEXEC    sceMcFileAttrPDAExec
+#define MC_ATTR_PSX        sceMcFileAttrPS1
 /** not hidden in osdsys, but it is to games */
-#define MC_ATTR_HIDDEN          sceMcFileAttrHidden
+#define MC_ATTR_HIDDEN     sceMcFileAttrHidden
 
 /** function numbers returned by mcSync in the 'cmd' pointer */
-enum MC_FUNC_NUMBERS{
-	MC_FUNC_NONE		= 0x00,
-	MC_FUNC_GET_INFO,
-	MC_FUNC_OPEN,
-	MC_FUNC_CLOSE,
-	MC_FUNC_SEEK,
-	MC_FUNC_READ,
-	MC_FUNC_WRITE,
-	MC_FUNC_FLUSH		= 0x0A,
-	MC_FUNC_MK_DIR,
-	MC_FUNC_CH_DIR,
-	MC_FUNC_GET_DIR,
-	MC_FUNC_SET_INFO,
-	MC_FUNC_DELETE,
-	MC_FUNC_FORMAT,
-	MC_FUNC_UNFORMAT,
-	MC_FUNC_GET_ENT,
-	MC_FUNC_RENAME,
-	MC_FUNC_CHG_PRITY,
-	MC_FUNC_ERASE_BLOCK	= 0x5A,
-	MC_FUNC_READ_PAGE,
-	MC_FUNC_WRITE_PAGE,
+enum MC_FUNC_NUMBERS {
+    MC_FUNC_NONE = 0x00,
+    MC_FUNC_GET_INFO,
+    MC_FUNC_OPEN,
+    MC_FUNC_CLOSE,
+    MC_FUNC_SEEK,
+    MC_FUNC_READ,
+    MC_FUNC_WRITE,
+    MC_FUNC_FLUSH = 0x0A,
+    MC_FUNC_MK_DIR,
+    MC_FUNC_CH_DIR,
+    MC_FUNC_GET_DIR,
+    MC_FUNC_SET_INFO,
+    MC_FUNC_DELETE,
+    MC_FUNC_FORMAT,
+    MC_FUNC_UNFORMAT,
+    MC_FUNC_GET_ENT,
+    MC_FUNC_RENAME,
+    MC_FUNC_CHG_PRITY,
+    MC_FUNC_ERASE_BLOCK = 0x5A,
+    MC_FUNC_READ_PAGE,
+    MC_FUNC_WRITE_PAGE,
 };
 
 /**
@@ -92,12 +92,12 @@ enum MC_FUNC_NUMBERS{
  * AFAIK these have no other effects.
  * Known type IDs for icon.sys file:
  */
-enum MCICON_TYPES{
-	MCICON_TYPE_SAVED_DATA		= 0,	// "Saved Data (PlayStation(r)2)"
-	MCICON_TYPE_SOFTWARE_PS2,		// "Software (PlayStation(r)2)"
-	MCICON_TYPE_SOFTWARE_PKT,		// "Software (PocketStation(r))"
-	MCICON_TYPE_SETTINGS_DATA,		// "Settings File (PlayStation(r)2)"
-    MCICON_TYPE_SYSTEM_DRIVER       // "System driver"; Implemented on SCPH-5XXXX, previous models can't recognize it unless HDD-OSD is active
+enum MCICON_TYPES {
+    MCICON_TYPE_SAVED_DATA = 0, // "Saved Data (PlayStation(r)2)"
+    MCICON_TYPE_SOFTWARE_PS2,   // "Software (PlayStation(r)2)"
+    MCICON_TYPE_SOFTWARE_PKT,   // "Software (PocketStation(r))"
+    MCICON_TYPE_SETTINGS_DATA,  // "Settings File (PlayStation(r)2)"
+    MCICON_TYPE_SYSTEM_DRIVER,  // "System driver"; Implemented on SCPH-5XXXX, previous models can't recognize it unless HDD-OSD is active
 };
 
 typedef int iconIVECTOR[4];
@@ -106,7 +106,7 @@ typedef float iconFVECTOR[4];
 typedef struct
 {
     /** header = "PS2D" */
-    unsigned char  head[4];
+    unsigned char head[4];
     /** filetype, used to be "unknown1" (see MCICON_TYPE_* above) */
     unsigned short type;
     /** new line pos within title name */
@@ -135,15 +135,16 @@ typedef struct
     unsigned char unknown3[512];
 } mcIcon;
 
-typedef struct _sceMcTblGetDir {	// size = 64
-	sceMcStDateTime _Create;	// 0
-	sceMcStDateTime _Modify;	// 8
-	u32 FileSizeByte;		// 16
-	u16 AttrFile;			// 20
-	u16 Reserve1;			// 22
-	u32 Reserve2;			// 24
-	u32 PdaAplNo;			// 28
-	unsigned char EntryName[32];	// 32
+typedef struct _sceMcTblGetDir
+{                                // size = 64
+    sceMcStDateTime _Create;     // 0
+    sceMcStDateTime _Modify;     // 8
+    u32 FileSizeByte;            // 16
+    u16 AttrFile;                // 20
+    u16 Reserve1;                // 22
+    u32 Reserve2;                // 24
+    u32 PdaAplNo;                // 28
+    unsigned char EntryName[32]; // 32
 } sceMcTblGetDir __attribute__((aligned(64)));
 
 typedef struct
@@ -151,7 +152,7 @@ typedef struct
     struct
     {
         unsigned char unknown1;
-        /** Entry creation date/time (second) */        
+        /** Entry creation date/time (second) */
         unsigned char sec;
         /** Entry creation date/time (minute) */
         unsigned char min;
@@ -168,7 +169,7 @@ typedef struct
     struct
     {
         unsigned char unknown2;
-        /** Entry modification date/time (second) */        
+        /** Entry modification date/time (second) */
         unsigned char sec;
         /** Entry modification date/time (minute) */
         unsigned char min;
@@ -190,11 +191,11 @@ typedef struct
     unsigned unknown4[2];
     /** Entry name */
     unsigned char name[32];
-} mcTable __attribute__((deprecated, aligned (64)));
+} mcTable __attribute__((deprecated, aligned(64)));
 
 // values to send to mcInit() to use either mcserv or xmcserv
-#define MC_TYPE_MC	0
-#define MC_TYPE_XMC	1
+#define MC_TYPE_MC  0
+#define MC_TYPE_XMC 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -220,7 +221,7 @@ int mcInit(int type);
  * @param format pointer to get whether or not the card is formatted (Note: Originally, sceMcGetInfo didn't have a 5th argument for returning the format status. As this is emulated based on the return value of sceMcSync() when rom0:MCSERV is used, please keep track of the return value from sceMcSync instead!)
  * @return 0 = successful; < 0 = error
  */
-int mcGetInfo(int port, int slot, int* type, int* free, int* format);
+int mcGetInfo(int port, int slot, int *type, int *free, int *format);
 
 /** open a file on memcard
  * mcSync returns:	0 or more = file descriptor (success)
@@ -295,7 +296,7 @@ int mcFlush(int fd);
  * @param name directory name
  * @return 0 = successful; < 0 = error
  */
-int mcMkDir(int port, int slot, const char* name);
+int mcMkDir(int port, int slot, const char *name);
 
 /** change current dir
  * (can also get current dir)
@@ -308,7 +309,7 @@ int mcMkDir(int port, int slot, const char* name);
  * @param currentDir buffer to get current dir (use 0 if not needed)
  * @return 0 = successful; < 0 = error
  */
-int mcChdir(int port, int slot, const char* newDir, char* currentDir);
+int mcChdir(int port, int slot, const char *newDir, char *currentDir);
 
 /** get memcard filelist
  * mcSync result:	 0 or more = number of file entries obtained (success)
@@ -323,7 +324,7 @@ int mcChdir(int port, int slot, const char* newDir, char* currentDir);
  * @param table mc table array
  * @return 0 = successful; < 0 = error
  */
-int mcGetDir(int port, int slot, const char *name, unsigned mode, int maxent, sceMcTblGetDir* table);
+int mcGetDir(int port, int slot, const char *name, unsigned mode, int maxent, sceMcTblGetDir *table);
 
 /** change file information
  * mcSync returns:	0 if ok
@@ -336,7 +337,7 @@ int mcGetDir(int port, int slot, const char *name, unsigned mode, int maxent, sc
  * @param flags flags to show which data is valid
  * @return 0 = successful; < 0 = error
  */
-int mcSetFileInfo(int port, int slot, const char* name, const sceMcTblGetDir* info, unsigned flags);
+int mcSetFileInfo(int port, int slot, const char *name, const sceMcTblGetDir *info, unsigned flags);
 
 /** delete file
  * mcSync returns:	0 if deleted successfully
@@ -378,7 +379,7 @@ int mcUnformat(int port, int slot);
  * @param path path to be checked
  * @return 0 or more = number of empty entries; -1 = error
  */
-int mcGetEntSpace(int port, int slot, const char* path);
+int mcGetEntSpace(int port, int slot, const char *path);
 
 /** rename file or dir on memcard
  * Note: rom0:MCSERV does not support this.
@@ -391,7 +392,7 @@ int mcGetEntSpace(int port, int slot, const char* path);
  * @param newName new name to give to file/dir
  * @return 1 = success; < 0 = error
  */
-int mcRename(int port, int slot, const char* oldName, const char* newName);
+int mcRename(int port, int slot, const char *oldName, const char *newName);
 
 /** Erases a block on the memory card.
  * Note: rom0:XMCSERV does not support this.

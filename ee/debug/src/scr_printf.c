@@ -73,14 +73,14 @@ static void SetVideoMode(void)
     unsigned val4_lo;
 
     /*	DISPLAY1	0x0983227c001bf9ff
-            DX = 0x27C (636)
-            DY = 0x032 (50)
+                    DX = 0x27C (636)
+                    DY = 0x032 (50)
 
-            MAGH = 0x03 (4x)
-            MAGV = 0x01 (2x)
+                    MAGH = 0x03 (4x)
+                    MAGV = 0x01 (2x)
 
-            DW = 0x9FF (2560)
-            DH = 0x1BF (447)	*/
+                    DW = 0x9FF (2560)
+                    DH = 0x1BF (447)	*/
 
     asm volatile("        .set push               \n"
                  "        .set noreorder          \n"
@@ -185,12 +185,12 @@ void scr_setbgcolor(u32 color)
 
 void scr_setfontcolor(u32 color)
 {
-	fontcolor = color;
+    fontcolor = color;
 }
 
 void scr_setcursorcolor(u32 color)
 {
-	cursorcolor = color;
+    cursorcolor = color;
 }
 
 void init_scr(void)
@@ -244,6 +244,7 @@ void scr_putchar(int x, int y, u32 color, int ch)
     for (i = l = 0; i < 8; i++, l += 8, font++) {
         for (j = 0; j < 8; j++) {
             pixel = ((*font & (128 >> j))) ? color : bgcolor;
+
             *(u32 *)UNCACHED_SEG(&charmap[l + j]) = pixel;
         }
     }

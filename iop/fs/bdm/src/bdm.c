@@ -10,7 +10,7 @@
 
 struct bdm_mounts
 {
-    struct block_device *bd; // real block device
+    struct block_device *bd;  // real block device
     struct block_device *cbd; // cached block device
     struct file_system *fs;
 };

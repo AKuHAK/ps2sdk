@@ -30,11 +30,11 @@ int nanosleep(const struct timespec *req, struct timespec *rem)
     ThreadWaitClock(cycles);
 
     if (rem != NULL) {
-        rem->tv_sec = 0;
+        rem->tv_sec  = 0;
         rem->tv_nsec = 0;
     }
 
-	return 0;
+    return 0;
 }
 
 #endif

@@ -12,10 +12,10 @@
 
 #include <erl.h>
 
-char * erl_id = "libgraph";
-char * erl_dependancies[] =
-{
+char *erl_id = "libgraph";
+
+char *erl_dependancies[] = {
     "libkernel",
-	"libc",
-    0
+    "libc",
+    0,
 };

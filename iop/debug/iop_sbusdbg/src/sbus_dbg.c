@@ -14,7 +14,7 @@
 #include "iopdebug.h"
 
 #define SIF2_CMD_DBG_PUTS (1)
-#define SIF2_CMD_DBG_EXC (2)
+#define SIF2_CMD_DBG_EXC  (2)
 #define SIF2_CMD_DBG_CTRL (3)
 
 extern int _iop_exception_state;
@@ -33,12 +33,12 @@ extern int _iop_controlled;
 // send a string to EE for output.
 void sbus_tty_puts(const char *str)
 {
-    SIF2_send_cmd(SIF2_CMD_DBG_PUTS, (void *) str, strlen(str) + 1);
+    SIF2_send_cmd(SIF2_CMD_DBG_PUTS, (void *)str, strlen(str) + 1);
 }
 
 void signal_iop_exception(IOP_RegFrame *frame)
 {
-    SIF2_send_cmd(SIF2_CMD_DBG_EXC, (void *) frame, sizeof(IOP_RegFrame));
+    SIF2_send_cmd(SIF2_CMD_DBG_EXC, (void *)frame, sizeof(IOP_RegFrame));
 }
 
 extern int tid;
@@ -49,21 +49,23 @@ void _sif2_cmd_dbg_control(SIF2_CmdPkt *cmd, void *param)
 
     (void)param;
 
-    params = (SBUS_ControlCPU_Params *) ((((u32) cmd) + sizeof(SIF2_CmdPkt)) | 0x00000000);
+    params = (SBUS_ControlCPU_Params *)((((u32)cmd) + sizeof(SIF2_CmdPkt)) | 0x00000000);
 
-    if(params->mode == 1)
-    {
+    if (params->mode == 1) {
         // wake up the controller thread.
         iWakeupThread(tid);
-    }
-    else
-    {
+    } else {
         IOP_RegFrame *frame;
 
-        if(_iop_exception_state == 0) { return; }
+        if (_iop_exception_state == 0) {
+            return;
+        }
 
-        if(_iop_exception_state == 1) { frame = _iop_ex_def_frame; }
-        else { frame = _iop_ex_dbg_frame; }
+        if (_iop_exception_state == 1) {
+            frame = _iop_ex_def_frame;
+        } else {
+            frame = _iop_ex_dbg_frame;
+        }
 
         // update the register frame and release the CPU.
         memcpy(frame, &params->reg_frame, sizeof(IOP_RegFrame));
@@ -72,7 +74,7 @@ void _sif2_cmd_dbg_control(SIF2_CmdPkt *cmd, void *param)
         FlushDcache();
 
         _iop_exception_state = 0;
-        _iop_controlled = 0;
+        _iop_controlled      = 0;
     }
 }
 

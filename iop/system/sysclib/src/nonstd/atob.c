@@ -12,9 +12,10 @@
 #include <sysclib.h>
 
 // non-standard function
-char *atob(char *s, int *i) {
-	char *result;
+char *atob(char *s, int *i)
+{
+    char *result;
 
-	*i = strtol(s, &result, 10);
-	return result;
+    *i = strtol(s, &result, 10);
+    return result;
 }

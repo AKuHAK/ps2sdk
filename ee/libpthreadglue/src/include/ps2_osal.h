@@ -24,20 +24,21 @@ typedef int pte_osMutexHandle;
 #include <sys/pte_generic_osal.h>
 
 pte_osResult pteTlsGlobalInit(int maxEntries);
-void * pteTlsThreadInit(void);
+void *pteTlsThreadInit(void);
 
 pte_osResult __pteTlsAlloc(unsigned int *pKey);
-void * pteTlsGetValue(void *pTlsThreadStruct, unsigned int index);
-pte_osResult __pteTlsSetValue(void *pTlsThreadStruct, unsigned int index, void * value);
+void *pteTlsGetValue(void *pTlsThreadStruct, unsigned int index);
+pte_osResult __pteTlsSetValue(void *pTlsThreadStruct, unsigned int index, void *value);
 void *__getTlsStructFromThread(s32 thid);
 pte_osResult pteTlsFree(unsigned int index);
 
-void pteTlsThreadDestroy(void * pTlsThreadStruct);
+void pteTlsThreadDestroy(void *pTlsThreadStruct);
 void pteTlsGlobalDestroy(void);
 
-struct OsalThreadInfo {
-  uint32_t threadNumber;
-  void *tlsPtr;
+struct OsalThreadInfo
+{
+    uint32_t threadNumber;
+    void *tlsPtr;
 };
 
 extern struct OsalThreadInfo __threadInfo[];

@@ -147,33 +147,33 @@ int DvrdrvInit()
     iop_sema_t v13;
 
     DVRDRV.mainthread_id = -1;
-    v12.attr = 0;
-    v12.initial = 1;
-    v12.max = 1;
-    v12.option = 0;
-    v0 = CreateSema(&v12);
+    v12.attr             = 0;
+    v12.initial          = 1;
+    v12.max              = 1;
+    v12.option           = 0;
+    v0                   = CreateSema(&v12);
     if (v0 < 0)
         return -1;
     api_sema_id = v0;
-    v13.attr = 0;
+    v13.attr    = 0;
     v13.initial = 1;
-    v13.max = 1;
-    v13.option = 0;
-    v1 = CreateSema(&v13);
+    v13.max     = 1;
+    v13.option  = 0;
+    v1          = CreateSema(&v13);
     if (v1 < 0)
         return -1;
     phase_sema_id = v1;
-    v13.attr = 0;
-    v13.initial = 0;
-    v13.max = 1;
-    v13.option = 0;
+    v13.attr      = 0;
+    v13.initial   = 0;
+    v13.max       = 1;
+    v13.option    = 0;
     for (int i = 0; i < 32; i += 1) {
         itr_sema_table[i].sema = CreateSema(&v13);
         itr_sema_table[i].used = 0;
     }
     for (int i = 0; i < 32; i += 1) {
         intrhandler_callbacks[i] = 0;
-        intrhandler_intrnum[i] = 0;
+        intrhandler_intrnum[i]   = 0;
     }
     for (int i = 0; i < 3; i += 1) {
         for (int j = 0; j < 32; j += 1) {
@@ -286,7 +286,7 @@ int DvrdrvSendCmdAck(struct_itr_sema *itrsema, u16 command, u16 *input_word, s32
         goto LABEL_18;
     }
 LABEL_19:
-    v20 = itrsema->sema;
+    v20               = itrsema->sema;
     SPD_REG16(0x4210) = command;
     WaitSema(v20);
     v21 = (u16)(command & 0xF00) >> 8;
@@ -372,11 +372,11 @@ int DvrdrvTransferDma(u8 *output_buffer, int a2)
     if (((u32)output_buffer & 3) != 0)
         return -1;
     BlockAPI();
-    v6 = a2 / 128;
-    v7 = a2 % 128;
+    v6                = a2 / 128;
+    v7                = a2 % 128;
     SPD_REG16(0x4108) = a2 / 128;
     SPD_REG16(0x410C) = 32;
-    v8 = (u32 *)&output_buffer[128 * (u16)(a2 / 128)];
+    v8                = (u32 *)&output_buffer[128 * (u16)(a2 / 128)];
     switch (SPD_REG8(0x4004) & 7) {
         case 0:
         case 2:
@@ -564,7 +564,7 @@ int DvrdrvWaitCmdComp(struct_itr_sema *itrsema, u16 command, u16 *status_4220, u
     if (!v8->timed_out) {
         s16 v10;
         v10 = v8->error;
-        v9 = -3;
+        v9  = -3;
         if ((v10 & 0x8000) == 0) {
             if ((v10 & 4) != 0) {
                 int v11;
@@ -574,7 +574,7 @@ int DvrdrvWaitCmdComp(struct_itr_sema *itrsema, u16 command, u16 *status_4220, u
                 else
                     v11 = (u8)(SPD_REG16(0x4228) & 0xFC) >> 2;
                 *status_4228 = v11;
-                v12 = 0;
+                v12          = 0;
                 if (*status_4228 > 0) {
                     u16 *v13;
 
@@ -636,12 +636,10 @@ int DvrdrvRegisterIntrHandler(int a1, void *arg, void (*a3)(int, void *))
     int i;
 
     BlockAPI();
-    for (i = 0; i < 32; i += 1)
-    {
-        if (intrhandler_callbacks[i] == NULL)
-        {
-            intrhandler_callbacks[i] = a3;
-            intrhandler_intrnum[i] = a1;
+    for (i = 0; i < 32; i += 1) {
+        if (intrhandler_callbacks[i] == NULL) {
+            intrhandler_callbacks[i]    = a3;
+            intrhandler_intrnum[i]      = a1;
             intrhandler_callbacksarg[i] = arg;
             UnblockAPI();
             return 0;
@@ -656,12 +654,10 @@ int DvrdrvUnregisterIntrHandler(void (*a1)(int, void *))
     int i;
 
     BlockAPI();
-    for (i = 0; i < 32; i += 1)
-    {
-        if (intrhandler_callbacks[i] == a1)
-        {
-            intrhandler_callbacks[i] = NULL;
-            intrhandler_intrnum[i] = 0;
+    for (i = 0; i < 32; i += 1) {
+        if (intrhandler_callbacks[i] == a1) {
+            intrhandler_callbacks[i]    = NULL;
+            intrhandler_intrnum[i]      = 0;
             intrhandler_callbacksarg[i] = 0;
             UnblockAPI();
             return 0;
@@ -689,7 +685,7 @@ int DvrdrvEnd()
     DvrdrvUnregisterIntrHandler((void *)INTR_DMAEND_HANDLER);
     DeleteSema(api_sema_id);
     DeleteSema(phase_sema_id);
-    api_sema_id = -1;
+    api_sema_id   = -1;
     phase_sema_id = -1;
 #if 0
     for (int i = 0; i < 32; i += 1) {
@@ -710,12 +706,9 @@ int DVR_INTR_HANDLER(int flag)
 
     v1 = 0;
     v4 = SPD_REG16(0x4200);
-    for (i = 0; i < 32; i += 1)
-    {
-        if ((intrhandler_intrnum[i] & v4) != 0)
-        {
-            if (intrhandler_callbacks[i])
-            {
+    for (i = 0; i < 32; i += 1) {
+        if ((intrhandler_intrnum[i] & v4) != 0) {
+            if (intrhandler_callbacks[i]) {
                 intrhandler_callbacks[i](v4, intrhandler_callbacksarg[i]);
                 v1 |= intrhandler_intrnum[i];
             }
@@ -796,7 +789,7 @@ int INTR_CMD_ACK_TO_HANDLER(struct_itr_sid_tbl *a1)
     GetSystemTime(&clock);
     v1 = clock.lo;
     Kprintf("CMDACK_TO:[%u]\n", v1);
-    v3 = a1->sema;
+    v3            = a1->sema;
     a1->timed_out = 1;
     iSignalSema(v3);
     return 0;
@@ -852,7 +845,7 @@ unsigned int INTR_CMD_COMP_TO_HANDLER(struct_itr_sid_tbl *a1)
     GetSystemTime(&clock);
     v1 = clock.lo;
     Kprintf("COMP TO:[%u]\n", v1);
-    v3 = a1->sema;
+    v3            = a1->sema;
     a1->timed_out = 1;
     iSignalSema(v3);
     return 0;
@@ -936,8 +929,8 @@ struct_itr_sid_tbl *SetItrSidTbl(int itrsid_index, u16 command, int sema)
     for (i = 0; i < 32; i += 1) {
         if (itrsid_table[itrsid_index][i].sema == -1 || itrsid_table[itrsid_index][i].command == command) {
             itrsid_table[itrsid_index][i].command = command;
-            itrsid_table[itrsid_index][i].sema = sema;
-            itrsid_table[itrsid_index][i].error = 0;
+            itrsid_table[itrsid_index][i].sema    = sema;
+            itrsid_table[itrsid_index][i].error   = 0;
             break;
         }
     }
@@ -973,10 +966,10 @@ int ClearItrSidTbl(struct_itr_sid_tbl *a1)
 
     CpuSuspendIntr(&state);
     a1->timed_out = 0;
-    v2 = state;
-    a1->command = 0;
-    a1->sema = -1;
-    a1->error = 0;
+    v2            = state;
+    a1->command   = 0;
+    a1->sema      = -1;
+    a1->error     = 0;
     return CpuResumeIntr(v2);
 }
 
@@ -988,12 +981,10 @@ struct_itr_sema *AllocItrSema()
 
     result = 0;
     CpuSuspendIntr(&state);
-    for (i = 0; i < 32; i += 1)
-    {
-        if (!itr_sema_table[i].used)
-        {
+    for (i = 0; i < 32; i += 1) {
+        if (!itr_sema_table[i].used) {
             itr_sema_table[i].used = 1;
-            result = &itr_sema_table[i];
+            result                 = &itr_sema_table[i];
             break;
         }
     }
@@ -1011,10 +1002,8 @@ int ReleaseItrSema(const struct_itr_sema *itrsema)
     int state;
 
     CpuSuspendIntr(&state);
-    for (i = 0; i < 32; i += 1)
-    {
-        if (&itr_sema_table[i] == itrsema)
-        {
+    for (i = 0; i < 32; i += 1) {
+        if (&itr_sema_table[i] == itrsema) {
             itr_sema_table[i].used = 0;
             break;
         }
@@ -1038,9 +1027,9 @@ int DvrdrvExecCmdAck(drvdrv_exec_cmd_ack *a1)
         int v4;
 
         DvrdrvBlockPhase();
-        v3 = a1->command;
+        v3        = a1->command;
         a1->phase = 1;
-        v4 = DvrdrvSendCmdAck(
+        v4        = DvrdrvSendCmdAck(
             v2,
             v3,
             a1->input_word,
@@ -1073,9 +1062,9 @@ int DvrdrvExecCmdAckComp(drvdrv_exec_cmd_ack *a1)
 
         DvrdrvPrepareWaitCmdComp(v2, a1->command, a1->timeout);
         DvrdrvBlockPhase();
-        v5 = a1->command;
+        v5        = a1->command;
         a1->phase = 1;
-        v6 = DvrdrvSendCmdAck(
+        v6        = DvrdrvSendCmdAck(
             v3,
             v5,
             a1->input_word,
@@ -1088,9 +1077,9 @@ int DvrdrvExecCmdAckComp(drvdrv_exec_cmd_ack *a1)
             DvrdrvUnblockPhase();
         } else {
             DvrdrvUnblockPhase();
-            v7 = a1->command;
+            v7        = a1->command;
             a1->phase = 4;
-            v6 = DvrdrvWaitCmdComp(v3, v7, &a1->status_4220_comp, &a1->comp_status, &a1->status_4228_comp);
+            v6        = DvrdrvWaitCmdComp(v3, v7, &a1->status_4220_comp, &a1->comp_status, &a1->status_4228_comp);
         }
         ReleaseItrSema(v3);
         result = v6;
@@ -1151,12 +1140,12 @@ int DvrdrvExecCmdAckDmaSendComp(drvdrv_exec_cmd_ack *a1)
             v18 = (v8 / 128 + 1) << 7;
         else
             v18 = a1->input_buffer_length;
-        v9 = a1->command;
+        v9               = a1->command;
         input_word_count = 2;
-        v12 = (v9 & 0xF0FF) | 0x200;
-        v13[0] = (v18 & 0xFFFF0000) >> 16;
-        v13[1] = v18;
-        v10 = AllocItrSema();
+        v12              = (v9 & 0xF0FF) | 0x200;
+        v13[0]           = (v18 & 0xFFFF0000) >> 16;
+        v13[1]           = v18;
+        v10              = AllocItrSema();
         DvrdrvPrepareWaitDmaEnd(v10, v12);
         v6 = DvrdrvSendCmdAck(v3, v12, v13, input_word_count, &v15, ack_status, v17);
         if (v6) {
@@ -1172,9 +1161,9 @@ int DvrdrvExecCmdAckDmaSendComp(drvdrv_exec_cmd_ack *a1)
                 }
                 ReleaseItrSema(v10);
                 DvrdrvUnblockPhase();
-                v11 = a1->command;
+                v11       = a1->command;
                 a1->phase = 4;
-                v6 = DvrdrvWaitCmdComp(v3, v11, &a1->status_4220_comp, &a1->comp_status, &a1->status_4228_comp);
+                v6        = DvrdrvWaitCmdComp(v3, v11, &a1->status_4220_comp, &a1->comp_status, &a1->status_4228_comp);
                 goto LABEL_17;
             }
             v7 = a1->command;
@@ -1228,10 +1217,10 @@ int DvrdrvExecCmdAckDmaRecvComp(drvdrv_exec_cmd_ack *a1)
         a1->phase = 3;
         DvrdrvBlockPhase();
         DvrdrvSetDmaDirection(0);
-        v7 = a1->command;
+        v7               = a1->command;
         input_word_count = 0;
-        v11 = (v7 & 0xF0FF) | 0x300;
-        v8 = AllocItrSema();
+        v11              = (v7 & 0xF0FF) | 0x300;
+        v8               = AllocItrSema();
         DvrdrvPrepareWaitDmaEnd(v8, v11);
         v5 = DvrdrvSendCmdAck(v3, v11, v12, input_word_count, &v14, ack_status, v16);
         if (v5) {
@@ -1239,7 +1228,7 @@ int DvrdrvExecCmdAckDmaRecvComp(drvdrv_exec_cmd_ack *a1)
         } else {
             v5 = -1;
             if (!ack_status[0]) {
-                v9 = (ack_status[1] << 16) + ack_status[2];
+                v9                  = (ack_status[1] << 16) + ack_status[2];
                 a1->ack_status_ack2 = v9;
                 if (v9 <= 0) {
                     DvrdrvCancelWaitDmaEnd(v11);
@@ -1249,9 +1238,9 @@ int DvrdrvExecCmdAckDmaRecvComp(drvdrv_exec_cmd_ack *a1)
                 }
                 ReleaseItrSema(v8);
                 DvrdrvUnblockPhase();
-                v10 = a1->command;
+                v10       = a1->command;
                 a1->phase = 4;
-                v5 = DvrdrvWaitCmdComp(v3, v10, &a1->status_4220_comp, &a1->comp_status, &a1->status_4228_comp);
+                v5        = DvrdrvWaitCmdComp(v3, v10, &a1->status_4220_comp, &a1->comp_status, &a1->status_4228_comp);
                 goto LABEL_14;
             }
             v6 = a1->command;
@@ -1314,14 +1303,14 @@ int DvrdrvExecCmdAckDma2Comp(drvdrv_exec_cmd_ack *a1)
     a1->phase = 2;
     DvrdrvBlockPhase();
     DvrdrvSetDmaDirection(1u);
-    v6 = a1->input_buffer_length;
-    v20 = (v6 & 0x7F) != 0 ? (u32)((v6 / 128 + 1) << 7) : a1->input_buffer_length;
-    v7 = a1->command;
+    v6               = a1->input_buffer_length;
+    v20              = (v6 & 0x7F) != 0 ? (u32)((v6 / 128 + 1) << 7) : a1->input_buffer_length;
+    v7               = a1->command;
     input_word_count = 2;
-    v14 = (v7 & 0xF0FF) | 0x200;
-    v15[0] = (v20 & 0xFFFF0000) >> 16;
-    v15[1] = v20;
-    v8 = AllocItrSema();
+    v14              = (v7 & 0xF0FF) | 0x200;
+    v15[0]           = (v20 & 0xFFFF0000) >> 16;
+    v15[1]           = v20;
+    v8               = AllocItrSema();
     DvrdrvPrepareWaitDmaEnd(v8, v14);
     v5 = DvrdrvSendCmdAck(v3, v14, v15, input_word_count, &v17, ack_status, v19);
     if (v5) {
@@ -1349,7 +1338,7 @@ int DvrdrvExecCmdAckDma2Comp(drvdrv_exec_cmd_ack *a1)
         DvrdrvPrepareWaitDmaEnd(v11, v21);
         v5 = DvrdrvSendCmdAck(v3, v21, v22, v23, &v24, v25, v26);
         if (!v5 && !v25[0]) {
-            v12 = (v25[1] << 16) + v25[2];
+            v12                 = (v25[1] << 16) + v25[2];
             a1->ack_status_ack2 = v12;
             if (v12 <= 0) {
                 DvrdrvCancelWaitDmaEnd(v21);
@@ -1359,9 +1348,9 @@ int DvrdrvExecCmdAckDma2Comp(drvdrv_exec_cmd_ack *a1)
             }
             ReleaseItrSema(v11);
             DvrdrvUnblockPhase();
-            v13 = a1->command;
+            v13       = a1->command;
             a1->phase = 4;
-            v5 = DvrdrvWaitCmdComp(v3, v13, &a1->status_4220_comp, &a1->comp_status, &a1->status_4228_comp);
+            v5        = DvrdrvWaitCmdComp(v3, v13, &a1->status_4220_comp, &a1->comp_status, &a1->status_4228_comp);
             goto LABEL_21;
         }
         goto LABEL_15;

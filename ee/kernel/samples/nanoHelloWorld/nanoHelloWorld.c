@@ -22,9 +22,8 @@ DISABLE_TimerSystemTime();
 PS2_DISABLE_AUTOSTART_PTHREAD();
 
 int main(int argc, char *argv[])
-{    
-    while (1)
-    {
+{
+    while (1) {
         printf("Hello World from a nano binary!\n");
     }
     return 0;

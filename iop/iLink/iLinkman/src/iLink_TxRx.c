@@ -130,7 +130,8 @@ static int iLinkSync(unsigned int PayloadLength)
     if (LocalCachedIntr0Register & iLink_INTR0_RetEx)
         return (-1026);
     /* if (!(LocalCachedIntr0Register & iLink_INTR0_AckRcvd))
-        return (-1); */ /* Don't test for an acknowledge, as this somehow doesn't work right. :/ */
+        return (-1); */
+    /* Don't test for an acknowledge, as this somehow doesn't work right. :/ */
 
     return PayloadLength;
 }

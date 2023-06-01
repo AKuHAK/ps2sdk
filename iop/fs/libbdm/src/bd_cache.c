@@ -2,11 +2,11 @@
 #include <string.h>
 #include <sysmem.h>
 
-//#define DEBUG  //comment out this line when not debugging
+// #define DEBUG  //comment out this line when not debugging
 #include "module_debug.h"
 
-#define SECTORS_PER_BLOCK     8 //  8 * 512b =   4KiB
-#define BLOCK_COUNT          32 // 32 * 4KiB = 128KiB
+#define SECTORS_PER_BLOCK   8   //  8 * 512b =   4KiB
+#define BLOCK_COUNT         32  // 32 * 4KiB = 128KiB
 #define BLOCK_WEIGHT_FACTOR 256 // Fixed point math (24.8)
 
 struct bd_cache
@@ -14,7 +14,7 @@ struct bd_cache
     struct block_device *bd;
     int weight[BLOCK_COUNT];
     u64 sector[BLOCK_COUNT];
-    u8 cache[BLOCK_COUNT][SECTORS_PER_BLOCK*512];
+    u8 cache[BLOCK_COUNT][SECTORS_PER_BLOCK * 512];
 #ifdef DEBUG
     u32 sectors_read;
     u32 sectors_cache;
@@ -56,7 +56,7 @@ static int _read(struct block_device *bd, u64 sector, void *buffer, u16 count)
 {
     struct bd_cache *c = bd->priv;
 
-    //M_DEBUG("%s(%d, %d)\n", __FUNCTION__, sector, count);
+    // M_DEBUG("%s(%d, %d)\n", __FUNCTION__, sector, count);
 
     if (count >= SECTORS_PER_BLOCK) {
         // Do a direct read
@@ -73,7 +73,7 @@ static int _read(struct block_device *bd, u64 sector, void *buffer, u16 count)
         if (_contains(c->sector[blkidx], sector, count)) {
 #ifdef DEBUG
             c->sectors_cache += count;
-            //M_DEBUG("- CACHE HIT[%d] [block %d] [devread %ds, hit-ratio %d%%]\n", sector, blkidx, c->sectors_dev, (c->sectors_cache * 100) / c->sectors_read);
+            // M_DEBUG("- CACHE HIT[%d] [block %d] [devread %ds, hit-ratio %d%%]\n", sector, blkidx, c->sectors_dev, (c->sectors_cache * 100) / c->sectors_read);
 #endif
             // Minimum weight
             if (c->weight[blkidx] < 0)
@@ -90,7 +90,7 @@ static int _read(struct block_device *bd, u64 sector, void *buffer, u16 count)
 
     // Find block with the lowest weight
     int blkidx_best_weight = 0x7fffffff;
-    int blkidx_best = 0;
+    int blkidx_best        = 0;
     M_DEBUG("- list: ");
     for (blkidx = 0; blkidx < BLOCK_COUNT; blkidx++) {
 #ifdef DEBUG
@@ -103,13 +103,13 @@ static int _read(struct block_device *bd, u64 sector, void *buffer, u16 count)
         if (c->weight[blkidx] < blkidx_best_weight) {
             // Better block found
             blkidx_best_weight = c->weight[blkidx];
-            blkidx_best = blkidx;
+            blkidx_best        = blkidx;
         }
     }
 #ifdef DEBUG
     printf(" devread: %*d, evict %*d [%*d], add [%*d]\n", 4, c->sectors_dev, 2, blkidx_best, 8, c->sector[blkidx_best], 8, sector);
     c->sectors_dev += SECTORS_PER_BLOCK;
-    //M_DEBUG("- CACHE READ[%d] -> [block %d] [devread %ds, hit-ratio %d%%]\n", sector, blkidx_best, c->sectors_dev, (c->sectors_cache * 100) / c->sectors_read);
+    // M_DEBUG("- CACHE READ[%d] -> [block %d] [devread %ds, hit-ratio %d%%]\n", sector, blkidx_best, c->sectors_dev, (c->sectors_cache * 100) / c->sectors_read);
 #endif
 
     // Fill the block
@@ -117,7 +117,7 @@ static int _read(struct block_device *bd, u64 sector, void *buffer, u16 count)
     c->sector[blkidx_best] = sector;
 
     // Read from cache
-    u64 offset = (sector - c->sector[blkidx_best]) * 512;
+    u64 offset             = (sector - c->sector[blkidx_best]) * 512;
     c->weight[blkidx_best] = count * BLOCK_WEIGHT_FACTOR;
     memcpy(buffer, &c->cache[blkidx_best][offset], count * 512);
     return count;
@@ -169,9 +169,9 @@ struct block_device *bd_cache_create(struct block_device *bd)
         c->sector[blkidx] = 0xffffffffffffffff;
     }
 #ifdef DEBUG
-    c->sectors_read = 0;
+    c->sectors_read  = 0;
     c->sectors_cache = 0;
-    c->sectors_dev = 0;
+    c->sectors_dev   = 0;
 #endif
 
     // copy all parameters becouse we are the same blocks device
@@ -185,10 +185,10 @@ struct block_device *bd_cache_create(struct block_device *bd)
     cbd->sectorOffset = bd->sectorOffset;
     cbd->sectorCount  = bd->sectorCount;
 
-    cbd->read = _read;
+    cbd->read  = _read;
     cbd->write = _write;
     cbd->flush = _flush;
-    cbd->stop = _stop;
+    cbd->stop  = _stop;
 
     return cbd;
 }

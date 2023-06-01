@@ -12,9 +12,10 @@
 
 #include <erl.h>
 
-char *erl_id             = "libremote";
+char *erl_id = "libremote";
 
 char *erl_dependancies[] = {
     "libkernel",
     "libc",
-    0};
+    0,
+};

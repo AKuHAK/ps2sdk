@@ -13,8 +13,6 @@
  * Shims for libraries that detect features by attempting to link with symbols.
  */
 
-__attribute__((weak))
-void connect(void)
+__attribute__((weak)) void connect(void)
 {
-
 }

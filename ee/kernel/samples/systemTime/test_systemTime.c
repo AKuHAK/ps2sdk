@@ -21,9 +21,8 @@ int main(int argc, char *argv[])
 
     printf("\n\nStarting GetTimerSystemTime example!\n");
     previous = GetTimerSystemTime();
-    
-    while (1)
-    {
+
+    while (1) {
         uint64_t current;
 
         current = GetTimerSystemTime();

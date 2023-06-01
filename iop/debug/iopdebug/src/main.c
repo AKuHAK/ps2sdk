@@ -21,25 +21,23 @@ int _start(int argc, char *argv[])
     (void)argv;
 
     // install IOP debug system.
-    if(iop_dbg_install() != 0)
-    {
-        //printf("Failed installing IOP debug system!\n");
+    if (iop_dbg_install() != 0) {
+        // printf("Failed installing IOP debug system!\n");
         return MODULE_NO_RESIDENT_END;
     }
 
     // register our IRX exports.
-    if(RegisterLibraryEntries(&_exp_iopdebug) != 0)
-    {
+    if (RegisterLibraryEntries(&_exp_iopdebug) != 0) {
         iop_dbg_remove();
 
-        //printf("Error registering library!\n");
+        // printf("Error registering library!\n");
         return MODULE_NO_RESIDENT_END;
     }
 
     FlushIcache();
     FlushDcache();
 
-    //printf("IOPDEBUG installed!\n");
+    // printf("IOPDEBUG installed!\n");
 
     return MODULE_RESIDENT_END;
 }
@@ -50,11 +48,9 @@ int _stop(int argc, char *argv[])
     (void)argv;
 
     // remove IOP debug system.
-    if(iop_dbg_remove() != 0)
-    {
-        //printf("Failed removing IOP debug handlers!\n");
+    if (iop_dbg_remove() != 0) {
+        // printf("Failed removing IOP debug handlers!\n");
     }
 
     return MODULE_NO_RESIDENT_END;
 }
-

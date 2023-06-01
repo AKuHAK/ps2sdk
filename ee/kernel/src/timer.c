@@ -16,19 +16,19 @@
 #include <timer.h>
 #include <kernel.h>
 
-#define INTC_TIM       INTC_TIM2
-#define T_COUNT_RD     T2_COUNT
-#define T_COUNT_WR     K_T2_COUNT
-#define T_MODE_RD      T2_MODE
-#define T_MODE_WR      K_T2_MODE
-#define T_COMP         K_T2_COMP
+#define INTC_TIM   INTC_TIM2
+#define T_COUNT_RD T2_COUNT
+#define T_COUNT_WR K_T2_COUNT
+#define T_MODE_RD  T2_MODE
+#define T_MODE_WR  K_T2_MODE
+#define T_COMP     K_T2_COMP
 
 #ifdef F___time_internals
-s32  __time_intr_overflow_id = -1;
-u64  __time_intr_overflow_count = 0;
+s32 __time_intr_overflow_id    = -1;
+u64 __time_intr_overflow_count = 0;
 #else
-extern s32  __time_intr_overflow_id;
-extern u64  __time_intr_overflow_count;
+extern s32 __time_intr_overflow_id;
+extern u64 __time_intr_overflow_count;
 #endif
 
 #ifdef F_StartTimerSystemTime
@@ -54,12 +54,11 @@ static s32 intrOverflow(int ca)
  * Start the interruption handler for getting the system time
  * This function should be called at beginning of your program
  */
-__attribute__((weak))
-void StartTimerSystemTime(void)
+__attribute__((weak)) void StartTimerSystemTime(void)
 {
     u32 oldintr;
 
-    oldintr = DIntr();
+    oldintr                    = DIntr();
     __time_intr_overflow_count = 0;
 
     ee_kmode_enter();
@@ -69,16 +68,17 @@ void StartTimerSystemTime(void)
     //  CUE: 0x01 - Start/Restart the counting
     // OVFE: 0x01 - An interrupt is generated when an overflow occurs
     *T_COUNT_WR = 0;
-    *T_MODE_WR = Tn_MODE(0x02, 0, 0, 0, 0, 0x01, 0, 0x01, 0, 0);
+    *T_MODE_WR  = Tn_MODE(0x02, 0, 0, 0, 0, 0x01, 0, 0x01, 0, 0);
     ee_kmode_exit();
 
-    if (__time_intr_overflow_id == -1)
-    {
+    if (__time_intr_overflow_id == -1) {
         __time_intr_overflow_id = AddIntcHandler(INTC_TIM, intrOverflow, 0);
         EnableIntc(INTC_TIM);
     }
 
-    if(oldintr) { EIntr(); }
+    if (oldintr) {
+        EIntr();
+    }
 }
 #endif
 
@@ -89,8 +89,7 @@ void StartTimerSystemTime(void)
  * Stops the interruption handler for getting the  system time
  * This function should be called when ending your program
  */
-__attribute__((weak))
-void StopTimerSystemTime(void)
+__attribute__((weak)) void StopTimerSystemTime(void)
 {
     u32 oldintr;
     oldintr = DIntr();
@@ -99,20 +98,21 @@ void StopTimerSystemTime(void)
     *T_MODE_WR = 0x0000; // Stop the timer
     ee_kmode_exit();
 
-    if (__time_intr_overflow_id >= 0)
-    {
+    if (__time_intr_overflow_id >= 0) {
         DisableIntc(INTC_TIM);
         RemoveIntcHandler(INTC_TIM, __time_intr_overflow_id);
         __time_intr_overflow_id = -1;
     }
 
     __time_intr_overflow_count = 0;
-    if(oldintr) { EIntr(); }
+    if (oldintr) {
+        EIntr();
+    }
 }
 #endif
 
 #ifdef F_iGetTimerSystemTime
- /** Get current System Time
+/** Get current System Time
  *
  * This function gets the current system time
  * Can be called from an interrupt handler
@@ -147,10 +147,11 @@ u64 iGetTimerSystemTime(void)
  *
  * @return current system time in BUSCLK units, 0 in case the InitTimer wasn't called at init.
  */
-u64 GetTimerSystemTime(void) {
+u64 GetTimerSystemTime(void)
+{
     u64 t;
     u32 oldintr = DIntr();
-    t = iGetTimerSystemTime();
+    t           = iGetTimerSystemTime();
     if (oldintr)
         EIntr();
 

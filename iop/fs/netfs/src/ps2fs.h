@@ -18,10 +18,10 @@
 #ifndef _PS2FS_H_
 #define _PS2FS_H_
 
-#define PS2NETFS_LISTEN_PORT  0x4713
+#define PS2NETFS_LISTEN_PORT 0x4713
 
-//from iomanx, all operations
-//  open
+// from iomanx, all operations
+//   open
 #define PS2NETFS_OPEN_CMD     0xbeef8011
 #define PS2NETFS_OPEN_RLY     0xbeef8012
 //  close
@@ -108,7 +108,7 @@
 #define PS2NETFS_DEVLIST_CMD  0xbeef8F21
 #define PS2NETFS_DEVLIST_RLY  0xbeef8F22
 
-#define PS2NETFS_MAX_PATH   256
+#define PS2NETFS_MAX_PATH 256
 
 typedef struct
 {

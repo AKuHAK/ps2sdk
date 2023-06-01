@@ -36,7 +36,7 @@
 
 IRX_ID("SIFToo_driver", 1, 1);
 
-#define SIF2_SBUS_IRQ	0
+#define SIF2_SBUS_IRQ 0
 
 int sif2_control(u32 intr, void *unused);
 
@@ -44,76 +44,76 @@ extern struct irx_export_table _exp_siftoo;
 
 int _start(int argc, char *argv[])
 {
-	u32 state;
+    u32 state;
 
-	(void)argc;
-	(void)argv;
+    (void)argc;
+    (void)argv;
 
-	if (RegisterLibraryEntries(&_exp_siftoo) != 0)
-		return MODULE_NO_RESIDENT_END;
+    if (RegisterLibraryEntries(&_exp_siftoo) != 0)
+        return MODULE_NO_RESIDENT_END;
 
-	/* Add our SBUS interrupt handler.  */
-	if (sbus_intr_init() < 0) {
-		printf("Unable to initialize SBUS interrupt driver, exiting.\n");
-		return MODULE_NO_RESIDENT_END;
-	}
+    /* Add our SBUS interrupt handler.  */
+    if (sbus_intr_init() < 0) {
+        printf("Unable to initialize SBUS interrupt driver, exiting.\n");
+        return MODULE_NO_RESIDENT_END;
+    }
 
-	if (sbus_intr_handler_add(SIF2_SBUS_IRQ, sif2_control, NULL) < 0) {
-		printf("Unable to register SIFToo Control handler, exiting.\n");
-		return MODULE_NO_RESIDENT_END;
-	}
+    if (sbus_intr_handler_add(SIF2_SBUS_IRQ, sif2_control, NULL) < 0) {
+        printf("Unable to register SIFToo Control handler, exiting.\n");
+        return MODULE_NO_RESIDENT_END;
+    }
 
-	CpuSuspendIntr((int *)&state);
-	sceSifDma2Init();
-	CpuResumeIntr(state);
+    CpuSuspendIntr((int *)&state);
+    sceSifDma2Init();
+    CpuResumeIntr(state);
 
-	return MODULE_RESIDENT_END;
+    return MODULE_RESIDENT_END;
 }
 
 int shutdown()
 {
-	return 0;
+    return 0;
 }
 
 int sif2_init()
 {
-	/* Perform the EE handshake:
-	 * - Check if the EE was already initialized, and if so send a control
-	 *   message with our recieve buffer address.
-	 * - If it hasn't been initialized yet, set SIF SM flag 0x80000 and
-	 *   wait for an event signaling that the EE is ready.
-	 */
+    /* Perform the EE handshake:
+     * - Check if the EE was already initialized, and if so send a control
+     *   message with our recieve buffer address.
+     * - If it hasn't been initialized yet, set SIF SM flag 0x80000 and
+     *   wait for an event signaling that the EE is ready.
+     */
 
-	return 0;
+    return 0;
 }
 
 int sif2_exit()
 {
-	return 0;
+    return 0;
 }
 
 int sif2_control(u32 intr, void *unused)
 {
-	(void)intr;
-	(void)unused;
+    (void)intr;
+    (void)unused;
 
-	return 0;
+    return 0;
 }
 
 int sif2_mem_read(u32 addr, void *buf, u32 size)
 {
-	(void)addr;
-	(void)buf;
-	(void)size;
+    (void)addr;
+    (void)buf;
+    (void)size;
 
-	return 0;
+    return 0;
 }
 
 int sif2_mem_write(u32 addr, void *buf, u32 size)
 {
-	(void)addr;
-	(void)buf;
-	(void)size;
+    (void)addr;
+    (void)buf;
+    (void)size;
 
-	return 0;
+    return 0;
 }

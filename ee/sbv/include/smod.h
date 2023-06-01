@@ -18,27 +18,28 @@
 
 #include <tamtypes.h>
 
-/** Module info entry.  
+/** Module info entry.
  * Most of the fields are self-explanatory.  I don't know what the *flags fields do, and they don't seem to be important.
  */
-typedef struct _smod_mod_info {
-	struct _smod_mod_info *next;
-	/** A pointer to the name in IOP RAM, this must be smem_read().  */
-	char	*name;
-	u16	version;
-	/** For MODLOAD shipped with games. The old MODLOAD module from boot ROMs do not use a flags field.  */
-	u16	newflags;
-	u16	id;
-	u16	unused;
-	/** _start */
-	u32	entry;
-	u32	gp;
-	u32	text_start;
-	u32	text_size;
-	u32	data_size;
-	u32	bss_size;
-	u32	unused1;
-	u32	unused2;
+typedef struct _smod_mod_info
+{
+    struct _smod_mod_info *next;
+    /** A pointer to the name in IOP RAM, this must be smem_read().  */
+    char *name;
+    u16 version;
+    /** For MODLOAD shipped with games. The old MODLOAD module from boot ROMs do not use a flags field.  */
+    u16 newflags;
+    u16 id;
+    u16 unused;
+    /** _start */
+    u32 entry;
+    u32 gp;
+    u32 text_start;
+    u32 text_size;
+    u32 data_size;
+    u32 bss_size;
+    u32 unused1;
+    u32 unused2;
 } smod_mod_info_t;
 
 #ifdef __cplusplus

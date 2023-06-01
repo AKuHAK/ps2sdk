@@ -171,8 +171,7 @@ static void fileio_rpc_read(struct _fio_read_arg *buffer, int length, int *outbu
         v22 = (void *)((ptr + size) >> 4 << 4);
     }
 #endif
-    else
-    {
+    else {
         v7  = size;
         v8  = 0;
         v9  = 0;

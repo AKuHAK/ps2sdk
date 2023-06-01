@@ -9,7 +9,7 @@
 #include "ff.h"
 #include "fs_driver.h"
 
-//#define DEBUG  //comment out this line when not debugging
+// #define DEBUG  //comment out this line when not debugging
 #include "module_debug.h"
 
 #define MAJOR_VER 1
@@ -18,9 +18,9 @@
 IRX_ID("bdmff", MAJOR_VER, MINOR_VER);
 
 static struct file_system g_fs = {
-    .priv = NULL,
-    .name = "fatfs",
-    .connect_bd = connect_bd,
+    .priv          = NULL,
+    .name          = "fatfs",
+    .connect_bd    = connect_bd,
     .disconnect_bd = disconnect_bd,
 };
 

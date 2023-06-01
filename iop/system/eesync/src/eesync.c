@@ -21,45 +21,43 @@ IRX_ID(MODNAME, 0x01, 0x01);
 static int PostResetCallback(iop_init_entry_t *arg1, int arg2)
 {
 #ifdef EESYNC_WIPE_EE_KERNEL_SPACE
-	void *block;
-	SifDmaTransfer_t dmat;
+    void *block;
+    SifDmaTransfer_t dmat;
 
-	block = AllocSysMemory(0, 0x7C000, 0);
-	memset(block, 0, 0x7C000);
-	dmat.src = block;
-	dmat.dest = (void *)0x84000;
-	dmat.size = 0x7C000;
-	dmat.attr = 0;
-	sceSifSetDma(&dmat, 1);
-	FreeSysMemory(block);
+    block = AllocSysMemory(0, 0x7C000, 0);
+    memset(block, 0, 0x7C000);
+    dmat.src  = block;
+    dmat.dest = (void *)0x84000;
+    dmat.size = 0x7C000;
+    dmat.attr = 0;
+    sceSifSetDma(&dmat, 1);
+    FreeSysMemory(block);
 #endif
-	(void)arg1;
-	(void)arg2;
+    (void)arg1;
+    (void)arg2;
 
-	sceSifSetSMFlag(SIF_STAT_BOOTEND);
+    sceSifSetSMFlag(SIF_STAT_BOOTEND);
 
-	return 0;
+    return 0;
 }
 
 #ifdef EESYNC_SECRMAN_DUMMY
 static void allocate_empty_space_for_secrman(void)
 {
-	int fd;
+    int fd;
 
-	// In the original SCE version, there was obfuscation applied to the file string.
-	fd = open("rom0:SECRMAN", O_RDONLY);
-	if (fd >= 0)
-	{
-		int lseek_result;
-		int close_result;
+    // In the original SCE version, there was obfuscation applied to the file string.
+    fd = open("rom0:SECRMAN", O_RDONLY);
+    if (fd >= 0) {
+        int lseek_result;
+        int close_result;
 
-		lseek_result = lseek(fd, 0, SEEK_END);
-		close_result = close(fd);
-		if ((lseek_result >= 0) && (close_result >= 0))
-		{
-			AllocSysMemory(0, (lseek_result == 10033) ? 6400 : 256, NULL);
-		}
-	}
+        lseek_result = lseek(fd, 0, SEEK_END);
+        close_result = close(fd);
+        if ((lseek_result >= 0) && (close_result >= 0)) {
+            AllocSysMemory(0, (lseek_result == 10033) ? 6400 : 256, NULL);
+        }
+    }
 }
 #endif
 
@@ -70,30 +68,28 @@ extern struct irx_export_table _exp_eesync;
 int _start(int argc, char **argv)
 {
 #ifdef EESYNC_CHECK_ILOADP
-	int *BootMode;
+    int *BootMode;
 #endif
 
-	(void)argc;
-	(void)argv;
+    (void)argc;
+    (void)argv;
 
 #ifdef EESYNC_CHECK_ILOADP
-	BootMode = QueryBootMode(3);
-	// If ILOADP bit 0 (Init SIF) is set or ILOADP bit 1 (Do not perform FILEIO services) is set, do not initialize SIF
-	if (BootMode != NULL && (((BootMode[1] & 1) != 0) || (BootMode[1] & 2) != 0))
-	{
-		return MODULE_NO_RESIDENT_END;
-	}
+    BootMode = QueryBootMode(3);
+    // If ILOADP bit 0 (Init SIF) is set or ILOADP bit 1 (Do not perform FILEIO services) is set, do not initialize SIF
+    if (BootMode != NULL && (((BootMode[1] & 1) != 0) || (BootMode[1] & 2) != 0)) {
+        return MODULE_NO_RESIDENT_END;
+    }
 #endif
 #ifdef EESYNC_REGISTER_EXPORTS
-	if (RegisterLibraryEntries(&_exp_eesync) < 0)
-	{
-		return MODULE_NO_RESIDENT_END;
-	}
+    if (RegisterLibraryEntries(&_exp_eesync) < 0) {
+        return MODULE_NO_RESIDENT_END;
+    }
 #endif
 #ifdef EESYNC_SECRMAN_DUMMY
-	allocate_empty_space_for_secrman();
+    allocate_empty_space_for_secrman();
 #endif
-	RegisterPostBootCallback(&PostResetCallback, 2, 0);
+    RegisterPostBootCallback(&PostResetCallback, 2, 0);
 
-	return MODULE_RESIDENT_END;
+    return MODULE_RESIDENT_END;
 }

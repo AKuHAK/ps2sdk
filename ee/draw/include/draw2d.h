@@ -10,36 +10,41 @@
 
 #include <draw_types.h>
 
-typedef struct {
-	vertex_t v0;
-	color_t  color;
+typedef struct
+{
+    vertex_t v0;
+    color_t color;
 } point_t;
 
-typedef struct {
-	vertex_t v0;
-	vertex_t v1;
-	color_t  color;
+typedef struct
+{
+    vertex_t v0;
+    vertex_t v1;
+    color_t color;
 } line_t;
 
-typedef struct {
-	vertex_t v0;
-	vertex_t v1;
-	vertex_t v2;
-	color_t  color;
+typedef struct
+{
+    vertex_t v0;
+    vertex_t v1;
+    vertex_t v2;
+    color_t color;
 } triangle_t;
 
-typedef struct {
-	vertex_t v0;
-	vertex_t v1;
-	color_t  color;
+typedef struct
+{
+    vertex_t v0;
+    vertex_t v1;
+    color_t color;
 } rect_t;
 
-typedef struct {
-	vertex_t v0;
-	texel_t  t0;
-	vertex_t v1;
-	texel_t  t1;
-	color_t  color;
+typedef struct
+{
+    vertex_t v0;
+    texel_t t0;
+    vertex_t v1;
+    texel_t t1;
+    color_t color;
 } texrect_t;
 
 #ifdef __cplusplus
@@ -62,7 +67,7 @@ qword_t *draw_line(qword_t *q, int context, line_t *line);
 qword_t *draw_triangle_outline(qword_t *q, int context, triangle_t *triangle);
 
 /** Draws a single triangle */
-qword_t *draw_triangle_filled(qword_t *q, int context,triangle_t *triangle);
+qword_t *draw_triangle_filled(qword_t *q, int context, triangle_t *triangle);
 
 /** Draws a rectangle using line primitives */
 qword_t *draw_rect_outline(qword_t *q, int context, rect_t *rect);

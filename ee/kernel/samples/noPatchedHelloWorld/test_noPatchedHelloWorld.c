@@ -18,9 +18,8 @@
 DISABLE_PATCHED_FUNCTIONS();
 
 int main(int argc, char *argv[])
-{    
-    while (1)
-    {
+{
+    while (1) {
         printf("Hello World from no patch kernel!\n");
     }
     return 0;

@@ -43,6 +43,4 @@ u32 pdCheckConnection(u32 port, u32 slot);
 
 
 
-
 #endif
-

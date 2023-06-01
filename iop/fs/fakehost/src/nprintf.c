@@ -45,7 +45,7 @@ static void *naplinkRpcHandler(int cmd, void *buffer, int size)
 
 ////////////////////////////////////////////////////////////////////////
 static SifRpcServerData_t server __attribute((aligned(16)));
-static SifRpcDataQueue_t  queue __attribute((aligned(16)));
+static SifRpcDataQueue_t queue __attribute((aligned(16)));
 static unsigned char rpc_buffer[512] __attribute__((__aligned__(4)));
 
 /** naplink compatbile RPC handler thread.
@@ -64,7 +64,7 @@ static void napThread(void *arg)
     SifSetRpcQueue(&queue, pid);
     SifRegisterRpc(&server, RPC_NPM_USER, naplinkRpcHandler,
                    rpc_buffer, 0, 0, &queue);
-    SifRpcLoop(&queue);  // Never exits
+    SifRpcLoop(&queue); // Never exits
     ExitDeleteThread();
 }
 
@@ -83,11 +83,11 @@ int naplinkRpcInit(void)
     int ret;
     int pid;
 
-    th_attr.attr = 0x02000000;
-    th_attr.option = 0;
-    th_attr.thread = napThread;
+    th_attr.attr      = 0x02000000;
+    th_attr.option    = 0;
+    th_attr.thread    = napThread;
     th_attr.stacksize = 0x800;
-    th_attr.priority = 0x4f;
+    th_attr.priority  = 0x4f;
 
     pid = CreateThread(&th_attr);
     if (pid < 0) {

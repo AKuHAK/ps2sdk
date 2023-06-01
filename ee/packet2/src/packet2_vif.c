@@ -19,8 +19,7 @@ void packet2_vif_add_micro_program(packet2_t *packet2, u32 dest, u32 *start, u32
         count++;
 
     u32 *l_start = start;
-    while (count > 0)
-    {
+    while (count > 0) {
         u16 curr_count = count > 256 ? 256 : count;
         packet2_chain_ref(packet2, l_start, curr_count / 2, 0, 0, 0);
         packet2_vif_nop(packet2, 0);
@@ -44,7 +43,7 @@ u32 packet2_vif_close_unpack_auto(packet2_t *packet2, u32 wl, u32 cl)
     // qwords ACTUALLY WRITTEN to vu memory (it does not count quads that are skipped in
     // "skipping write" mode.)  But first forget about skipping/filling writes and compute the number
     // of qwords that the data in this packet will expand to."
-    u32 bytes_count = (u32)packet2->next - (u32)packet2->vif_code_opened_at - 4;
+    u32 bytes_count       = (u32)packet2->next - (u32)packet2->vif_code_opened_at - 4;
     u32 block_bytes_count = 4 >> vl;
     u32 quad_blocks_count = vn + 1;
 
@@ -61,9 +60,8 @@ u32 packet2_vif_close_unpack_auto(packet2_t *packet2, u32 wl, u32 cl)
     // block? I will say that in this case the vif should still do the full wl length block, filling
     // with internal registers. If you want different behavior call packet2_vif_close_unpack_manual
     // with a num field you've computed yourself"
-    if (cl < wl)
-    {
-        u32 wl_blocks_count = (quads_count / cl);
+    if (cl < wl) {
+        u32 wl_blocks_count  = (quads_count / cl);
         u32 last_block_quads = quads_count - wl_blocks_count * cl;
         if (last_block_quads == cl)
             last_block_quads = wl;

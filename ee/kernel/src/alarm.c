@@ -42,12 +42,10 @@ extern unsigned int size_srcfile;
 extern unsigned char eenull[];
 extern unsigned int size_eenull;
 
-__attribute__((weak))
-void InitAlarm(void)
+__attribute__((weak)) void InitAlarm(void)
 {
     // Only apply the kernel patch if T3 has not already started
-    if (((*T3_MODE) & 0x100) == 0)
-    {
+    if (((*T3_MODE) & 0x100) == 0) {
         int i;
 
         setup(SysEntry[0].syscall, SysEntry[0].function);
@@ -57,8 +55,7 @@ void InitAlarm(void)
         FlushCache(2);
         setup(SysEntry[1].syscall, SysEntry[1].function);
 
-        for (i = 2; i < 8; i++)
-        {
+        for (i = 2; i < 8; i++) {
             setup(SysEntry[i].syscall, GetEntryAddress(SysEntry[i].syscall));
         }
     }

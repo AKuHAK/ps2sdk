@@ -17,26 +17,27 @@
 
 #include <tamtypes.h>
 
-typedef struct bd_fragment {
+typedef struct bd_fragment
+{
     u64 sector; /// start sector of fragmented bd/file
     u32 count;  /// number of sector in this fragment
 } __attribute__((packed)) bd_fragment_t;
 
 // IOCTL function codes
 /** Rename opened file. Data input to ioctl() -> new, full filename of file. */
-#define USBMASS_IOCTL_RENAME         0x0000
+#define USBMASS_IOCTL_RENAME            0x0000
 /** Returns first cluster number of opened file, within the filesystem. */
-#define USBMASS_IOCTL_GET_CLUSTER    0x0001
+#define USBMASS_IOCTL_GET_CLUSTER       0x0001
 /** Returns the absolute LBA of the opened file. */
-#define USBMASS_IOCTL_GET_LBA        0x0002
+#define USBMASS_IOCTL_GET_LBA           0x0002
 /** Returns the block device driver name */
-#define USBMASS_IOCTL_GET_DRIVERNAME 0x0003
+#define USBMASS_IOCTL_GET_DRIVERNAME    0x0003
 /** Check if fragments exist */
-#define USBMASS_IOCTL_CHECK_CHAIN    0x0004
+#define USBMASS_IOCTL_CHECK_CHAIN       0x0004
 /** Return fragment table **/
-#define USBMASS_IOCTL_GET_FRAGLIST   0x0005
+#define USBMASS_IOCTL_GET_FRAGLIST      0x0005
 /** Get the device number for the block device backing the mass partition */
-#define USBMASS_IOCTL_GET_DEVICE_NUMBER     0x0006
+#define USBMASS_IOCTL_GET_DEVICE_NUMBER 0x0006
 
 // DEVCTL function codes
 /** Issues the SCSI STOP UNIT command to the specified device. Use this to shut down devices properly. */

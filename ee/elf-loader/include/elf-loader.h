@@ -31,7 +31,7 @@ int LoadELFFromFile(const char *filename, int argc, char *argv[]);
  * @param argv      Pointer to array of arguments.
  * @returns         positive on success, zero value on failure
  *
- * You should prepare filename and partition before parsing in function 
+ * You should prepare filename and partition before parsing in function
  *
  * filename should be changed to <fs_type>:/path_to_file_without_mountpoint
  * for example `pfs3:/TEST.ELF` (where `pfs3` is mountpoint name) will become

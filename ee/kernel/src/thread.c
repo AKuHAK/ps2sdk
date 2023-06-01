@@ -74,8 +74,7 @@ static void topThread(void *arg)
     }
 }
 
-__attribute__((weak))
-int InitThread(void)
+__attribute__((weak)) int InitThread(void)
 {
     ee_sema_t sema;
     ee_thread_t thread;
@@ -110,7 +109,8 @@ int InitThread(void)
 #ifdef F_iWakeupThread
 // The original iWakeupThread cannot wake up threads in THS_RUN state.
 __attribute__((weak))
-s32 iWakeupThread(s32 thread_id)
+s32
+iWakeupThread(s32 thread_id)
 {
     if (_iGetThreadId() == thread_id) {
         if (thread_id < 256 && topId != 0) {
@@ -134,7 +134,8 @@ s32 iWakeupThread(s32 thread_id)
 #ifdef F_iRotateThreadReadyQueue
 // The original iRotateThreadReadyQueue will not change the current thread ID.
 __attribute__((weak))
-s32 iRotateThreadReadyQueue(s32 priority)
+s32
+iRotateThreadReadyQueue(s32 priority)
 {
     if (priority < 128 && topId != 0) {
         int index;
@@ -154,7 +155,8 @@ s32 iRotateThreadReadyQueue(s32 priority)
 #ifdef F_iSuspendThread
 // The original iSuspendThread allows a thread to suspend itself, but won't change the current thread ID.
 __attribute__((weak))
-s32 iSuspendThread(s32 thread_id)
+s32
+iSuspendThread(s32 thread_id)
 {
     if (_iGetThreadId() == thread_id) {
         if (thread_id < 256 && topId != 0) {

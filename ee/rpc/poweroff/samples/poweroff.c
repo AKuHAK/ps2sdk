@@ -21,14 +21,14 @@ static void poweroffCallback(void *arg)
 {
     printf("\'hi\' from Poweroff callback!\n");
 
-    //Close all files and unmount all partitions.
-    //close(fd);
+    // Close all files and unmount all partitions.
+    // close(fd);
 
-    //If you use PFS, close all files and unmount all partitions.
-    //fileXioDevctl("pfs:", PDIOC_CLOSEALL, NULL, 0, NULL, 0)
+    // If you use PFS, close all files and unmount all partitions.
+    // fileXioDevctl("pfs:", PDIOC_CLOSEALL, NULL, 0, NULL, 0);
 
-    //Shut down DEV9, if you used it.
-    //while(fileXioDevctl("dev9x:", DDIOC_OFF, NULL, 0, NULL, 0) < 0){};
+    // Shut down DEV9, if you used it.
+    // while (fileXioDevctl("dev9x:", DDIOC_OFF, NULL, 0, NULL, 0) < 0) {};
 
     printf("Shutdown!");
     poweroffShutdown();
@@ -40,10 +40,9 @@ int main(int argc, char *argv[])
 
     SifInitRpc(0);
 
-    //Load modules.
+    // Load modules.
     SifLoadFileInit();
-    if ((result = SifLoadModule("host:poweroff.irx", 0, NULL)) < 0)
-    {
+    if ((result = SifLoadModule("host:poweroff.irx", 0, NULL)) < 0) {
         printf("Could not load \"host:poweroff.irx\": %d\n", result);
         return ENOENT;
     }
@@ -58,13 +57,13 @@ int main(int argc, char *argv[])
         can be completely written to disk.
         */
 
-    //Initialize poweroff library
+    // Initialize poweroff library
     poweroffInit();
 
-    //If necessary, change thread priority.
-    //poweroffChangeThreadPriority(POWEROFF_THREAD_PRIORITY);
+    // If necessary, change thread priority.
+    // poweroffChangeThreadPriority(POWEROFF_THREAD_PRIORITY);
 
-    //Set callback function
+    // Set callback function
     poweroffSetCallback(&poweroffCallback, NULL);
 
     /*  The library has been initialized and a callback has been registered.

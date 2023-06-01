@@ -14,48 +14,50 @@
 #define MODE_UNLOCKED 0
 #define MODE_LOCKED   1
 
-#define PAD_LEFT      0x0080
-#define PAD_DOWN      0x0040
-#define PAD_RIGHT     0x0020
-#define PAD_UP        0x0010
-#define PAD_START     0x0008
-#define PAD_R3        0x0004
-#define PAD_L3        0x0002
-#define PAD_SELECT    0x0001
-#define PAD_SQUARE    0x8000
-#define PAD_CROSS     0x4000
-#define PAD_CIRCLE    0x2000
-#define PAD_TRIANGLE  0x1000
-#define PAD_R1        0x0800
-#define PAD_L1        0x0400
-#define PAD_R2        0x0200
-#define PAD_L2        0x0100
+#define PAD_LEFT     0x0080
+#define PAD_DOWN     0x0040
+#define PAD_RIGHT    0x0020
+#define PAD_UP       0x0010
+#define PAD_START    0x0008
+#define PAD_R3       0x0004
+#define PAD_L3       0x0002
+#define PAD_SELECT   0x0001
+#define PAD_SQUARE   0x8000
+#define PAD_CROSS    0x4000
+#define PAD_CIRCLE   0x2000
+#define PAD_TRIANGLE 0x1000
+#define PAD_R1       0x0800
+#define PAD_L1       0x0400
+#define PAD_R2       0x0200
+#define PAD_L2       0x0100
 
-typedef struct {
-	char small;
-	unsigned char large;
-	char status[6];
+typedef struct
+{
+    char small;
+    unsigned char large;
+    char status[6];
 } actuator_t;
 
-typedef struct {
+typedef struct
+{
 
-	char port;
-	char slot;
-	char mode;
-	char lock;
+    char port;
+    char slot;
+    char mode;
+    char lock;
 
-	int  type;
+    int type;
 
-	char state;
-	char last_state;
-	char exec_cmd;
-	char num_modes;
-	char sensitivity;
+    char state;
+    char last_state;
+    char exec_cmd;
+    char num_modes;
+    char sensitivity;
 
-	struct padButtonStatus *buttons;
+    struct padButtonStatus *buttons;
 
-	actuator_t *actuator;
-	char *buffer;
+    actuator_t *actuator;
+    char *buffer;
 
 } pad_t;
 
@@ -69,7 +71,7 @@ pad_t *pad_open(unsigned int port, unsigned int slot, unsigned int mode, unsigne
 /** Get the pad's current button status */
 static inline void pad_get_buttons(pad_t *pad)
 {
-	padRead(pad->port,pad->slot,pad->buttons);
+    padRead(pad->port, pad->slot, pad->buttons);
 }
 
 /** Close the pad */

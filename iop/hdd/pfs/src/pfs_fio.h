@@ -11,7 +11,7 @@
 #ifndef _PFS_FIO_H
 #define _PFS_FIO_H
 
-#define	PFS_FDIRO		(0x0008)  /* internal use for dopen */
+#define PFS_FDIRO (0x0008) /* internal use for dopen */
 
 ///////////////////////////////////////////////////////////////////////////////
 //	Function declarations
@@ -24,22 +24,22 @@ void pfsFioCloseFileSlot(pfs_file_slot_t *fileSlot);
 ///////////////////////////////////////////////////////////////////////////////
 //	I/O functions
 
-int	pfsFioInit(iomanX_iop_device_t *f);
-int	pfsFioDeinit(iomanX_iop_device_t *f);
-int	pfsFioFormat(iomanX_iop_file_t *, const char *dev, const char *blockdev, void *arg, int arglen);
-int	pfsFioOpen(iomanX_iop_file_t *f, const char *name, int flags, int mode);
-int	pfsFioClose(iomanX_iop_file_t *f);
-int	pfsFioRead(iomanX_iop_file_t *f, void *buf, int size);
-int	pfsFioWrite(iomanX_iop_file_t *f, void *buf, int size);
-int	pfsFioLseek(iomanX_iop_file_t *f, int pos, int whence);
-int	pfsFioRemove(iomanX_iop_file_t *f, const char *name);
-int	pfsFioMkdir(iomanX_iop_file_t *f, const char *path, int mode);
-int	pfsFioRmdir(iomanX_iop_file_t *f, const char *path);
-int	pfsFioDopen(iomanX_iop_file_t *f, const char *name);
-int	pfsFioDclose(iomanX_iop_file_t *f);
-int	pfsFioDread(iomanX_iop_file_t *f, iox_dirent_t *buf);
-int	pfsFioGetstat(iomanX_iop_file_t *f, const char *name, iox_stat_t *stat);
-int	pfsFioChstat(iomanX_iop_file_t *f, const char *name, iox_stat_t *stat, unsigned int statmask);
+int pfsFioInit(iomanX_iop_device_t *f);
+int pfsFioDeinit(iomanX_iop_device_t *f);
+int pfsFioFormat(iomanX_iop_file_t *, const char *dev, const char *blockdev, void *arg, int arglen);
+int pfsFioOpen(iomanX_iop_file_t *f, const char *name, int flags, int mode);
+int pfsFioClose(iomanX_iop_file_t *f);
+int pfsFioRead(iomanX_iop_file_t *f, void *buf, int size);
+int pfsFioWrite(iomanX_iop_file_t *f, void *buf, int size);
+int pfsFioLseek(iomanX_iop_file_t *f, int pos, int whence);
+int pfsFioRemove(iomanX_iop_file_t *f, const char *name);
+int pfsFioMkdir(iomanX_iop_file_t *f, const char *path, int mode);
+int pfsFioRmdir(iomanX_iop_file_t *f, const char *path);
+int pfsFioDopen(iomanX_iop_file_t *f, const char *name);
+int pfsFioDclose(iomanX_iop_file_t *f);
+int pfsFioDread(iomanX_iop_file_t *f, iox_dirent_t *buf);
+int pfsFioGetstat(iomanX_iop_file_t *f, const char *name, iox_stat_t *stat);
+int pfsFioChstat(iomanX_iop_file_t *f, const char *name, iox_stat_t *stat, unsigned int statmask);
 int pfsFioRename(iomanX_iop_file_t *f, const char *old, const char *new);
 int pfsFioChdir(iomanX_iop_file_t *f, const char *name);
 int pfsFioSync(iomanX_iop_file_t *f, const char *dev, int flag);

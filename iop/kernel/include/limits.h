@@ -44,7 +44,7 @@
 
 /* Minimum and maximum values a `signed short int' can hold.  */
 #undef SHRT_MIN
-#define SHRT_MIN (-SHRT_MAX-1)
+#define SHRT_MIN (-SHRT_MAX - 1)
 #undef SHRT_MAX
 #define SHRT_MAX __SHRT_MAX__
 
@@ -53,7 +53,7 @@
 #define __INT_MAX__ 2147483647
 #endif
 #undef INT_MIN
-#define INT_MIN (-INT_MAX-1)
+#define INT_MIN (-INT_MAX - 1)
 #undef INT_MAX
 #define INT_MAX __INT_MAX__
 
@@ -79,7 +79,7 @@
 #endif /* defined(__R5900) && (__GNUC__ <= 3) */
 #endif
 #undef LONG_MIN
-#define LONG_MIN (-LONG_MAX-1)
+#define LONG_MIN (-LONG_MAX - 1)
 #undef LONG_MAX
 #define LONG_MAX __LONG_MAX__
 
@@ -91,10 +91,10 @@
 #define __LONG_LONG_MAX__ 9223372036854775807LL
 #endif
 
-#if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 /* Minimum and maximum values a `signed long long int' can hold.  */
 #undef LLONG_MIN
-#define LLONG_MIN (-LLONG_MAX-1)
+#define LLONG_MIN (-LLONG_MAX - 1)
 #undef LLONG_MAX
 #define LLONG_MAX __LONG_LONG_MAX__
 
@@ -103,10 +103,10 @@
 #define ULLONG_MAX (LLONG_MAX * 2ULL + 1)
 #endif
 
-#if defined (__GNU_LIBRARY__) ? defined (__USE_GNU) : !defined (__STRICT_ANSI__)
+#if defined(__GNU_LIBRARY__) ? defined(__USE_GNU) : !defined(__STRICT_ANSI__)
 /* Minimum and maximum values a `signed long long int' can hold.  */
 #undef LONG_LONG_MIN
-#define LONG_LONG_MIN (-LONG_LONG_MAX-1)
+#define LONG_LONG_MIN (-LONG_LONG_MAX - 1)
 #undef LONG_LONG_MAX
 #define LONG_LONG_MAX __LONG_LONG_MAX__
 

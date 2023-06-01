@@ -29,18 +29,18 @@ struct remote_data
  * @name Status values (guess)
  */
 /** @{ */
-#define RM_INIT          0x000012FF
-#define RM_READY         0x005A12FF
-#define RM_KEYPRESSED    0x145A12FF
-#define RM_NOREMOTE      0xFFFFFFFF
+#define RM_INIT       0x000012FF
+#define RM_READY      0x005A12FF
+#define RM_KEYPRESSED 0x145A12FF
+#define RM_NOREMOTE   0xFFFFFFFF
 /** @} */
 
 /**
  * @name Status button Values
  */
 /** @{ */
-#define RM_RELEASED      0x00000000
-#define RM_IDLE          0x00FFFFFF
+#define RM_RELEASED 0x00000000
+#define RM_IDLE     0x00FFFFFF
 /** @}*/
 
 /**
@@ -95,31 +95,31 @@ struct remote_data
 /** @name Commands that works only on Dragon models
  */
 /** @{ */
-#define RM_PS2_RESET     0x0050D1DA /* 21 */
-#define RM_PS2_EJECT     0x0060D1DA
-#define RM_PS2_POWERON   0x00E0D2DA /* 46 */
-#define RM_PS2_POWEROFF  0x00F0D2DA
+#define RM_PS2_RESET    0x0050D1DA /* 21 */
+#define RM_PS2_EJECT    0x0060D1DA
+#define RM_PS2_POWERON  0x00E0D2DA /* 46 */
+#define RM_PS2_POWEROFF 0x00F0D2DA
 /** @}*/
 
 /** @name PS2 Controller buttons
  */
 /** @{ */
-#define RM_PS2_SELECT    0x0000D5DA /* 80 */
-#define RM_PS2_L3        0x0010D5DA
-#define RM_PS2_R3        0x0020D5DA
-#define RM_PS2_START     0x0030D5DA
-#define RM_PS2_UP        0x0040D5DA
-#define RM_PS2_RIGHT     0x0050D5DA
-#define RM_PS2_DOWN      0x0060D5DA
-#define RM_PS2_LEFT      0x0070D5DA
-#define RM_PS2_L2        0x0080D5DA
-#define RM_PS2_R2        0x0090D5DA
-#define RM_PS2_L1        0x00A0D5DA
-#define RM_PS2_R1        0x00B0D5DA
-#define RM_PS2_TRIANGLE  0x00C0D5DA
-#define RM_PS2_CIRCLE    0x00D0D5DA
-#define RM_PS2_CROSS     0x00E0D5DA
-#define RM_PS2_SQUARE    0x00F0D5DA
+#define RM_PS2_SELECT   0x0000D5DA /* 80 */
+#define RM_PS2_L3       0x0010D5DA
+#define RM_PS2_R3       0x0020D5DA
+#define RM_PS2_START    0x0030D5DA
+#define RM_PS2_UP       0x0040D5DA
+#define RM_PS2_RIGHT    0x0050D5DA
+#define RM_PS2_DOWN     0x0060D5DA
+#define RM_PS2_LEFT     0x0070D5DA
+#define RM_PS2_L2       0x0080D5DA
+#define RM_PS2_R2       0x0090D5DA
+#define RM_PS2_L1       0x00A0D5DA
+#define RM_PS2_R1       0x00B0D5DA
+#define RM_PS2_TRIANGLE 0x00C0D5DA
+#define RM_PS2_CIRCLE   0x00D0D5DA
+#define RM_PS2_CROSS    0x00E0D5DA
+#define RM_PS2_SQUARE   0x00F0D5DA
 /** @} */
 
 #ifdef _cplusplus

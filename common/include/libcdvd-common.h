@@ -109,7 +109,7 @@ enum SCECdvdErrorCode {
 enum SCECdvdMediaType {
     SCECdGDTFUNCFAIL = -1,
     /** No Disc inserted */
-    SCECdNODISC      = 0x00,
+    SCECdNODISC = 0x00,
     /** Detecting disc type */
     SCECdDETCT,
     SCECdDETCTCD,
@@ -174,13 +174,13 @@ enum SCECdvdDriveState {
     /** disc is spinning */
     SCECdStatSpin,
     /** reading from disc */
-    SCECdStatRead  = 0x06,
+    SCECdStatRead = 0x06,
     /** disc is paused */
     SCECdStatPause = 0x0A,
     /** disc is seeking */
-    SCECdStatSeek  = 0x12,
+    SCECdStatSeek = 0x12,
     /** error occurred */
-    SCECdStatEmg   = 0x20,
+    SCECdStatEmg = 0x20,
 };
 
 typedef struct
@@ -303,13 +303,13 @@ enum SCECdvdFanSpeed {
 
 // LED definitions for sceCdSetLEDsMode()
 /** Light up the red LED on the power button. */
-#define CdlLEDPowerRed 1
+#define CdlLEDPowerRed    1
 /** Light up the green LED on the power button. */
-#define CdlLEDPowerGreen 2
+#define CdlLEDPowerGreen  2
 /** Light up the yellow LED on the power button. */
 #define CdlLEDPowerYellow 4
 /** Light up the blue LED on the eject button. */
-#define CdlLEDEjectBlue 8
+#define CdlLEDEjectBlue   8
 
 // For streaming operations (Use with sceCdStRead())
 enum SCECdvdStreamMode {
@@ -406,7 +406,7 @@ int sceCdReadChain(sceCdRChain *tag, sceCdRMode *mode);
  * @param inBuffSize size of input buffer  (0 - 16 bytes)
  * @return 1 on success, 0 on failure.
  */
-int sceCdApplyNCmd(u8 cmdNum, const void* inBuff, u16 inBuffSize);
+int sceCdApplyNCmd(u8 cmdNum, const void *inBuff, u16 inBuffSize);
 
 // **** S-Command functions ****
 

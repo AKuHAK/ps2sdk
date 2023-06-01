@@ -752,7 +752,7 @@ static int spi_sdcard_write(struct block_device *bd, u64 sector, const void *buf
             sio2_unlock();
             return 0;
         }
-        buffer = (const u8*)buffer + 512;
+        buffer = (const u8 *)buffer + 512;
     }
 #else
     rv = spisd_write_multi_block(sector, buffer, count);

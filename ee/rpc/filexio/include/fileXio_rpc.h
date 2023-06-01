@@ -24,11 +24,11 @@
 #error "Use posix function calls instead."
 #endif
 
-#define FXIO_WAIT		0
-#define FXIO_NOWAIT		1
+#define FXIO_WAIT   0
+#define FXIO_NOWAIT 1
 
-#define FXIO_COMPLETE	1
-#define FXIO_INCOMPLETE	0
+#define FXIO_COMPLETE   1
+#define FXIO_INCOMPLETE 0
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,18 +42,18 @@ int fileXioWaitAsync(int mode, int *retVal);
 
 void fileXioStop();
 int fileXioGetDeviceList(struct fileXioDevice deviceEntry[], unsigned int req_entries);
-int fileXioGetdir(const char* pathname, struct fileXioDirEntry DirEntry[], unsigned int req_entries);
-int fileXioMount(const char* mountpoint, const char* blockdev, int flag);
-int fileXioUmount(const char* mountpoint);
-int fileXioCopyfile(const char* source, const char* dest, int mode);
-int fileXioMkdir(const char* pathname, int mode);
-int fileXioRmdir(const char* pathname);
-int fileXioRemove(const char* pathname);
-int fileXioRename(const char* source, const char* dest);
-int fileXioSymlink(const char* source, const char* dest);
-int fileXioReadlink(const char* source, char* buf, unsigned int buflen);
-int fileXioChdir(const char* pathname);
-int fileXioOpen(const char* source, int flags, ...);
+int fileXioGetdir(const char *pathname, struct fileXioDirEntry DirEntry[], unsigned int req_entries);
+int fileXioMount(const char *mountpoint, const char *blockdev, int flag);
+int fileXioUmount(const char *mountpoint);
+int fileXioCopyfile(const char *source, const char *dest, int mode);
+int fileXioMkdir(const char *pathname, int mode);
+int fileXioRmdir(const char *pathname);
+int fileXioRemove(const char *pathname);
+int fileXioRename(const char *source, const char *dest);
+int fileXioSymlink(const char *source, const char *dest);
+int fileXioReadlink(const char *source, char *buf, unsigned int buflen);
+int fileXioChdir(const char *pathname);
+int fileXioOpen(const char *source, int flags, ...);
 int fileXioClose(int fd);
 int fileXioRead(int fd, void *buf, int size);
 int fileXioWrite(int fd, const void *buf, int size);
@@ -66,7 +66,7 @@ int fileXioSync(const char *devname, int flag);
 int fileXioDopen(const char *name);
 int fileXioDclose(int fd);
 int fileXioDread(int fd, iox_dirent_t *dirent);
-int fileXioDevctl(const char *name, int cmd, void *arg, unsigned int arglen, void *buf,unsigned int buflen);
+int fileXioDevctl(const char *name, int cmd, void *arg, unsigned int arglen, void *buf, unsigned int buflen);
 int fileXioIoctl(int fd, int cmd, void *arg);
 int fileXioIoctl2(int fd, int command, void *arg, unsigned int arglen, void *buf, unsigned int buflen);
 int fileXioSetRWBufferSize(int size);

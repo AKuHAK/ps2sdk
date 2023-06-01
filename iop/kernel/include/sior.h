@@ -39,19 +39,19 @@ int sio_printf(const char *format, ...);
 int sio_vprintf(const char *format, va_list);
 
 #define sior_IMPORTS_start DECLARE_IMPORT_TABLE(sior, 1, 1)
-#define sior_IMPORTS_end END_IMPORT_TABLE
+#define sior_IMPORTS_end   END_IMPORT_TABLE
 
-#define I_sio_init DECLARE_IMPORT(4, sio_init)
-#define I_sio_putc DECLARE_IMPORT(5, sio_putc)
-#define I_sio_getc DECLARE_IMPORT(6, sio_getc)
+#define I_sio_init       DECLARE_IMPORT(4, sio_init)
+#define I_sio_putc       DECLARE_IMPORT(5, sio_putc)
+#define I_sio_getc       DECLARE_IMPORT(6, sio_getc)
 #define I_sio_getc_block DECLARE_IMPORT(7, sio_getc_block)
-#define I_sio_write DECLARE_IMPORT(8, sio_write)
-#define I_sio_read DECLARE_IMPORT(9, sio_read)
-#define I_sio_puts DECLARE_IMPORT(10, sio_puts)
-#define I_sio_putsn DECLARE_IMPORT(11, sio_putsn)
-#define I_sio_gets DECLARE_IMPORT(12, sio_gets)
-#define I_sio_flush DECLARE_IMPORT(13, sio_flush)
-#define I_sio_printf DECLARE_IMPORT(14, sio_printf)
-#define I_sio_vprintf DECLARE_IMPORT(15, sio_vprintf)
+#define I_sio_write      DECLARE_IMPORT(8, sio_write)
+#define I_sio_read       DECLARE_IMPORT(9, sio_read)
+#define I_sio_puts       DECLARE_IMPORT(10, sio_puts)
+#define I_sio_putsn      DECLARE_IMPORT(11, sio_putsn)
+#define I_sio_gets       DECLARE_IMPORT(12, sio_gets)
+#define I_sio_flush      DECLARE_IMPORT(13, sio_flush)
+#define I_sio_printf     DECLARE_IMPORT(14, sio_printf)
+#define I_sio_vprintf    DECLARE_IMPORT(15, sio_vprintf)
 
 #endif /* __SIOR_H__ */

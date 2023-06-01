@@ -226,7 +226,7 @@ static iomanX_iop_device_ops_t dvrf_translator_functbl = {
 };
 
 #define GEN_TRANSLATION_FUNCS(basefuncname, basedevname, shouldbswapformatarg, drvname) \
-    static iomanX_iop_device_t basefuncname##_drv = {                                          \
+    static iomanX_iop_device_t basefuncname##_drv = {                                   \
         basedevname,                                                                    \
         (IOP_DT_FS | IOP_DT_FSEXT),                                                     \
         1,                                                                              \
@@ -273,7 +273,7 @@ int module_start(int argc, char *argv[])
         printf("IOMAN task of DVRP is not running...\n");
         return MODULE_NO_RESIDENT_END;
     }
-    sema_id = -1;
+    sema_id            = -1;
     current_chunk_size = 0x4000;
     if (iomanX_AddDrv(&dvrpfs_drv) || iomanX_AddDrv(&dvrhdd_drv)) {
         goto fail;
@@ -357,11 +357,11 @@ int dvrf_df_init(iomanX_iop_device_t *f)
     if (sema_id >= 0) {
         return 0;
     }
-    sema_struct.attr = 0;
+    sema_struct.attr    = 0;
     sema_struct.initial = 1;
-    sema_struct.max = 1;
-    sema_struct.option = 0;
-    this_sema_id = CreateSema(&sema_struct);
+    sema_struct.max     = 1;
+    sema_struct.option  = 0;
+    this_sema_id        = CreateSema(&sema_struct);
     if (this_sema_id < 0) {
         return -1;
     }
@@ -392,11 +392,11 @@ int dvrf_df_chdir(iomanX_iop_file_t *f, const char *name)
 
     WaitSema(sema_id);
     strcpy((char *)SBUF, name);
-    cmdack.command = 0x1101;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1101;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = strlen(name) + 1;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -415,12 +415,12 @@ int dvrf_df_chstat(iomanX_iop_file_t *f, const char *name, iox_stat_t *stat, uns
     WaitSema(sema_id);
     SBUF[0] = statmask;
     strcpy((char *)&SBUF[1], name);
-    cmdack.command = 0x1102;
-    cmdack.input_buffer = SBUF;
-    cmdack.input_word_count = 2;
+    cmdack.command             = 0x1102;
+    cmdack.input_buffer        = SBUF;
+    cmdack.input_word_count    = 2;
     cmdack.input_buffer_length = strlen(name) + 5;
-    cmdack.output_buffer = RBUF;
-    cmdack.timeout = 10000000;
+    cmdack.output_buffer       = RBUF;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDma2Comp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -438,16 +438,16 @@ int dvrf_df_close(iomanX_iop_file_t *f)
 
     retval = 0;
     WaitSema(sema_id);
-    cmdack.command = 0x1103;
-    dvrp_fd = (int)f->privdata;
-    cmdack.input_word[0] = (dvrp_fd >> 16) & 0xFFFF;
-    cmdack.input_word[1] = dvrp_fd;
+    cmdack.command          = 0x1103;
+    dvrp_fd                 = (int)f->privdata;
+    cmdack.input_word[0]    = (dvrp_fd >> 16) & 0xFFFF;
+    cmdack.input_word[1]    = dvrp_fd;
     cmdack.input_word_count = 2;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
-    retval = 0;
+    retval      = 0;
     f->privdata = NULL;
 finish:
     SignalSema(sema_id);
@@ -462,16 +462,16 @@ int dvrf_df_dclose(iomanX_iop_file_t *f)
 
     retval = 0;
     WaitSema(sema_id);
-    cmdack.command = 0x1104;
-    dvrp_fd = (int)f->privdata;
-    cmdack.input_word[0] = (dvrp_fd >> 16) & 0xFFFF;
-    cmdack.input_word[1] = dvrp_fd;
+    cmdack.command          = 0x1104;
+    dvrp_fd                 = (int)f->privdata;
+    cmdack.input_word[0]    = (dvrp_fd >> 16) & 0xFFFF;
+    cmdack.input_word[1]    = dvrp_fd;
     cmdack.input_word_count = 2;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
-    retval = 0;
+    retval      = 0;
     f->privdata = NULL;
 finish:
     SignalSema(sema_id);
@@ -499,18 +499,18 @@ int dvrf_df_devctl(iomanX_iop_file_t *f, const char *name, int cmd, void *arg, u
         goto finish;
     }
     argoffset = arglen + 16;
-    SBUF[0] = bswap32(argoffset);
-    SBUF[1] = bswap32((u32)cmd);
-    SBUF[2] = bswap32(buflen);
-    SBUF[3] = bswap32(arglen);
+    SBUF[0]   = bswap32(argoffset);
+    SBUF[1]   = bswap32((u32)cmd);
+    SBUF[2]   = bswap32(buflen);
+    SBUF[3]   = bswap32(arglen);
     memcpy(&SBUF[4], arg, arglen);
     strcpy((char *)SBUF + argoffset, name);
     cmdack.input_buffer_length = argoffset + strlen(name) + 1;
-    cmdack.command = 0x1105;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
-    cmdack.output_buffer = RBUF;
-    cmdack.timeout = 30000000;
+    cmdack.command             = 0x1105;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
+    cmdack.output_buffer       = RBUF;
+    cmdack.timeout             = 30000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDma2Comp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -529,11 +529,11 @@ int dvrf_df_dopen(iomanX_iop_file_t *f, const char *path)
 
     WaitSema(sema_id);
     strcpy((char *)SBUF, path);
-    cmdack.command = 0x1106;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1106;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = strlen(path) + 1;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -554,21 +554,21 @@ int dvrf_df_dread(iomanX_iop_file_t *f, iox_dirent_t *buf)
     drvdrv_exec_cmd_ack cmdack;
 
     WaitSema(sema_id);
-    cmdack.command = 0x1107;
-    dvrp_fd = (int)f->privdata;
-    cmdack.input_word[0] = (dvrp_fd >> 16) & 0xFFFF;
-    cmdack.input_word[1] = dvrp_fd;
+    cmdack.command          = 0x1107;
+    dvrp_fd                 = (int)f->privdata;
+    cmdack.input_word[0]    = (dvrp_fd >> 16) & 0xFFFF;
+    cmdack.input_word[1]    = dvrp_fd;
     cmdack.input_word_count = 2;
-    cmdack.output_buffer = RBUF;
-    cmdack.timeout = 10000000;
+    cmdack.output_buffer    = RBUF;
+    cmdack.timeout          = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaRecvComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
     memcpy(buf, RBUF, sizeof(*buf));
-    buf->stat.mode = bswap32(buf->stat.mode);
-    buf->stat.attr = bswap32(buf->stat.attr);
-    buf->stat.size = bswap32(buf->stat.size);
-    buf->stat.hisize = bswap32(buf->stat.hisize);
+    buf->stat.mode      = bswap32(buf->stat.mode);
+    buf->stat.attr      = bswap32(buf->stat.attr);
+    buf->stat.size      = bswap32(buf->stat.size);
+    buf->stat.hisize    = bswap32(buf->stat.hisize);
     buf->stat.private_0 = bswap32(buf->stat.private_0);
     buf->stat.private_1 = bswap32(buf->stat.private_1);
     buf->stat.private_2 = bswap32(buf->stat.private_2);
@@ -576,13 +576,13 @@ int dvrf_df_dread(iomanX_iop_file_t *f, iox_dirent_t *buf)
     buf->stat.private_4 = bswap32(buf->stat.private_4);
     buf->stat.private_5 = bswap32(buf->stat.private_5);
     u8 tmp;
-    tmp = buf->stat.ctime[6];
+    tmp                = buf->stat.ctime[6];
     buf->stat.ctime[6] = buf->stat.ctime[7];
     buf->stat.ctime[7] = tmp;
-    tmp = buf->stat.atime[6];
+    tmp                = buf->stat.atime[6];
     buf->stat.atime[6] = buf->stat.atime[7];
     buf->stat.atime[7] = tmp;
-    tmp = buf->stat.mtime[6];
+    tmp                = buf->stat.mtime[6];
     buf->stat.mtime[6] = buf->stat.mtime[7];
     buf->stat.mtime[7] = tmp;
 finish:
@@ -602,21 +602,21 @@ int dvrf_df_format(iomanX_iop_file_t *f, const char *dev, const char *blockdev, 
     (void)f;
 
     WaitSema(sema_id);
-    dev_len = strlen(dev) + 13;
+    dev_len      = strlen(dev) + 13;
     blockdev_len = strlen(blockdev);
-    dev_ = dev;
-    arg_offset = dev_len + blockdev_len + 1;
-    SBUF[1] = bswap32(arg_offset);
-    SBUF[0] = bswap32(dev_len);
-    SBUF[2] = bswap32(arglen);
+    dev_         = dev;
+    arg_offset   = dev_len + blockdev_len + 1;
+    SBUF[1]      = bswap32(arg_offset);
+    SBUF[0]      = bswap32(dev_len);
+    SBUF[2]      = bswap32(arglen);
     strcpy((char *)&SBUF[3], dev_);
     strcpy((char *)SBUF + dev_len, blockdev);
     memcpy((char *)SBUF + arg_offset, arg, arglen);
-    cmdack.command = 0x1108;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1108;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = arg_offset + arglen;
-    cmdack.timeout = 3600000000;
+    cmdack.timeout             = 3600000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -634,12 +634,12 @@ int dvrf_df_getstat(iomanX_iop_file_t *f, const char *name, iox_stat_t *stat)
 
     WaitSema(sema_id);
     strcpy((char *)SBUF, name);
-    cmdack.command = 0x1109;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1109;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = strlen(name) + 1;
-    cmdack.output_buffer = RBUF;
-    cmdack.timeout = 10000000;
+    cmdack.output_buffer       = RBUF;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDma2Comp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -656,16 +656,16 @@ int dvrf_df_ioctl(iomanX_iop_file_t *f, int cmd, void *param)
     drvdrv_exec_cmd_ack cmdack;
 
     WaitSema(sema_id);
-    dvrp_fd = (int)f->privdata;
-    cmdack.command = 0x110A;
-    cmdack.input_word[0] = (dvrp_fd >> 16) & 0xFFFF;
-    cmdack.input_word[1] = dvrp_fd;
-    cmdack.input_word[2] = (cmd >> 16) & 0xFFFF;
-    cmdack.input_word[3] = cmd;
-    cmdack.input_word[4] = ((u32)param >> 16) & 0xFFFF;
-    cmdack.input_word[5] = (u32)param & 0xFFFF;
+    dvrp_fd                 = (int)f->privdata;
+    cmdack.command          = 0x110A;
+    cmdack.input_word[0]    = (dvrp_fd >> 16) & 0xFFFF;
+    cmdack.input_word[1]    = dvrp_fd;
+    cmdack.input_word[2]    = (cmd >> 16) & 0xFFFF;
+    cmdack.input_word[3]    = cmd;
+    cmdack.input_word[4]    = ((u32)param >> 16) & 0xFFFF;
+    cmdack.input_word[5]    = (u32)param & 0xFFFF;
     cmdack.input_word_count = 6;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -687,12 +687,12 @@ int dvrf_df_ioctl2(iomanX_iop_file_t *f, int cmd, void *arg, unsigned int arglen
     SBUF[0] = bswap32(dvrp_fd);
     SBUF[3] = bswap32(arglen);
     memcpy(((u8 *)SBUF) + 0x10, arg, arglen);
-    cmdack.command = 0x110B;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x110B;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = arglen + 16;
-    cmdack.input_word_count = 0;
-    cmdack.output_buffer = RBUF;
-    cmdack.timeout = 10000000;
+    cmdack.input_word_count    = 0;
+    cmdack.output_buffer       = RBUF;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDma2Comp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -709,16 +709,16 @@ int dvrf_df_lseek(iomanX_iop_file_t *f, int offset, int mode)
     drvdrv_exec_cmd_ack cmdack;
 
     WaitSema(sema_id);
-    dvrp_fd = (int)f->privdata;
-    cmdack.command = 0x110C;
-    cmdack.input_word[0] = (dvrp_fd >> 16) & 0xFFFF;
-    cmdack.input_word[1] = dvrp_fd;
-    cmdack.input_word[2] = (offset >> 16) & 0xFFFF;
-    cmdack.input_word[3] = offset;
-    cmdack.input_word[4] = (mode >> 16) & 0xFFFF;
-    cmdack.input_word[5] = mode;
+    dvrp_fd                 = (int)f->privdata;
+    cmdack.command          = 0x110C;
+    cmdack.input_word[0]    = (dvrp_fd >> 16) & 0xFFFF;
+    cmdack.input_word[1]    = dvrp_fd;
+    cmdack.input_word[2]    = (offset >> 16) & 0xFFFF;
+    cmdack.input_word[3]    = offset;
+    cmdack.input_word[4]    = (mode >> 16) & 0xFFFF;
+    cmdack.input_word[5]    = mode;
     cmdack.input_word_count = 6;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -737,19 +737,19 @@ s64 dvrf_df_lseek64(iomanX_iop_file_t *f, s64 offset, int whence)
     (void)f;
 
     WaitSema(sema_id);
-    dvrp_fd = (int)f->privdata;
-    cmdack.command = 0x110D;
-    cmdack.input_word[0] = (dvrp_fd >> 16) & 0xFFFF;
-    cmdack.input_word[1] = dvrp_fd;
-    cmdack.input_word[2] = (offset >> 48) & 0xFFFF;
-    cmdack.input_word[3] = (offset >> 32) & 0xFFFF;
-    cmdack.input_word[4] = (offset >> 16) & 0xFFFF;
-    cmdack.input_word[5] = offset;
-    cmdack.input_word[6] = (whence >> 16) & 0xFFFF;
-    cmdack.input_word[7] = whence;
+    dvrp_fd                 = (int)f->privdata;
+    cmdack.command          = 0x110D;
+    cmdack.input_word[0]    = (dvrp_fd >> 16) & 0xFFFF;
+    cmdack.input_word[1]    = dvrp_fd;
+    cmdack.input_word[2]    = (offset >> 48) & 0xFFFF;
+    cmdack.input_word[3]    = (offset >> 32) & 0xFFFF;
+    cmdack.input_word[4]    = (offset >> 16) & 0xFFFF;
+    cmdack.input_word[5]    = offset;
+    cmdack.input_word[6]    = (whence >> 16) & 0xFFFF;
+    cmdack.input_word[7]    = whence;
     cmdack.input_word_count = 8;
-    cmdack.timeout = 10000000;
-    rretval = 0;
+    cmdack.timeout          = 10000000;
+    rretval                 = 0;
     if (check_cmdack_err(&DvrdrvExecCmdAckComp, &cmdack, &rretval, __func__)) {
         retval = rretval;
         goto finish;
@@ -770,11 +770,11 @@ int dvrf_df_mkdir(iomanX_iop_file_t *f, const char *path, int mode)
     WaitSema(sema_id);
     SBUF[0] = bswap32(mode);
     strcpy((char *)&SBUF[1], path);
-    cmdack.command = 0x110E;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x110E;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = strlen(path) + 5;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -795,23 +795,23 @@ int dvrf_df_mount(iomanX_iop_file_t *f, const char *fsname, const char *devname,
     (void)f;
 
     WaitSema(sema_id);
-    SBUF[0] = bswap32(flag);
-    fsname_len = strlen(fsname) + 17;
+    SBUF[0]     = bswap32(flag);
+    fsname_len  = strlen(fsname) + 17;
     devname_len = strlen(devname);
-    fsname_ = fsname;
-    arg_offs = fsname_len + devname_len + 1;
-    SBUF[2] = bswap32(arg_offs);
-    SBUF[1] = bswap32(fsname_len);
-    SBUF[3] = bswap32(arglen);
+    fsname_     = fsname;
+    arg_offs    = fsname_len + devname_len + 1;
+    SBUF[2]     = bswap32(arg_offs);
+    SBUF[1]     = bswap32(fsname_len);
+    SBUF[3]     = bswap32(arglen);
     strcpy((char *)&SBUF[4], fsname_);
     strcpy((char *)SBUF + fsname_len, devname);
     memcpy(((u8 *)SBUF) + arg_offs, arg, arglen);
 
-    cmdack.command = 0x110F;
-    cmdack.input_buffer = SBUF;
-    cmdack.input_word_count = 0;
+    cmdack.command             = 0x110F;
+    cmdack.input_buffer        = SBUF;
+    cmdack.input_word_count    = 0;
     cmdack.input_buffer_length = arg_offs + arglen;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -829,14 +829,14 @@ int dvrf_df_open(iomanX_iop_file_t *f, const char *name, int flags, int mode)
     mode_ = mode;
     WaitSema(sema_id);
     SBUF[0] = bswap32(flags);
-    mode_ = (mode_ << 8) + (mode_ >> 8);
+    mode_   = (mode_ << 8) + (mode_ >> 8);
     memcpy(&SBUF[1], &mode_, sizeof(mode_));
     strcpy((char *)&SBUF[1] + 2, name);
-    cmdack.command = 0x1110;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1110;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = strlen(name) + 7;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -861,20 +861,20 @@ int dvrf_df_read(iomanX_iop_file_t *f, void *ptr, int size)
     int unaligned_size;
     drvdrv_exec_cmd_ack cmdack;
 
-    total_read = 0;
+    total_read     = 0;
     unaligned_size = 0;
     if (((u32)ptr & 3) != 0) {
         unaligned_size = 4 - ((u32)ptr & 3);
     }
     WaitSema(sema_id);
-    out_buf = (char *)ptr;
-    dvrp_fd = (int)f->privdata;
-    remain_size = size;
-    cmdack.command = 0x1111;
-    cmdack.input_word[0] = (dvrp_fd >> 16) & 0xFFFF;
-    cmdack.input_word[1] = dvrp_fd;
+    out_buf                 = (char *)ptr;
+    dvrp_fd                 = (int)f->privdata;
+    remain_size             = size;
+    cmdack.command          = 0x1111;
+    cmdack.input_word[0]    = (dvrp_fd >> 16) & 0xFFFF;
+    cmdack.input_word[1]    = dvrp_fd;
     cmdack.input_word_count = 4;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     while (1) {
         int read_size;
         if (remain_size <= 0) {
@@ -926,11 +926,11 @@ int dvrf_df_readlink(iomanX_iop_file_t *f, const char *path, char *buf, unsigned
     SBUF[0] = bswap32(buflen);
     strcpy((char *)&SBUF[1], path);
     cmdack.input_buffer_length = strlen(path) + 5;
-    cmdack.command = 0x1112;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
-    cmdack.output_buffer = RBUF;
-    cmdack.timeout = 10000000;
+    cmdack.command             = 0x1112;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
+    cmdack.output_buffer       = RBUF;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDma2Comp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -949,11 +949,11 @@ int dvrf_df_remove(iomanX_iop_file_t *f, const char *name)
 
     WaitSema(sema_id);
     strcpy((char *)SBUF, name);
-    cmdack.command = 0x1113;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1113;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = strlen(name) + 1;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -974,16 +974,16 @@ int dvrf_df_rename(iomanX_iop_file_t *f, const char *old, const char *new_1)
 
     WaitSema(sema_id);
     old_strlen = strlen(old);
-    old_ = old;
-    new_offs = old_strlen + 5;
-    SBUF[0] = bswap32(new_offs);
+    old_       = old;
+    new_offs   = old_strlen + 5;
+    SBUF[0]    = bswap32(new_offs);
     strcpy((char *)&SBUF[1], old_);
     strcpy((char *)SBUF + new_offs, new_1);
-    cmdack.command = 0x1114;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1114;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = new_offs + strlen(new_1) + 1;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -1001,11 +1001,11 @@ int dvrf_df_rmdir(iomanX_iop_file_t *f, const char *path)
 
     WaitSema(sema_id);
     strcpy((char *)SBUF, path);
-    cmdack.command = 0x1115;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1115;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = strlen(path) + 1;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -1025,17 +1025,17 @@ int dvrf_df_symlink(iomanX_iop_file_t *f, const char *old, const char *new_1)
     (void)f;
 
     WaitSema(sema_id);
-    old_len = strlen(old);
-    old_ = old;
+    old_len  = strlen(old);
+    old_     = old;
     new_offs = old_len + 5;
-    SBUF[0] = bswap32(new_offs);
+    SBUF[0]  = bswap32(new_offs);
     strcpy((char *)&SBUF[1], old_);
     strcpy((char *)SBUF + new_offs, new_1);
-    cmdack.command = 0x1116;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1116;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = new_offs + strlen(new_1) + 1;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -1054,11 +1054,11 @@ int dvrf_df_sync(iomanX_iop_file_t *f, const char *dev, int flag)
     WaitSema(sema_id);
     SBUF[0] = bswap32(flag);
     strcpy((char *)&SBUF[1], dev);
-    cmdack.command = 0x1117;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1117;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = strlen(dev) + 5;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -1076,11 +1076,11 @@ int dvrf_df_umount(iomanX_iop_file_t *f, const char *fsname)
 
     WaitSema(sema_id);
     strcpy((char *)SBUF, fsname);
-    cmdack.command = 0x1118;
-    cmdack.input_word_count = 0;
-    cmdack.input_buffer = SBUF;
+    cmdack.command             = 0x1118;
+    cmdack.input_word_count    = 0;
+    cmdack.input_buffer        = SBUF;
     cmdack.input_buffer_length = strlen(fsname) + 1;
-    cmdack.timeout = 10000000;
+    cmdack.timeout             = 10000000;
     if (check_cmdack_err(&DvrdrvExecCmdAckDmaSendComp, &cmdack, &retval, __func__)) {
         goto finish;
     }
@@ -1099,21 +1099,21 @@ int dvrf_df_write(iomanX_iop_file_t *f, void *ptr, int size)
     int unaligned_size;
     drvdrv_exec_cmd_ack cmdack;
 
-    total_write = 0;
-    in_buffer = (char *)ptr;
+    total_write    = 0;
+    in_buffer      = (char *)ptr;
     unaligned_size = 0;
     if (((u32)ptr & 3) != 0) {
         unaligned_size = 4 - ((u32)ptr & 3);
         memcpy(RBUF, ptr, unaligned_size);
     }
     WaitSema(sema_id);
-    dvrp_fd = (int)f->privdata;
-    remain_size = size;
-    cmdack.command = 0x1119;
-    cmdack.input_word[0] = (dvrp_fd >> 16) & 0xFFFF;
-    cmdack.input_word[1] = dvrp_fd;
+    dvrp_fd                 = (int)f->privdata;
+    remain_size             = size;
+    cmdack.command          = 0x1119;
+    cmdack.input_word[0]    = (dvrp_fd >> 16) & 0xFFFF;
+    cmdack.input_word[1]    = dvrp_fd;
     cmdack.input_word_count = 4;
-    cmdack.timeout = 10000000;
+    cmdack.timeout          = 10000000;
     while (remain_size > 0) {
         u32 chunk_size;
         chunk_size = current_chunk_size;
@@ -1127,7 +1127,7 @@ int dvrf_df_write(iomanX_iop_file_t *f, void *ptr, int size)
         cmdack.input_word[3] = chunk_size;
         if (unaligned_size != 0) {
             cmdack.input_buffer = (char *)RBUF;
-            unaligned_size = 0;
+            unaligned_size      = 0;
         } else {
             cmdack.input_buffer = in_buffer;
         }
@@ -1160,9 +1160,9 @@ void CopySceStat(iox_stat_t *stat, u8 *dvrp_stat)
     stat->atime[6] = ((u8 *)dvrp_stat)[27];
     stat->atime[7] = ((u8 *)dvrp_stat)[26];
     memcpy(stat->mtime, &((u32 *)dvrp_stat)[7], 6);
-    stat->mtime[6] = ((u8 *)dvrp_stat)[35];
-    stat->mtime[7] = ((u8 *)dvrp_stat)[34];
-    stat->hisize = bswap32(((u32 *)dvrp_stat)[9]);
+    stat->mtime[6]  = ((u8 *)dvrp_stat)[35];
+    stat->mtime[7]  = ((u8 *)dvrp_stat)[34];
+    stat->hisize    = bswap32(((u32 *)dvrp_stat)[9]);
     stat->private_0 = bswap32(((u32 *)dvrp_stat)[10]);
     stat->private_1 = bswap32(((u32 *)dvrp_stat)[11]);
     stat->private_2 = bswap32(((u32 *)dvrp_stat)[12]);

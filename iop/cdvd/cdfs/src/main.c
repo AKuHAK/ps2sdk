@@ -8,12 +8,12 @@
 
 // 16 sectors worth of toc entry
 #define MAX_FILES_PER_FOLDER 256
-#define MAX_FILES_OPENED 16
-#define MAX_FOLDERS_OPENED 16
-#define MAX_BYTES_READ 16384
+#define MAX_FILES_OPENED     16
+#define MAX_FOLDERS_OPENED   16
+#define MAX_BYTES_READ       16384
 
-#define DRIVER_UNIT_NAME "cdfs"
-#define DRIVER_UNIT_VERSION 2
+#define DRIVER_UNIT_NAME     "cdfs"
+#define DRIVER_UNIT_VERSION  2
 #define VERSION_STRINGIFY(x) #x
 
 #define MODNAME "cdfs_driver"
@@ -46,13 +46,13 @@ static int fod_used[MAX_FOLDERS_OPENED];
 
 // global variables
 static int lastsector = -1;
-static int last_bk = 0;
+static int last_bk    = 0;
 
 /***********************************************
-*                                              *
-*             DRIVER FUNCTIONS                 *
-*                                              *
-***********************************************/
+ *                                              *
+ *             DRIVER FUNCTIONS                 *
+ *                                              *
+ ***********************************************/
 
 static int fio_init(iop_device_t *driver)
 {
@@ -88,7 +88,7 @@ static int fio_open(iop_file_t *f, const char *name, int mode)
     // Invalidate last sector cache if disk changed
     if (cdfs_checkDiskChanged(CHANGED_FIO)) {
         lastsector = -1;
-        last_bk = 0;
+        last_bk    = 0;
     }
 
     // check if the file exists
@@ -100,7 +100,7 @@ static int fio_open(iop_file_t *f, const char *name, int mode)
     if (mode != O_RDONLY) {
         printf("mode is different than O_RDONLY, expected %i, received %i\n\n", O_RDONLY, mode);
         return -2;
-    }   
+    }
 
     DPRINTF("CDFS: fio_open TocEntry info\n");
     DPRINTF("      TocEntry....... %p\n", &tocEntry);
@@ -121,11 +121,11 @@ static int fio_open(iop_file_t *f, const char *name, int mode)
         return -3;
     }
 
-    fd_used[j] = 1;
-    fd_table[j].fd = f;
+    fd_used[j]           = 1;
+    fd_table[j].fd       = f;
     fd_table[j].fileSize = tocEntry.fileSize;
-    fd_table[j].LBA = tocEntry.fileLBA;
-    fd_table[j].filePos = 0;
+    fd_table[j].LBA      = tocEntry.fileLBA;
+    fd_table[j].filePos  = 0;
 
     f->privdata = (void *)j;
 
@@ -177,7 +177,7 @@ static int fio_read(iop_file_t *f, void *buffer, int size)
     // A few sanity checks
     if (fd_table[i].filePos > fd_table[i].fileSize) {
         // We cant start reading from past the beginning of the file
-        return 0;  // File exists but we couldnt read anything from it
+        return 0; // File exists but we couldnt read anything from it
     }
 
     if ((fd_table[i].filePos + size) > fd_table[i].fileSize)
@@ -191,7 +191,7 @@ static int fio_read(iop_file_t *f, void *buffer, int size)
 
     // Now work out where we want to start reading from
     start_sector = fd_table[i].LBA + (fd_table[i].filePos >> 11);
-    off_sector = (fd_table[i].filePos & 0x7FF);
+    off_sector   = (fd_table[i].filePos & 0x7FF);
 
     num_sectors = (off_sector + size);
     num_sectors = (num_sectors >> 11) + ((num_sectors & 2047) != 0);
@@ -213,7 +213,7 @@ static int fio_read(iop_file_t *f, void *buffer, int size)
         if (!cdfs_readSect(start_sector + read, num_sectors - read, local_buffer + ((read) << 11))) {
             DPRINTF("Couldn't Read from file for some reason\n");
         }
-        
+
         last_bk = num_sectors - 1;
     }
 
@@ -245,7 +245,7 @@ static int fio_lseek(iop_file_t *f, int offset, int whence)
     DPRINTF("      offset...... %d\n", offset);
     DPRINTF("      whence...... %d\n\n", whence);
 
-    i = (int) f->privdata;
+    i = (int)f->privdata;
 
     if (i >= 16) {
         DPRINTF("fio_lseek: ERROR: File does not appear to be open!\n");
@@ -278,8 +278,9 @@ static int fio_lseek(iop_file_t *f, int offset, int whence)
     return fd_table[i].filePos;
 }
 
-static int fio_openDir(iop_file_t *f, const char *path) {
-   int j;
+static int fio_openDir(iop_file_t *f, const char *path)
+{
+    int j;
 
     DPRINTF("CDFS: fio_openDir called.\n");
     DPRINTF("      kernel_fd.. %p\n", f);
@@ -303,15 +304,15 @@ static int fio_openDir(iop_file_t *f, const char *path) {
     }
 
     fod_table[j].filesIndex = 0;
-    fod_table[j].fd = f;
-    fod_used[j] = 1;
+    fod_table[j].fd         = f;
+    fod_used[j]             = 1;
 
     DPRINTF("ITEMS %i\n\n", fod_table[j].files);
 #ifdef DEBUG
     int index = 0;
-    for (index=0; index < fod_table[j].files; index++) {
+    for (index = 0; index < fod_table[j].files; index++) {
         struct TocEntry tocEntry = fod_table[j].entries[index];
-        
+
         DPRINTF("CDFS: fio_openDir index=%d TocEntry info\n", index);
         DPRINTF("      TocEntry....... %p\n", &tocEntry);
         DPRINTF("      fileLBA........ %i\n", tocEntry.fileLBA);
@@ -321,13 +322,13 @@ static int fio_openDir(iop_file_t *f, const char *path) {
         DPRINTF("      filename....... %s\n", tocEntry.filename);
     }
 #endif
-   
+
     f->privdata = (void *)j;
 
     return j;
 }
 
-static int fio_closeDir(iop_file_t *fd) 
+static int fio_closeDir(iop_file_t *fd)
 {
     int i;
 
@@ -386,12 +387,12 @@ static int fio_dread(iop_file_t *fd, io_dirent_t *dirent)
     memcpy(dirent->stat.mtime, entry.dateStamp, 8);
     strncpy(dirent->name, entry.filename, 128);
     dirent->unknown = 0;
-    
+
     fod_table[i].filesIndex++;
     return fod_table[i].filesIndex;
 }
 
-static int fio_getstat(iop_file_t *fd, const char *name, io_stat_t *stat) 
+static int fio_getstat(iop_file_t *fd, const char *name, io_stat_t *stat)
 {
     struct TocEntry entry;
     int ret = -1;
@@ -419,7 +420,8 @@ static int fio_getstat(iop_file_t *fd, const char *name, io_stat_t *stat)
     return ret;
 }
 
-static int cdfs_dummy() {
+static int cdfs_dummy()
+{
     DPRINTF("CDFS: dummy function called\n\n");
     return -5;
 }
@@ -461,7 +463,9 @@ int _start(int argc, char *argv[])
     cdfs_prepare();
 
     DelDrv(fio_driver.name);
-    if(AddDrv(&fio_driver) != 0) { return MODULE_NO_RESIDENT_END; }
+    if (AddDrv(&fio_driver) != 0) {
+        return MODULE_NO_RESIDENT_END;
+    }
 
     return MODULE_RESIDENT_END;
 }

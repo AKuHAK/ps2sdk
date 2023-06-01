@@ -53,17 +53,17 @@ extern int DvrdrvExecCmdAckDmaRecvComp(drvdrv_exec_cmd_ack *a1);
 extern int DvrdrvExecCmdAckDma2Comp(drvdrv_exec_cmd_ack *a1);
 
 #define pvrdrv_IMPORTS_start DECLARE_IMPORT_TABLE(pvrdrv, 1, 1)
-#define pvrdrv_IMPORTS_end END_IMPORT_TABLE
+#define pvrdrv_IMPORTS_end   END_IMPORT_TABLE
 
-#define I_DvrdrvResetSystem DECLARE_IMPORT(4, DvrdrvResetSystem)
-#define I_DvrdrvEnableIntr DECLARE_IMPORT(5, DvrdrvEnableIntr)
-#define I_DvrdrvDisableIntr DECLARE_IMPORT(6, DvrdrvDisableIntr)
-#define I_DvrdrvRegisterIntrHandler DECLARE_IMPORT(7, DvrdrvRegisterIntrHandler)
+#define I_DvrdrvResetSystem           DECLARE_IMPORT(4, DvrdrvResetSystem)
+#define I_DvrdrvEnableIntr            DECLARE_IMPORT(5, DvrdrvEnableIntr)
+#define I_DvrdrvDisableIntr           DECLARE_IMPORT(6, DvrdrvDisableIntr)
+#define I_DvrdrvRegisterIntrHandler   DECLARE_IMPORT(7, DvrdrvRegisterIntrHandler)
 #define I_DvrdrvUnregisterIntrHandler DECLARE_IMPORT(8, DvrdrvUnregisterIntrHandler)
-#define I_DvrdrvExecCmdAck DECLARE_IMPORT(9, DvrdrvExecCmdAck)
-#define I_DvrdrvExecCmdAckComp DECLARE_IMPORT(10, DvrdrvExecCmdAckComp)
+#define I_DvrdrvExecCmdAck            DECLARE_IMPORT(9, DvrdrvExecCmdAck)
+#define I_DvrdrvExecCmdAckComp        DECLARE_IMPORT(10, DvrdrvExecCmdAckComp)
 #define I_DvrdrvExecCmdAckDmaSendComp DECLARE_IMPORT(11, DvrdrvExecCmdAckDmaSendComp)
 #define I_DvrdrvExecCmdAckDmaRecvComp DECLARE_IMPORT(12, DvrdrvExecCmdAckDmaRecvComp)
-#define I_DvrdrvExecCmdAckDma2Comp DECLARE_IMPORT(13, DvrdrvExecCmdAckDma2Comp)
+#define I_DvrdrvExecCmdAckDma2Comp    DECLARE_IMPORT(13, DvrdrvExecCmdAckDma2Comp)
 
 #endif

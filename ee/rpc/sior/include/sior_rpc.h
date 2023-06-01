@@ -16,7 +16,7 @@
 #ifndef __SIOR_RPC_H__
 #define __SIOR_RPC_H__
 
-#define	SIOR_IRX              0xC001510
+#define SIOR_IRX 0xC001510
 
 #ifdef __cplusplus
 extern "C" {

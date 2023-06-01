@@ -516,16 +516,16 @@ int hcdInit(void)
     }
 
     dbg_printf("HCD thread...\n");
-    thread.attr      = TH_C;
-    thread.option    = 0;
-    thread.thread    = hcdIrqThread;
+    thread.attr   = TH_C;
+    thread.option = 0;
+    thread.thread = hcdIrqThread;
 #ifndef MINI_DRIVER
     thread.stacksize = 0x4000; // 16KiB
 #else
     thread.stacksize = 0x0800; //  2KiB
 #endif
-    thread.priority  = usbConfig.hcdThreadPrio;
-    hcdTid           = CreateThread(&thread);
+    thread.priority = usbConfig.hcdThreadPrio;
+    hcdTid          = CreateThread(&thread);
     StartThread(hcdTid, (void *)hcdIrqEvent);
 
     dbg_printf("Callback thread...\n");

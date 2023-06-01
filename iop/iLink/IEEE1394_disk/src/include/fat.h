@@ -73,9 +73,9 @@ typedef struct _fat32_raw_bpb
     unsigned char sectorCount[4];  // number of sectors
 
     /* fat32 specific */
-    unsigned char fatSize32[4]; // FAT32 sectors per FAT
-    unsigned char fatStatus[2]; // If bit 7 is clear then all FAT's are updated other wise bits 0-3
-                                // give the current active FAT, all other bits are reserved.
+    unsigned char fatSize32[4];      // FAT32 sectors per FAT
+    unsigned char fatStatus[2];      // If bit 7 is clear then all FAT's are updated other wise bits 0-3
+                                     // give the current active FAT, all other bits are reserved.
     unsigned char revision[2];       // High byte is major revision number, low byte is minor revision number, currently both are 0
     unsigned char rootDirCluster[4]; // Root directory starting cluster
     unsigned char fsInfoSector[2];   // File system information sector.
@@ -85,11 +85,11 @@ typedef struct _fat32_raw_bpb
     unsigned char reserved2;         // Reserved
     unsigned char signature;         // Signature (must be 28h or 29h to be recognised by NT)
     unsigned char serialNumber[4];   // The serial number, the serial number is stored in reverse
-                                   // order and is the hex representation of the bytes stored here
-    unsigned char volumeLabel[11];  // Volume label
-    unsigned char fatId[8];         // File system ID. "FAT12", "FAT16" or "FAT  "
-    unsigned char machineCode[8];   // Machine code
-    unsigned char bootSignature[2]; // Boot Signature AA55h.
+                                     // order and is the hex representation of the bytes stored here
+    unsigned char volumeLabel[11];   // Volume label
+    unsigned char fatId[8];          // File system ID. "FAT12", "FAT16" or "FAT  "
+    unsigned char machineCode[8];    // Machine code
+    unsigned char bootSignature[2];  // Boot Signature AA55h.
 } fat32_raw_bpb;
 
 /* directory entry of the short file name */

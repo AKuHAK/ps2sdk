@@ -112,9 +112,9 @@ void create_local_screen(MATRIX local_screen, MATRIX local_world, MATRIX world_v
 /* CALCULATE FUNCTIONS */
 
 /** Ambient light source. */
-#define LIGHT_AMBIENT		0
+#define LIGHT_AMBIENT     0
 /** Directional light source. */
-#define LIGHT_DIRECTIONAL	1
+#define LIGHT_DIRECTIONAL 1
 
 /** Transform an array of normals by applying the specified local_light matrix. */
 void calculate_normals(VECTOR *output, int count, VECTOR *normals, MATRIX local_light);

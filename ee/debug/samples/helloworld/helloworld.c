@@ -16,20 +16,20 @@
 
 int main(int argc, char *argv[])
 {
-  SifInitRpc(0);
-  init_scr();
+    SifInitRpc(0);
+    init_scr();
 
-  scr_printf("Hello, World!\n");
+    scr_printf("Hello, World!\n");
 
-  // After 5 seconds, clear the screen.
-  sleep(5);
-  scr_clear();
+    // After 5 seconds, clear the screen.
+    sleep(5);
+    scr_clear();
 
-  // Move cursor to 20, 20
-  scr_setXY(20, 20);
-  scr_printf("Hello Again, World!\n");
+    // Move cursor to 20, 20
+    scr_setXY(20, 20);
+    scr_printf("Hello Again, World!\n");
 
-  sleep(10);
+    sleep(10);
 
-  return 0;
+    return 0;
 }

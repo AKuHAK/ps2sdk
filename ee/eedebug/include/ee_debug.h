@@ -25,7 +25,7 @@
 extern "C" {
 #endif
 
-typedef int (EE_ExceptionHandler)(struct st_EE_RegFrame *);
+typedef int(EE_ExceptionHandler)(struct st_EE_RegFrame *);
 
 int ee_dbg_install(int levels);
 int ee_dbg_remove(int levels);

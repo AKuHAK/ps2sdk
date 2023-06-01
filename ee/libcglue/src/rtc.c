@@ -26,15 +26,14 @@ extern time_t ps2time(time_t *t);
 
 s64 _ps2sdk_rtc_offset_from_busclk = 0;
 
-__attribute__((weak))
-void _libcglue_rtc_update()
+__attribute__((weak)) void _libcglue_rtc_update()
 {
-	time_t rtc_sec;
-	u32 busclock_sec;
-	u32 busclock_usec;
+    time_t rtc_sec;
+    u32 busclock_sec;
+    u32 busclock_usec;
 
-	rtc_sec = ps2time(NULL);
-	TimerBusClock2USec(GetTimerSystemTime(), &busclock_sec, &busclock_usec);
+    rtc_sec = ps2time(NULL);
+    TimerBusClock2USec(GetTimerSystemTime(), &busclock_sec, &busclock_usec);
 
-	_ps2sdk_rtc_offset_from_busclk = ((s64)rtc_sec) - ((s64)busclock_sec);
+    _ps2sdk_rtc_offset_from_busclk = ((s64)rtc_sec) - ((s64)busclock_sec);
 }

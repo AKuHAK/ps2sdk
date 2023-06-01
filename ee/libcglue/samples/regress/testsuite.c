@@ -24,30 +24,23 @@ int run_testsuite(test_suite *p)
 
     printf("Running %d tests\n", p->ntests);
     successful = 0;
-    for (i = 0; i < p->ntests; i++)
-    {
+    for (i = 0; i < p->ntests; i++) {
         const char *error;
 
         printf("\nTest %d: %s ", i + 1, p->tests[i].name);
         error = p->tests[i].func(p->tests[i].arg);
-        if (error != NULL)
-        {
+        if (error != NULL) {
             printf("\nFAILURE: [%s]\n", error);
-        }
-        else
-        {
+        } else {
             successful++;
         }
 
         printf("\n");
     }
 
-    if (p->ntests - successful > 0)
-    {
+    if (p->ntests - successful > 0) {
         printf("\nTotal failures: %d\n", p->ntests - successful);
-    }
-    else
-    {
+    } else {
         printf("\nSUCCESS: all tests passed!\n");
     }
 

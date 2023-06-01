@@ -21,7 +21,7 @@
 #include <tamtypes.h>
 
 /* seems the IOP's sysclib does have one more value than the newlib's version... */
-#define _JBLEN 12
+#define _JBLEN  12
 #define _JBTYPE u32
 
 typedef _JBTYPE jmp_buf[_JBLEN];
@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 int setjmp(jmp_buf env);
-void longjmp(jmp_buf env, int val) __attribute__ ((noreturn));
+void longjmp(jmp_buf env, int val) __attribute__((noreturn));
 
 #ifdef __cplusplus
 }

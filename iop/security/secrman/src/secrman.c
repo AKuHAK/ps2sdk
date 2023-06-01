@@ -35,10 +35,10 @@ struct ModloadBitTableDescriptor
     unsigned int padding; // Doesn't seem to be used.
 };
 
-static loadfile_elf_load_proc_callback_t loadfile_elf_load_proc; // 0x00003d20
-static loadfile_check_valid_ee_elf_callback_t loadfile_check_valid_ee_elf; // 0x00003d24
-static loadfile_elf_get_program_header_callback_t loadfile_elf_get_program_header; // 0x00003d28
-static loadfile_elf_load_alloc_buffer_from_heap_callback_t loadfile_elf_load_alloc_buffer_from_heap; // 0x00003d2c
+static loadfile_elf_load_proc_callback_t loadfile_elf_load_proc;                                         // 0x00003d20
+static loadfile_check_valid_ee_elf_callback_t loadfile_check_valid_ee_elf;                               // 0x00003d24
+static loadfile_elf_get_program_header_callback_t loadfile_elf_get_program_header;                       // 0x00003d28
+static loadfile_elf_load_alloc_buffer_from_heap_callback_t loadfile_elf_load_alloc_buffer_from_heap;     // 0x00003d2c
 static loadfile_elf_load_dealloc_buffer_from_heap_callback_t loadfile_elf_load_dealloc_buffer_from_heap; // 0x00003d30
 
 // Function prototypes.
@@ -380,7 +380,7 @@ static int secrman_loadfile_read_callback_common(int fd, loadfile_allocate_handl
 		"\tModloadUnk2->read_buffer_length:\t%d\n", allocate_info->ring_buffer_index, allocate_info->read_buffer_offset, allocate_info->read_buffer_length);
 #endif
 
-    entry         = &allocate_info->ring_buffer_contents[allocate_info->ring_buffer_index];
+    entry                = &allocate_info->ring_buffer_contents[allocate_info->ring_buffer_index];
     entry->buffer_offset = allocate_info->read_buffer_offset;
     for (i = 0, PayloadLength = 0; i < ModloadBitTableDescriptor->header.block_count; PayloadLength += ModloadBitTableDescriptor->blocks[i].size, i++) {
         if (allocate_info->read_buffer_offset < PayloadLength + ModloadBitTableDescriptor->blocks[i].size) {
@@ -454,7 +454,7 @@ static int secrman_load_kelf_common(loadfile_allocate_handler_struct_t *allocate
                             result = 0;
 
                             // 0x00003318
-                            *result_out = flhs->elf_header.e_entry;
+                            *result_out        = flhs->elf_header.e_entry;
                             *result_module_out = 0;
                         } else {
                             printf("load elf error\n");
@@ -499,10 +499,10 @@ static int secrman_load_kelf_from_disk(loadfile_allocate_handler_struct_t *alloc
 // 0x00003430
 static void SecrGetLoadfileCallbacks(SetLoadfileCallbacks_struct_t *callbackinfo)
 {
-    loadfile_elf_load_proc = callbackinfo->elf_load_proc;
-    loadfile_check_valid_ee_elf = callbackinfo->check_valid_ee_elf;
-    loadfile_elf_get_program_header = callbackinfo->elf_get_program_header;
-    loadfile_elf_load_alloc_buffer_from_heap = callbackinfo->elf_load_alloc_buffer_from_heap;
+    loadfile_elf_load_proc                     = callbackinfo->elf_load_proc;
+    loadfile_check_valid_ee_elf                = callbackinfo->check_valid_ee_elf;
+    loadfile_elf_get_program_header            = callbackinfo->elf_get_program_header;
+    loadfile_elf_load_alloc_buffer_from_heap   = callbackinfo->elf_load_alloc_buffer_from_heap;
     loadfile_elf_load_dealloc_buffer_from_heap = callbackinfo->elf_load_dealloc_buffer_from_heap;
 
     callbackinfo->load_kelf_from_card = &secrman_load_kelf_from_card;

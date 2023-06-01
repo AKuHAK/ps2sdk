@@ -17,7 +17,7 @@
  * pukklink, regarding host and naplink printf.
  */
 
-//#define DEBUG
+// #define DEBUG
 
 #include "types.h"
 #include "loadcore.h"
@@ -32,8 +32,8 @@
 #include "iomanX.h"
 #include "ioman_mod.h"
 
-#define TRUE	1
-#define FALSE	0
+#define TRUE  1
+#define FALSE 0
 
 /** @defgroup fakehost fakehost - host: to hdd driver */
 
@@ -71,11 +71,11 @@ extern int naplinkRpcInit(void);
  *  This function takes the name param and adds it to the basename
  *  for replacement, returning the destination full pathname.
  */
-char * fd_name( char * buffer, const char * name )
+char *fd_name(char *buffer, const char *name)
 {
-	strcpy( buffer, base );
-	strcat( buffer, name );
-	return buffer;
+    strcpy(buffer, base);
+    strcat(buffer, name);
+    return buffer;
 }
 
 /** Store filedescriptor and get client filedescriptor.
@@ -85,11 +85,11 @@ char * fd_name( char * buffer, const char * name )
  * @param f   io_file pointer to store fd in .
  * @return client filedescriptor.
  */
-int fd_save( int fd, iop_io_file_t *f )
+int fd_save(int fd, iop_io_file_t *f)
 {
-	f->unit = ++fd_global;
-	f->privdata = (void *) fd;
-	return f->unit;
+    f->unit     = ++fd_global;
+    f->privdata = (void *)fd;
+    return f->unit;
 }
 
 /** Get real filedescriptor.
@@ -98,9 +98,9 @@ int fd_save( int fd, iop_io_file_t *f )
  * @param f   io_file pointer to get fd from.
  * @return real filedescriptor.
  */
-int realfd( iop_io_file_t *f )
+int realfd(iop_io_file_t *f)
 {
-	return (int) f->privdata;
+    return (int)f->privdata;
 }
 
 /** Dummy function, for where needed.
@@ -108,8 +108,8 @@ int realfd( iop_io_file_t *f )
  */
 int dummy()
 {
-	M_DEBUG("dummy function called\n");
-	return -5;
+    M_DEBUG("dummy function called\n");
+    return -5;
 }
 
 /** Initialise fs driver.
@@ -118,10 +118,10 @@ int dummy()
  * @param driver  io_device pointer to device
  * @return Status (0=successful).
  */
-int fd_initialize( iop_io_device_t *driver)
+int fd_initialize(iop_io_device_t *driver)
 {
-	M_PRINTF( "initializing '%s' file driver.\n", driver->name );
-	return 0;
+    M_PRINTF("initializing '%s' file driver.\n", driver->name);
+    return 0;
 }
 
 /** Handle open request.
@@ -132,16 +132,17 @@ int fd_initialize( iop_io_device_t *driver)
  * @param mode  open mode.
  * @return Status (as for fileio open).
  */
-int fd_open( iop_io_file_t *f, const char *name, int mode)
+int fd_open(iop_io_file_t *f, const char *name, int mode)
 {
-	char nameBuffer[ 250 ];
-	int fd;
+    char nameBuffer[250];
+    int fd;
 
-	M_DEBUG("open %i %s %s\n", f->unit, name ,base);
-	fd = iomanX_open( fd_name( nameBuffer, name), mode, 0 );
-	if ( fd < 0 ) return fd;
+    M_DEBUG("open %i %s %s\n", f->unit, name, base);
+    fd = iomanX_open(fd_name(nameBuffer, name), mode, 0);
+    if (fd < 0)
+        return fd;
 
-	return fd_save( fd, f );
+    return fd_save(fd, f);
 }
 
 /** Handle close request.
@@ -150,9 +151,9 @@ int fd_open( iop_io_file_t *f, const char *name, int mode)
  * @param f     Pointer to io_device structure.
  * @return Status (as for fileio close).
  */
-int fd_close( iop_io_file_t *f )
+int fd_close(iop_io_file_t *f)
 {
-	return iomanX_close( realfd(f) );
+    return iomanX_close(realfd(f));
 }
 
 /** Handle read request.
@@ -163,9 +164,9 @@ int fd_close( iop_io_file_t *f )
  * @param size    Size of buffer.
  * @return Status (as for fileio read).
  */
-int fd_read( iop_io_file_t *f, void * buffer, int size )
+int fd_read(iop_io_file_t *f, void *buffer, int size)
 {
-	return iomanX_read( realfd(f), buffer, size );
+    return iomanX_read(realfd(f), buffer, size);
 }
 
 /** Handle write request.
@@ -176,9 +177,9 @@ int fd_read( iop_io_file_t *f, void * buffer, int size )
  * @param size    Size of buffer.
  * @return Status (as for fileio write).
  */
-int fd_write( iop_io_file_t *fd, void *buffer, int size )
+int fd_write(iop_io_file_t *fd, void *buffer, int size)
 {
-	return iomanX_write( realfd(fd), buffer, size );
+    return iomanX_write(realfd(fd), buffer, size);
 }
 
 /** Handle lseek request.
@@ -189,39 +190,39 @@ int fd_write( iop_io_file_t *fd, void *buffer, int size )
  * @param whence  Base for seek.
  * @return Status (as for fileio lseek).
  */
-int fd_lseek( iop_io_file_t *fd, int offset, int whence)
+int fd_lseek(iop_io_file_t *fd, int offset, int whence)
 {
-	return iomanX_lseek( realfd(fd), offset, whence );
+    return iomanX_lseek(realfd(fd), offset, whence);
 }
 
 // Function array for fileio structure.
 static iop_io_device_ops_t functions = {
-	&fd_initialize,
-	(void *)&dummy,
-	(void *)&dummy,
-	&fd_open,
-	&fd_close,
-	&fd_read,
-	(void *)&dummy,
-	&fd_lseek,
-	(void *)&dummy,
-	(void *)&dummy,
-	(void *)&dummy,
-	(void *)&dummy,
-	(void *)&dummy,
-	(void *)&dummy,
-	(void *)&dummy,
-	(void *)&dummy,
-	(void *)&dummy,
+    &fd_initialize,
+    (void *)&dummy,
+    (void *)&dummy,
+    &fd_open,
+    &fd_close,
+    &fd_read,
+    (void *)&dummy,
+    &fd_lseek,
+    (void *)&dummy,
+    (void *)&dummy,
+    (void *)&dummy,
+    (void *)&dummy,
+    (void *)&dummy,
+    (void *)&dummy,
+    (void *)&dummy,
+    (void *)&dummy,
+    (void *)&dummy,
 };
 
 // FileIO structure.
 static iop_io_device_t driver = {
-	FS_REPNAME,
-	16,
-	1,
-	"host redirection driver",
-	&functions,
+    FS_REPNAME,
+    16,
+    1,
+    "host redirection driver",
+    &functions,
 };
 
 /** Entry point for IRX.
@@ -241,34 +242,29 @@ static iop_io_device_t driver = {
  *   MODULE_RESIDENT_END if loaded and registered as library.
  *   MODULE_NO_RESIDENT_END if just exiting normally.
  */
-int _start( int argc, char *argv[] )
+int _start(int argc, char *argv[])
 {
-	M_PRINTF( "Copyright (c) 2004 adresd\n" );
+    M_PRINTF("Copyright (c) 2004 adresd\n");
 
-	if ( argc != 2 )
-	{
-		M_PRINTF( "HOST requires based argument\n" );
-		return MODULE_NO_RESIDENT_END;
-	}
-      else
-      {
-		// Copy the base location.
-		strncpy( base, argv[1] ,sizeof(base) - 1);
-		base[sizeof(base) - 1] = '\0';
+    if (argc != 2) {
+        M_PRINTF("HOST requires based argument\n");
+        return MODULE_NO_RESIDENT_END;
+    } else {
+        // Copy the base location.
+        strncpy(base, argv[1], sizeof(base) - 1);
+        base[sizeof(base) - 1] = '\0';
 
-      	M_PRINTF( "redirecting '%s:' to '%s'\n",FS_REPNAME,base);
-		fd_global = 1;
+        M_PRINTF("redirecting '%s:' to '%s'\n", FS_REPNAME, base);
+        fd_global = 1;
 
-		M_PRINTF( "HOST final step, bye\n" );
+        M_PRINTF("HOST final step, bye\n");
 
-		// Install naplink RPC handler
-		naplinkRpcInit();
+        // Install naplink RPC handler
+        naplinkRpcInit();
 
-      	// now install the fileio driver
-		io_DelDrv( FS_REPNAME );
-		io_AddDrv( &driver );
-	}
-	return MODULE_RESIDENT_END;
+        // now install the fileio driver
+        io_DelDrv(FS_REPNAME);
+        io_AddDrv(&driver);
+    }
+    return MODULE_RESIDENT_END;
 }
-
-

@@ -22,29 +22,28 @@
 
 static char _ps2sdk_tzname[15];
 
-__attribute__((weak))
-void _libcglue_timezone_update()
+__attribute__((weak)) void _libcglue_timezone_update()
 {
-	// Set TZ and call tzset to ensure that timezone information won't get overwritten when tszet is called multiple times
-	// The TZ environment variable parsing in newlib is broken in various ways:
-	// * It doesn't support arbritary characters in the timezone name using angle brackets
-	// * The timezone offset sign is inverted
-	setenv("TZ", "", 0);
-	tzset();
+    // Set TZ and call tzset to ensure that timezone information won't get overwritten when tszet is called multiple times
+    // The TZ environment variable parsing in newlib is broken in various ways:
+    // * It doesn't support arbritary characters in the timezone name using angle brackets
+    // * The timezone offset sign is inverted
+    setenv("TZ", "", 0);
+    tzset();
 
-	// Set tzinfo manually instead.
+    // Set tzinfo manually instead.
 
-	__tzinfo_type *tz = __gettzinfo();
+    __tzinfo_type *tz = __gettzinfo();
 
-	// _timezone is in seconds, while the return value of configGetTimezone is in minutes
-	// Add one hour if configIsDaylightSavingEnabled is 1
-	// _timezone is offset from local time to UTC (not UTC to local time), so flip the sign
-	_timezone = -((configGetTimezone() + (configIsDaylightSavingEnabled() * 60)) * 60);
-	tz->__tzrule[0].offset = _timezone;
-	snprintf(_ps2sdk_tzname, sizeof(_ps2sdk_tzname), "Etc/GMT%+ld", _timezone / 3600);
-	_tzname[0] = _ps2sdk_tzname;
-	_tzname[1] = _ps2sdk_tzname;
+    // _timezone is in seconds, while the return value of configGetTimezone is in minutes
+    // Add one hour if configIsDaylightSavingEnabled is 1
+    // _timezone is offset from local time to UTC (not UTC to local time), so flip the sign
+    _timezone              = -((configGetTimezone() + (configIsDaylightSavingEnabled() * 60)) * 60);
+    tz->__tzrule[0].offset = _timezone;
+    snprintf(_ps2sdk_tzname, sizeof(_ps2sdk_tzname), "Etc/GMT%+ld", _timezone / 3600);
+    _tzname[0] = _ps2sdk_tzname;
+    _tzname[1] = _ps2sdk_tzname;
 
-	// Don't perform DST conversion
-	_daylight = 0;
+    // Don't perform DST conversion
+    _daylight = 0;
 }

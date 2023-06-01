@@ -201,23 +201,16 @@ int configGetTimezone(void)
     ConfigParam config;
     int timezoneOffset;
 
-    if (IsT10K())
-    {
+    if (IsT10K()) {
         timezoneOffset = g_t10KConfig.timezoneOffset;
-    }
-    else
-    {
+    } else {
         GetOsdConfigParam(&config);
-        if (IsEarlyJap(config))
-        {
+        if (IsEarlyJap(config)) {
             timezoneOffset = 540;
-        }
-        else
-        {
+        } else {
             timezoneOffset = config.timezoneOffset;
             // Check if this is negative, and manually make it positive using bit manipulation
-            if ((timezoneOffset & 0x400) != 0)
-            {
+            if ((timezoneOffset & 0x400) != 0) {
                 // Flip bits
                 timezoneOffset ^= 0x7ff;
                 // Add one
@@ -248,17 +241,14 @@ void configSetTimezone(int timezoneOffset)
         u32 wantedTimezoneOffset;
 
         // Reduce it to signed 11 bits if it is negative using bit manipulation
-        if (timezoneOffset < 0)
-        {
+        if (timezoneOffset < 0) {
             // Make it positive
             wantedTimezoneOffset = -timezoneOffset;
             // Subtract one
             wantedTimezoneOffset -= 1;
             // Flip bits
             wantedTimezoneOffset ^= 0x7ff;
-        }
-        else
-        {
+        } else {
             wantedTimezoneOffset = timezoneOffset;
         }
 

@@ -176,9 +176,8 @@ time_t ps2time(time_t *t)
     tim.tm_year = ps2tim.year + 100;
 
     // Temporally set the offset relative to JST
-    if (tz != NULL)
-    {
-        offset_save = tz->__tzrule[0].offset;
+    if (tz != NULL) {
+        offset_save            = tz->__tzrule[0].offset;
         tz->__tzrule[0].offset = -9 * 60 * 60;
     }
     tim2 = mktime(&tim);

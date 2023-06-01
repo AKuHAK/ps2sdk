@@ -24,17 +24,17 @@ void WaitVblank();
 void WaitNonVblank();
 
 int RegisterVblankHandler(int startend, int priority, int (*handler)(void *),
-		void *arg);
+                          void *arg);
 int ReleaseVblankHandler(int startend, int (*handler)(void *));
 
 #define vblank_IMPORTS_start DECLARE_IMPORT_TABLE(vblank, 1, 1)
-#define vblank_IMPORTS_end END_IMPORT_TABLE
+#define vblank_IMPORTS_end   END_IMPORT_TABLE
 
-#define I_WaitVblankStart DECLARE_IMPORT(4, WaitVblankStart)
-#define I_WaitVblankEnd DECLARE_IMPORT(5, WaitVblankEnd)
-#define I_WaitVblank DECLARE_IMPORT(6, WaitVblank)
-#define I_WaitNonVblank DECLARE_IMPORT(7, WaitNonVblank)
+#define I_WaitVblankStart       DECLARE_IMPORT(4, WaitVblankStart)
+#define I_WaitVblankEnd         DECLARE_IMPORT(5, WaitVblankEnd)
+#define I_WaitVblank            DECLARE_IMPORT(6, WaitVblank)
+#define I_WaitNonVblank         DECLARE_IMPORT(7, WaitNonVblank)
 #define I_RegisterVblankHandler DECLARE_IMPORT(8, RegisterVblankHandler)
-#define I_ReleaseVblankHandler DECLARE_IMPORT(9, ReleaseVblankHandler)
+#define I_ReleaseVblankHandler  DECLARE_IMPORT(9, ReleaseVblankHandler)
 
 #endif /* __VBLANK_H__ */

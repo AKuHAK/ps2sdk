@@ -41,7 +41,7 @@ void iop_start(void)
         return;
 
     fileXioInit();
-    */
+     */
 }
 #endif
 
@@ -65,8 +65,7 @@ int main(int argc, char *argv[])
     run_testsuite(&suite);
 
     /* do some stuff or ps2client will freeze */
-    while (1)
-    {
+    while (1) {
         sleep(10);
         printf("I am alive\n");
     };

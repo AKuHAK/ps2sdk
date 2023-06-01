@@ -2,14 +2,17 @@
 #define _CDFS_IOP_H
 
 #ifdef DEBUG
-#define DPRINTF(args...)	printf(args)
+#define DPRINTF(args...) printf(args)
 #else
-#define DPRINTF(args...)	do { } while(0)
+#define DPRINTF(args...) \
+    do {                 \
+    } while (0)
 #endif
 
 #define CDFS_FILEPROPERTY_DIR 0x02
 
-struct TocEntry {
+struct TocEntry
+{
     u32 fileLBA;
     u32 fileSize;
     u8 fileProperties;
@@ -18,8 +21,8 @@ struct TocEntry {
 } __attribute__((packed));
 
 enum CDFS_getMode {
-    CDFS_GET_FILES_ONLY = 1,
-    CDFS_GET_DIRS_ONLY = 2,
+    CDFS_GET_FILES_ONLY     = 1,
+    CDFS_GET_DIRS_ONLY      = 2,
     CDFS_GET_FILES_AND_DIRS = 3
 };
 
@@ -37,4 +40,4 @@ int cdfs_readSect(u32 lsn, u32 sectors, u8 *buf);
 int cdfs_getDir(const char *pathname, const char *extensions, enum CDFS_getMode getMode, struct TocEntry tocEntry[], unsigned int req_entries);
 int cdfs_checkDiskChanged(enum Cdvd_Changed_Index index);
 
-#endif  // _CDFS_H
+#endif // _CDFS_H
