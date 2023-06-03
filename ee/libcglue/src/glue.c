@@ -367,13 +367,13 @@ static int fioGetstatHelper(const char *path, struct stat *buf) {
 int (*_ps2sdk_stat)(const char *path, struct stat *buf) = fioGetstatHelper;
 
 int _stat(const char *path, struct stat *buf) {
-    return __transform_errno(_ps2sdk_stat(path, buf));
+    return _ps2sdk_stat(path, buf);
 }
 #endif
 
 #ifdef F_lstat
 int lstat(const char *path, struct stat *buf) {
-    return __transform_errno(stat(path, buf));
+    return stat(path, buf);
 }
 #endif
 
@@ -406,8 +406,8 @@ static DIR *fioOpendirHelper(const char *path)
 	}
 
 	dir = malloc(sizeof(DIR));
-	dir->dd_fd = dd;
-	dir->dd_buf = malloc(sizeof(struct dirent));
+        dir->dd_fd = dd;
+        dir->dd_buf = malloc(sizeof(struct dirent));
 
 	return dir;
 }
@@ -424,18 +424,17 @@ DIR *opendir(const char *path)
 static struct dirent *fioReaddirHelper(DIR *dir)
 {
 	int rv;
-	struct dirent *de;
-	io_dirent_t fiode;
+        struct dirent *de;
+        io_dirent_t fiode;
 
 	if(dir == NULL) {
 		errno = EBADF;
 		return NULL;
 	}
 
-	de = (struct dirent *)dir->dd_buf;
-	rv = fioDread(dir->dd_fd, &fiode);
+        de = (struct dirent *)dir->dd_buf;
+        rv = fioDread(dir->dd_fd, &fiode);
 	if (rv <= 0) {
-		errno = -rv;
 		return NULL;
 	}
 
@@ -458,7 +457,7 @@ struct dirent *readdir(DIR *dir)
 static void fioRewinddirHelper(DIR *dir)
 {
 	(void)dir;
-	errno = ENOSYS;
+
 	printf("rewinddir not implemented\n");
 }
 
@@ -473,24 +472,23 @@ void rewinddir(DIR *dir)
 #ifdef F_closedir
 static int fioClosedirHelper(DIR *dir)
 {
-	int res;
-
 	if(dir == NULL) {
-		return -EBADF;
+		errno = EBADF;
+		return -1;
 	}
 
-	res = fioDclose(dir->dd_fd);
+	fioDclose(dir->dd_fd); // Check return value?
 	free(dir->dd_buf);
 	free(dir);
 
-	return res;
+	return 0;
 }
 
 int (*_ps2sdk_closedir)(DIR *dir) = fioClosedirHelper;
 
 int closedir(DIR *dir)
 {
-    return __transform_errno(_ps2sdk_closedir(dir));
+    return _ps2sdk_closedir(dir);
 }
 #endif
 
@@ -511,7 +509,7 @@ off64_t lseek64(int fd, off64_t offset, int whence)
     if (_ps2sdk_lseek64 == NULL)
         return EOVERFLOW;
 
-    return __transform_errno(_ps2sdk_lseek64(fd, offset, whence));
+    return _ps2sdk_lseek64(fd, offset, whence);
 }
 #endif
 
@@ -556,7 +554,7 @@ int fioRename(const char *old, const char *new) {
 int (*_ps2sdk_rename)(const char*, const char*) = fioRename;
 
 int _link(const char *old, const char *new) {
-    return __transform_errno(_ps2sdk_rename(old, new));
+    return _ps2sdk_rename(old, new);
 }
 #endif
 
@@ -596,8 +594,8 @@ int _kill(int pid, int sig) {
 #endif
 	(void)pid;
 	(void)sig;
-	errno = ENOSYS;
-	return 1; /* not supported */
+	// FIXME: set errno
+	return -1;
 }
 #endif
 
@@ -639,7 +637,7 @@ int _gettimeofday(struct timeval *tv, struct timezone *tz)
 {
 	if (tv == NULL)
 	{
-		errno = EFAULT;
+		errno = EINVAL;
 		return -1;
 	}
 
@@ -696,38 +694,35 @@ int ftime(struct timeb *tb) {
 #ifdef F_clock_getres
 int clock_getres(clockid_t clk_id, struct timespec *res) {
 	struct timeval tv;
-	int ret;
 
-	ret = gettimeofday(&tv, NULL);
+	gettimeofday(&tv, NULL);
 
 	/* Return the actual time since epoch */
 	res->tv_sec = tv.tv_sec;
 	res->tv_nsec = tv.tv_usec * 1000;
 
-	return ret;
+	return 0;
 }
 #endif
 
 #ifdef F_clock_gettime
 int clock_gettime(clockid_t clk_id, struct timespec *tp) {
 	struct timeval tv;
-	int res;
 
-	res = gettimeofday(&tv, NULL);
+	gettimeofday(&tv, NULL);
 
 	/* Return the actual time since epoch */
 	tp->tv_sec = tv.tv_sec;
 	tp->tv_nsec = tv.tv_usec * 1000;
 
-	return res;
+	return 0;
 }
 #endif
 
 #ifdef F_clock_settime
 int clock_settime(clockid_t clk_id, const struct timespec *tp) {
 	// TODO: implement using sceCdWriteClock
-	errno = EPERM;
-	return -1;
+	return 0;
 }
 #endif
 
@@ -735,12 +730,11 @@ int clock_settime(clockid_t clk_id, const struct timespec *tp) {
 int truncate(const char *path, off_t length)
 {
 	ssize_t bytes_read;
-    int fd, res;
+    int fd;
     char buff[length];
 
 	fd = open(path, O_RDONLY);
 	if (fd < 0) {
-		errno = ENOENT;
 		return -1;
 	}
 
@@ -753,13 +747,12 @@ int truncate(const char *path, off_t length)
 
 	fd = open (path, O_TRUNC|O_WRONLY);
 	if (fd < 0) {
-		errno = ENOENT;
 		return -1;
 	}
 
-	res = write(fd, &buff, length);
+	write(fd, &buff, length);
 	close(fd);
-	return res;
+	return 0;
 }
 #endif
 
@@ -773,7 +766,7 @@ int (*_ps2sdk_symlink)(const char *target, const char *linkpath) = _default_syml
 
 int symlink(const char *target, const char *linkpath)
 {
-  return __transform_errno(_ps2sdk_symlink(target, linkpath));
+  return _ps2sdk_symlink(target, linkpath);
 }
 #endif
 
@@ -846,7 +839,7 @@ int getentropy(void *buf, size_t buflen)
 #ifdef F__isatty
 int _isatty(int fd)
 {
-	errno = ENOSYS;
+	errno = ENOTTY;
 	return -1; /* not supported */
 }
 #endif
@@ -854,7 +847,7 @@ int _isatty(int fd)
 #ifdef F_chmod
 int chmod(const char *pathname, mode_t mode)
 {
-	errno = ENOSYS;
+	errno = ENOTTY;
 	return -1; /* not supported */
 }
 #endif
@@ -862,7 +855,7 @@ int chmod(const char *pathname, mode_t mode)
 #ifdef F_fchmod
 int fchmod(int fd, mode_t mode)
 {
-	errno = ENOSYS;
+	errno = ENOTTY;
 	return -1; /* not supported */
 }
 #endif
