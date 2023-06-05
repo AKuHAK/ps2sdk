@@ -367,7 +367,7 @@ static int fioGetstatHelper(const char *path, struct stat *buf) {
 int (*_ps2sdk_stat)(const char *path, struct stat *buf) = fioGetstatHelper;
 
 int _stat(const char *path, struct stat *buf) {
-    return _ps2sdk_stat(path, buf);
+    return __transform_errno(_ps2sdk_stat(path, buf));
 }
 #endif
 
