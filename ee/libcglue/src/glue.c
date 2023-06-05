@@ -474,7 +474,6 @@ static int fioClosedirHelper(DIR *dir)
 {
 	if(dir == NULL) {
 		errno = EBADF;
-		return -1;
 	}
 
 	fioDclose(dir->dd_fd); // Check return value?
