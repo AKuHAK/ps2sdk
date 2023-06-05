@@ -508,7 +508,7 @@ off64_t lseek64(int fd, off64_t offset, int whence)
     if (_ps2sdk_lseek64 == NULL)
         return EOVERFLOW;
 
-    return _ps2sdk_lseek64(fd, offset, whence);
+   return __transform_errno(_ps2sdk_lseek64(fd, offset, whence));
 }
 #endif
 
