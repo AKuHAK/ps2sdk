@@ -457,7 +457,7 @@ struct dirent *readdir(DIR *dir)
 static void fioRewinddirHelper(DIR *dir)
 {
 	(void)dir;
-
+    errno = ENOSYS;
 	printf("rewinddir not implemented\n");
 }
 
