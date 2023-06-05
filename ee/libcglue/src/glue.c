@@ -373,7 +373,7 @@ int _stat(const char *path, struct stat *buf) {
 
 #ifdef F_lstat
 int lstat(const char *path, struct stat *buf) {
-    return stat(path, buf);
+    return __transform_errno(stat(path, buf));
 }
 #endif
 
