@@ -23,6 +23,7 @@ jobs:
       # Still compilation is not fully compatible with multi-thread
       - name: Compile project ${{ matrix.debug }}
         run: |
+          unset PS2SDKSRC
           make -j $(getconf _NPROCESSORS_ONLN) clean
           make -j 1 ${{ matrix.debug }}
           make -j $(getconf _NPROCESSORS_ONLN) install
