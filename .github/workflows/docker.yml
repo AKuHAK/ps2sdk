@@ -35,6 +35,7 @@ jobs:
       run: |
         platform=${{ matrix.platform.container-platform }}
         printf 'PLATFORM_PAIR=%s\n' "${platform//\//-}" >> $GITHUB_ENV
+        printf 'REPO=%s\n' "${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 
     - name: Login to Github Container Registry
       uses: docker/login-action@v3
@@ -65,7 +66,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ghcr.io/${{ github.repository }}
+        images: ghcr.io/${{ env.REPO }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -76,7 +77,7 @@ jobs:
       with:
         platforms: ${{ matrix.platform.container-platform }}
         labels: ${{ steps.meta.outputs.labels }}
-        tags: ghcr.io/${{ github.repository }}
+        tags: ghcr.io/${{ env.REPO }}
         outputs: type=image,push-by-digest=true,name-canonical=true,push=true
         build-args: ${{ env.BUILD_ARGS_LIST_NEWLINES }}
 
@@ -108,6 +109,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
+    - name: Lowercase repository name
+      run: printf 'REPO=%s\n' "${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 
     - name: Install Ubuntu packages
       run: |
@@ -148,12 +152,12 @@ jobs:
     - name: Set docker tag list to include DockerHub if credentials available
       if: env.DOCKER_USERNAME != null
       run: |
-        printf 'DOCKER_CONTAINER_LIST<<EOF\n%s\nEOF\n' "ghcr.io/${{ github.repository }}"$'\n'"${{ github.repository }}" >> $GITHUB_ENV
+        printf 'DOCKER_CONTAINER_LIST<<EOF\n%s\nEOF\n' "ghcr.io/${{ env.REPO }}"$'\n'"${{ env.REPO }}" >> $GITHUB_ENV
 
     - name: Set docker tag list to not include DockerHub if credentials not available
       if: env.DOCKER_USERNAME == null
       run: |
-        printf 'DOCKER_CONTAINER_LIST<<EOF\n%s\nEOF\n' "ghcr.io/${{ github.repository }}" >> $GITHUB_ENV
+        printf 'DOCKER_CONTAINER_LIST<<EOF\n%s\nEOF\n' "ghcr.io/${{ env.REPO }}" >> $GITHUB_ENV
 
     - name: Docker meta
       id: meta
@@ -169,11 +173,11 @@ jobs:
     - name: Create manifest list and push
       working-directory: ${{ runner.temp }}/digests
       run: |
-        docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") $(printf 'ghcr.io/${{ github.repository }}@sha256:%s ' *)
+        docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") $(printf 'ghcr.io/${{ env.REPO }}@sha256:%s ' *)
 
     - name: Inspect image
       run: |
-        docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.version }}
+        docker buildx imagetools inspect ghcr.io/${{ env.REPO }}:${{ steps.meta.outputs.version }}
 
     - name: Gather information for repository dispatch
       id: dest-repo
