@@ -387,7 +387,7 @@ void SetHoldMode(int holdnum, int mode)
     u32 hold = _lw(TMR_HOLD_MODE);
     hold &= ~(0xF << (4 * holdnum));
     hold |= (mode & 0xF) << (4 * holdnum);
-    _sw(TMR_HOLD_MODE, hold);
+    _sw(hold, TMR_HOLD_MODE);
 #endif
 }
 
@@ -396,7 +396,7 @@ u32 GetHoldMode(int holdnum)
 #ifdef BUILDING_TIMRMANP
     return 0;
 #else
-    return _lw(TMR_HOLD_MODE >> (holdnum * 4)) & 0xF;
+    return (_lw(TMR_HOLD_MODE) >> (holdnum * 4)) & 0xF;
 #endif
 }
 

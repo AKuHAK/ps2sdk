@@ -26,12 +26,12 @@
 #define EI EIntr
 
 // Workaround for EE kernel bug: call this immediately before returning from any interrupt handler.
-#define ExitHandler() __asm__ __volatile__("sync\nei\n")
+#define ExitHandler() __asm__ __volatile__("sync\nei\n" ::: "memory")
 
 // note: 'sync' is the same as 'sync.l'
-#define EE_SYNC()  __asm__ __volatile__("sync")
-#define EE_SYNCL() __asm__ __volatile__("sync.l")
-#define EE_SYNCP() __asm__ __volatile__("sync.p")
+#define EE_SYNC()  __asm__ __volatile__("sync" ::: "memory")
+#define EE_SYNCL() __asm__ __volatile__("sync.l" ::: "memory")
+#define EE_SYNCP() __asm__ __volatile__("sync.p" ::: "memory")
 
 #define UNCACHED_SEG(x) \
     ((void *)(((u32)(x)) | 0x20000000))
